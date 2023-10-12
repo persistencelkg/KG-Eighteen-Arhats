@@ -23,6 +23,7 @@
     <modules>
         <module>Common-Arhat</module>
         <module>MQ-Arhat</module>
+        <module>MQ-Arhat</module>
     </modules>
 
     <dependencies>
