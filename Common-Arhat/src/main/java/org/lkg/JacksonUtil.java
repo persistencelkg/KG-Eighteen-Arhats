@@ -1,0 +1,69 @@
+package org.lkg;
+
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * @author likaiguang
+ */
+@Slf4j
+public class JacksonUtil {
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    static {
+        // 美化输出
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        // 输出时将属性变成小写带下划线 输入时还原成javaBean格式
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SnakeCaseStrategy.SNAKE_CASE);
+        // 映射未知属性不抛出异常
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
+        //
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
+        // 忽略取值为null的参数
+        //mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
+
+    public static ObjectMapper getMapper() {
+        return mapper;
+    }
+
+    public static String writeValue(Object any) {
+        try {
+            return mapper.writeValueAsString(any);
+        } catch (Exception e) {
+            log.error("writeValue json exception, {}", e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public static <T> T readValue(String json, Class<T> T) {
+        try {
+            return mapper.readValue(json, T);
+        } catch (IOException e) {
+            log.error("readValue convert json to object exception, {}", e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public static <T> List<T> readList(String json, Class<T> T) {
+        try {
+            return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, T));
+        } catch (IOException e) {
+            log.error("readList convert json to object list exception, {}", e.getMessage(), e);
+        }
+        return null;
+    }
+
+//    public static void main(String[] args) {
+//        String s = objectToJSON(new WebChannel());
+//        System.out.println(s);
+//    }
+
+}
