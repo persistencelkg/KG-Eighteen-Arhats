@@ -1,6 +1,7 @@
 package org.lkg;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -11,7 +12,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * @author likaiguang
+ * Description：
+ * Author: li kai guang
  */
 @Slf4j
 public class JacksonUtil {
@@ -61,8 +63,18 @@ public class JacksonUtil {
         return null;
     }
 
+    public static <T> T readObj(String json, TypeReference<T> typeReference) {
+        try {
+            return mapper.readValue(json, typeReference);
+        } catch (IOException e) {
+            log.error("readObj convert json to object list exception, {}", e.getMessage(), e);
+        }
+        return null;
+    }
+
+
 //    public static void main(String[] args) {
-//        String s = objectToJSON(new WebChannel());
+//        String s = writeValue(new BeanUtil());
 //        System.out.println(s);
 //    }
 
