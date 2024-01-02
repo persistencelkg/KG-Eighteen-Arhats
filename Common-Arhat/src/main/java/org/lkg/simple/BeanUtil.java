@@ -1,4 +1,4 @@
-package org.lkg;
+package org.lkg.simple;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

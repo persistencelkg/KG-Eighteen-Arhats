@@ -1,4 +1,4 @@
-package org.lkg;
+package org.lkg.simple;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;

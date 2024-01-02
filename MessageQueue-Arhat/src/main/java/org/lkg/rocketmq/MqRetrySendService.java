@@ -1,8 +1,8 @@
 package org.lkg.rocketmq;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lkg.JacksonUtil;
-import org.lkg.SystemConfigValue;
+import org.lkg.simple.JacksonUtil;
+import org.lkg.simple.SystemConfigValue;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
