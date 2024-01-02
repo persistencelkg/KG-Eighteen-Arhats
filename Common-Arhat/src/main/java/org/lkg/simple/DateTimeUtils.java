@@ -1,4 +1,4 @@
-package org.lkg;
+package org.lkg.simple;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
