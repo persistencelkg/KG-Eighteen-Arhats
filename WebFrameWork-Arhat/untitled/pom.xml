@@ -3,14 +3,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.lkg</groupId>
-        <artifactId>KG-Eighteem-Arhats</artifactId>
+        <artifactId>WebFrameWork-Arhat</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>MessageQueue-Arhat</artifactId>
+    <artifactId>untitled</artifactId>
     <packaging>jar</packaging>
 
-    <name>MessageQueue-Arhat</name>
+    <name>untitled</name>
+    <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,14 +20,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.lkg</groupId>
-            <artifactId>NonWebCommon-Arhat</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-spring-boot-starter</artifactId>
-            <version>2.2.0</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
