@@ -8,7 +8,6 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.2.6.RELEASE</version>
-
     </parent>
 
     <groupId>org.lkg</groupId>
@@ -21,8 +20,10 @@
     </properties>
 
     <modules>
-        <module>Common-Arhat</module>
+        <module>NonWebCommon-Arhat</module>
         <module>MessageQueue-Arhat</module>
+        <module>WebFrameWork-Arhat</module>
+        <module>MessageNotice-Arhat</module>
     </modules>
 
 
