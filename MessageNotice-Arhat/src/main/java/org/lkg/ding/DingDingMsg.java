@@ -1,5 +1,6 @@
 package org.lkg.ding;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,8 +25,8 @@ public abstract class DingDingMsg {
     public Map<String, Object> buildRequestBody(boolean atAll, String... at) {
         Map<String, Object> map = new HashMap<>();
         map.put("msgtype", getKey());
-        map.put("at", JacksonUtil.writeValue(Ding.buildDing(atAll, at)));
-        map.put(getKey(), JacksonUtil.writeValue(this));
+        map.put("at", Ding.buildDing(atAll, at));
+        map.put(getKey(), this);
         return map;
     }
 
@@ -147,8 +148,9 @@ public abstract class DingDingMsg {
     }
 
     public static void main(String[] args) {
-        Link test = new Link("test", "ssss", "1", "1");
+        MarkDown test = new MarkDown("test", "ssss");
+        System.out.println(test.buildRequestBody(false, "18830262673"));
 //        System.out.println(test.buildRequestBody(false, "18830262673"));
-        DingDingUtil.sendMessage(DingDingMsg.createMarkDown("--", "@18634185909 ## 测试\n\n ### <font color=\"#113311\">哈哈哈</font> "), "https://oapi.dingtalk.com/robot/send?access_token=37c083e9fffc155f5a5014cca52f01a07c8fee318da79e9a3f339bfd6a102e98", "SEC43e3ed7ae08747996b1d2a336c852b6482d50b2fac107e68269c329bb503c1f9", false, "18634185909");
+        DingDingUtil.sendMessage(DingDingMsg.createMarkDown("--", "@18830262673 ## 测试\n\n ### <font color=\"#113311\">哈哈哈</font> "), "https://oapi.dingtalk.com/robot/send?access_token=37c083e9fffc155f5a5014cca52f01a07c8fee318da79e9a3f339bfd6a102e98", "SEC43e3ed7ae08747996b1d2a336c852b6482d50b2fac107e68269c329bb503c1f9", false, "18830262673");
     }
 }

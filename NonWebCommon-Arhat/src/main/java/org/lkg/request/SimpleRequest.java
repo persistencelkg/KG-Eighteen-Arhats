@@ -9,6 +9,7 @@ import org.lkg.simple.JacksonUtil;
 import org.springframework.lang.Nullable;
 
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,7 @@ public class SimpleRequest {
     public static SimpleRequest createPostRequest(String url, BodyEnum bodyEnum) {
         return createPostRequest(url, bodyEnum, null, null);
     }
+
     public static SimpleRequest createPostRequest(String url, BodyEnum bodyEnum, Map<String, Object> body) {
         return createPostRequest(url, bodyEnum, body, null);
     }
@@ -98,8 +100,6 @@ public class SimpleRequest {
             this.headers.putAll(headers);
         }
     }
-
-
 
 
     @AllArgsConstructor
