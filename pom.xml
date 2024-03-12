@@ -10,24 +10,52 @@
         <version>2.2.6.RELEASE</version>
     </parent>
 
-    <groupId>org.lkg</groupId>
+    <groupId>io.github.persistencelkg</groupId>
     <artifactId>KG-Eighteem-Arhats</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0.RELEASE</version>
 
     <properties>
         <java.version>1.8</java.version>
+        <eighteem-arhat.version>1.0.0.RELEASE</eighteem-arhat.version>
     </properties>
 
     <modules>
         <module>NonWebCommon-Arhat</module>
         <module>MessageQueue-Arhat</module>
-        <module>WebFrameWork-Arhat</module>
         <module>MessageNotice-Arhat</module>
     </modules>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
+                <artifactId>NonWebCommon-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
+                <artifactId>MessageQueue-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
+                <artifactId>WebFrameWork-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
+                <artifactId>MessageNotice-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
+
+
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -50,13 +78,80 @@
     </distributionManagement>
     <build>
         <plugins>
+
+<!--            <plugin>-->
+<!--                <groupId>org.sonatype.central</groupId>-->
+<!--                <artifactId>central-publishing-maven-plugin</artifactId>-->
+<!--                <version>0.4.0</version>-->
+<!--                <extensions>true</extensions>-->
+<!--                <configuration>-->
+<!--                    <publishingServerId>central</publishingServerId>-->
+<!--                    <tokenAuth>true</tokenAuth>-->
+<!--&lt;!&ndash;                    <autoPublish>true</autoPublish>&ndash;&gt;-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+                    <!--禁用注释检查-->
+                    <additionalJOptions>
+                        <additionalJOption>-Xdoclint:none</additionalJOption>
+                    </additionalJOptions>
                 </configuration>
+
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 
@@ -71,4 +166,30 @@
             </resource>
         </resources>
     </build>
+
+
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>actable</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>li kaiguang</name>
+            <email>18634185909@163.com</email>
+            <organization>One day without coding, one feels repulsive</organization>
+        </developer>
+    </developers>
+
+    <scm>
+        <tag>master</tag>
+        <url>https://github.com/persistencelkg/KG-Eighteen-Arhats.git</url>
+        <connection>https://github.com/persistencelkg/KG-Eighteen-Arhats.git</connection>
+        <developerConnection>https://github.com/persistencelkg/KG-Eighteen-Arhats.git</developerConnection>
+    </scm>
+
 </project>
