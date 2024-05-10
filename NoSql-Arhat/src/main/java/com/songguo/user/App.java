@@ -1,4 +1,4 @@
-package org.lkg;
+package com.songguo.user;
 
 /**
  * Hello world!

@@ -1,7 +1,6 @@
 package org.lkg.enums;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 
 /**

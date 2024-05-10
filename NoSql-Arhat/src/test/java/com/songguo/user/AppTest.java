@@ -1,4 +1,4 @@
-package org.lkg;
+package com.songguo.user;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

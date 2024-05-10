@@ -1,5 +1,6 @@
 package org.lkg.simple;
 
+import java.sql.Timestamp;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -69,9 +70,26 @@ public class DateTimeUtils {
         return strConvertToTime(timeStr, pattern, LocalDateTime.class);
     }
 
-
     public static LocalDateTime strCovertToDateTime(String timeStr) {
         return strConvertToTime(timeStr, YYYY_MM_DD_HH_MM_SS, LocalDateTime.class);
+    }
+
+    public static LocalDateTime getLocalDateTime(Object timestamp) {
+        LocalDateTime time = null;
+        if (timestamp instanceof Timestamp) {
+            time = ((Timestamp) timestamp).toLocalDateTime();
+        } else if (timestamp instanceof LocalDateTime) {
+            time = ((LocalDateTime) timestamp);
+        } else if (timestamp instanceof Date) {
+            time = convertToLocalDateTime(((Date) timestamp));
+        } else if (timestamp instanceof CharSequence) {
+            return strCovertToDateTime(timestamp.toString());
+        } else if (timestamp instanceof Integer) {
+            return secondConvertToTime(Long.valueOf(timestamp.toString()));
+        } else if (timestamp instanceof Long) {
+            return millSecondConvertToTime(Long.valueOf(timestamp.toString()));
+        }
+        return time;
     }
 
     public static String timeConvertToString(TemporalAccessor temporalAccessor, String pattern) {
