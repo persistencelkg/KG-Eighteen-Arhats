@@ -25,6 +25,7 @@
         <module>MessageQueue-Arhat</module>
         <module>MessageNotice-Arhat</module>
         <module>NoSql-Arhat</module>
+        <module>WebCommon-Arhat</module>
     </modules>
 
     <dependencyManagement>
