@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.simple.JacksonUtil;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +45,7 @@ public class SimpleResponse {
         HashMap<String, Object> result = toEntity(new TypeReference<HashMap<String, Object>>() {
         });
         if (Objects.isNull(result) || !result.containsKey(statusCode) || !Objects.equals(result.get(statusCode), expectSuccessCode)) {
-            log.warn("response unexpect result:{}", this);
+//            log.info("response unexpect result:{}", this);
             return false;
         }
         return true;

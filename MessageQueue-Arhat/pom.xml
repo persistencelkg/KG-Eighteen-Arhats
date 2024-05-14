@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.github.persistencelkg</groupId>
         <artifactId>KG-Eighteem-Arhats</artifactId>
-        <version>1.0.0.RELEASE</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>MessageQueue-Arhat</artifactId>
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>io.github.persistencelkg</groupId>
             <artifactId>NonWebCommon-Arhat</artifactId>
-            <version>1.0.0.RELEASE</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.rocketmq</groupId>

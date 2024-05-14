@@ -4,10 +4,9 @@
     <parent>
         <groupId>io.github.persistencelkg</groupId>
         <artifactId>KG-Eighteem-Arhats</artifactId>
-        <version>1.0.0.RELEASE</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.songguo.user</groupId>
     <artifactId>NoSql-Arhat</artifactId>
     <packaging>jar</packaging>
 
@@ -20,7 +19,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.lkg</groupId>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>NonWebCommon-Arhat</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
             <artifactId>WebCommon-Arhat</artifactId>
             <version>${project.version}</version>
         </dependency>

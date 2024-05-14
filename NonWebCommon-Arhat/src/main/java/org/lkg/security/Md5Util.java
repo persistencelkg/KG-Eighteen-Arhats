@@ -70,8 +70,8 @@ public class Md5Util {
     /**
      * traceID 生成器
      *
-     * @param str
-     * @return
+     * @param str 加密文本
+     * @return encode32编码
      */
     public static String encode32(String str) {
         String result = "";
