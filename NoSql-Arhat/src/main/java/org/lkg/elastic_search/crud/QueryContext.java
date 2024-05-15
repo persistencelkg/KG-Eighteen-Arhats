@@ -70,11 +70,6 @@ public class QueryContext {
                 .indicesOptions(IndicesOptions.LENIENT_EXPAND_OPEN);
     }
 
-    public static MultiSearchRequest buildMultiSearchRequestWithIds(String index, String name, Collection<?> ids) {
-//        QueryContext build = QueryContext.build(index, null, QueryBuilders.termQuery(name, ids));
-        return null;
-
-    }
 
     public static void main(String[] args) {
 //        QueryContext queryContext = new QueryContext("11", "22", QueryBuilders.boolQuery());

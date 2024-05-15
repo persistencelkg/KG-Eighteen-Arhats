@@ -29,4 +29,6 @@ public interface EsApIService {
     List<Map<String, Object>> multiGetDocument(RestHighLevelClient client, String index, String type, Collection<String> ids);
 
     List<Map<String, Object>> listDocumentWithCondition(RestHighLevelClient client, QueryContext queryContext);
+
+
 }

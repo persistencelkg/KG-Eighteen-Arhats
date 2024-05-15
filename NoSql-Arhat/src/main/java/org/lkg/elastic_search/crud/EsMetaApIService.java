@@ -1,5 +1,7 @@
 package org.lkg.elastic_search.crud;
 
+import org.elasticsearch.client.RestHighLevelClient;
+
 import java.util.Map;
 
 /**
@@ -9,10 +11,10 @@ import java.util.Map;
  */
 public interface EsMetaApIService {
 
-    boolean createIndex(String indexName, String type);
+    boolean createIndex(RestHighLevelClient client, String indexName, String type);
 
-    boolean createTemplate(String indexPrefix, String type, Map<String, Object> mapping);
+    boolean updateTemplate(RestHighLevelClient client, String indexPrefix, String type, Map<String, Object> mapping);
 
-    boolean putMapping(String index, Map<String, Object> mapping);
+    boolean dropIndex(RestHighLevelClient client, String index);
 
 }
