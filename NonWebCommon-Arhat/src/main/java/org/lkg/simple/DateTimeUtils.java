@@ -134,7 +134,15 @@ public class DateTimeUtils {
         return dateAdd(date, unit, ~value + 1);
     }
 
-    public static long dateBetween(Date d1, Date d2, CalendarUnit unit) {
+    /**
+     * 参数不完全参考先后顺序
+     *
+     * @param d1   开始时间
+     * @param d2   结束时间
+     * @param unit
+     * @return 有效天数，是绝对概念
+     */
+    public static long dateAbsoluteDiff(Date d1, Date d2, CalendarUnit unit) {
         if (Objects.isNull(d1) || Objects.isNull(d2) || Objects.isNull(unit)) {
             return -1;
         }
@@ -143,7 +151,26 @@ public class DateTimeUtils {
         int l1 = instance.get(unit.getValue());
         instance.setTime(d2);
         int l2 = instance.get(unit.getValue());
-        return Math.abs(l2 - l1);
+        return Math.abs(l2 - l1) + 1;
+    }
+
+    public static long dayOfAbsoluteDiff(Date d1, Date d2) {
+        return dateAbsoluteDiff(d1, d2, CalendarUnit.DAY);
+    }
+
+    /**
+     * 相对时间间隔，多用于距离今天数，已过去天数、剩余天数计算
+     * @param d1 参数1
+     * @param d2 参数2
+     * @param unit 单位
+     * @return 返回相对间隔，即左闭右开 | 左开右闭的区间数
+     */
+    public static long dateRelativeDiff(Date d1, Date d2, CalendarUnit unit) {
+        return dateAbsoluteDiff(d1, d2, unit) - 1;
+    }
+
+    public static long dayOfRelativeDiffNow(Date d1){
+        return dateRelativeDiff(d1, new Date(System.currentTimeMillis()), CalendarUnit.DAY);
     }
 
     public static LocalDateTime convertToLocalDateTime(Date date) {
@@ -153,7 +180,6 @@ public class DateTimeUtils {
     public static Date convertToDate(LocalDateTime date) {
         return new Date(timeConvertToMillSecond(date));
     }
-
 
 
     public static long getInterval(Temporal s1, Temporal s2, boolean includeS2, ChronoUnit unit) {
@@ -202,10 +228,11 @@ public class DateTimeUtils {
         s1.set(2023, 11, 1, 1, 1, 1);
         Date t1 = s1.getTime();
         System.out.println(t1);
-        s1.set(2023, 11, 1, 23, 31, 41);
+        s1.set(2024, 06, 03, 23, 31, 41);
         Date t2 = s1.getTime();
         System.out.println(t2);
-        System.out.println(dateBetween(t1, t2, CalendarUnit.HOUR));
+        System.out.println(dateAbsoluteDiff(t1, t2, CalendarUnit.HOUR));
+        System.out.println(dayOfRelativeDiffNow(t2));
     }
 
 }
