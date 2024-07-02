@@ -1,28 +1,25 @@
 package org.lkg.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 import org.lkg.simple.JacksonUtil;
-import org.springframework.lang.Nullable;
+import org.lkg.simple.ObjectUtil;
 
-import java.lang.reflect.Array;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.lkg.simple.ObjectUtil.isEmpty;
 
 /**
- * Description:
+ * Description: 对内请求的参数
  * Author: 李开广
  * Date: 2024/2/27 7:30 PM
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class SimpleRequest {
+public class InternalRequest{
     private static final String GET = "GET";
     private static final String POST = "POST";
 
@@ -33,37 +30,38 @@ public class SimpleRequest {
 
     private BodyEnum bodyEnum;
 
-    private final Map<String, String> headers = new HashMap<>();
+    private Map<String, String> headers = new HashMap<>();
 
-    private final Map<String, Object> body;
+    private Map<String, Object> body;
 
 
-    public static SimpleRequest createGetRequest(String url, BodyEnum bodyEnum, Map<String, Object> body) {
+    public static InternalRequest createGetRequest(String url, BodyEnum bodyEnum, Map<String, Object> body) {
         return createGetRequest(url, bodyEnum, body, null);
     }
 
 
-    public static SimpleRequest createGetRequest(String url, BodyEnum bodyEnum, Map<String, Object> body, Map<String, String> headers) {
+    public static InternalRequest createGetRequest(String url, BodyEnum bodyEnum, Map<String, Object> body, Map<String, String> headers) {
         return createRequest(url, GET, bodyEnum, body, headers);
     }
 
-    public static SimpleRequest createPostRequest(String url, BodyEnum bodyEnum) {
+    public static InternalRequest createPostRequest(String url, BodyEnum bodyEnum) {
         return createPostRequest(url, bodyEnum, null, null);
     }
 
-    public static SimpleRequest createPostRequest(String url, BodyEnum bodyEnum, Map<String, Object> body) {
+
+    public static InternalRequest createPostRequest(String url, BodyEnum bodyEnum, Map<String, Object> body) {
         return createPostRequest(url, bodyEnum, body, null);
     }
 
-    public static SimpleRequest createPostRequest(String url, BodyEnum bodyEnum, Map<String, Object> body, Map<String, String> headers) {
+    public static InternalRequest createPostRequest(String url, BodyEnum bodyEnum, Map<String, Object> body, Map<String, String> headers) {
         return createRequest(url, POST, bodyEnum, body, headers);
     }
 
-    private static SimpleRequest createRequest(String url, String method, BodyEnum bodyEnum, Map<String, Object> body, Map<String, String> headers) {
+    private static InternalRequest createRequest(String url, String method, BodyEnum bodyEnum, Map<String, Object> body, Map<String, String> headers) {
         if (isEmpty(bodyEnum)) {
             throw new IllegalArgumentException(" request bodyEnum lack:");
         }
-        SimpleRequest request = SimpleRequest.builder().body(body).method(method).bodyEnum(bodyEnum).build();
+        InternalRequest request = InternalRequest.builder().body(body).method(method).bodyEnum(bodyEnum).build();
         request.addUrl(url);
         request.addHeaders(headers);
         request.addHeader("content-type", bodyEnum.getContentTypeValue());
@@ -89,16 +87,31 @@ public class SimpleRequest {
         }
     }
 
-    private void addHeader(String key, String object) {
-        if (!isEmpty(key)) {
-            this.headers.put(key, object);
+    public String bodyAsString() {
+        if (isEmpty(bodyEnum) || isEmpty(body)) {
+            return null;
         }
+        return JacksonUtil.writeValue(body);
     }
 
-    private void addHeaders(Map<String, String> headers) {
-        if (!isEmpty(headers)) {
-            this.headers.putAll(headers);
+    private void addHeader(String key, String object) {
+        if (isEmpty(key)) {
+            return;
         }
+        if (isEmpty(headers)) {
+            headers = new HashMap<>();
+        }
+        this.headers.put(key, object);
+    }
+
+    private void addHeaders(Map<String, String> paramHeader) {
+        if (isEmpty(paramHeader)) {
+            return;
+        }
+        if (isEmpty(headers)) {
+            headers = new HashMap<>();
+        }
+        this.headers.putAll(paramHeader);
     }
 
 

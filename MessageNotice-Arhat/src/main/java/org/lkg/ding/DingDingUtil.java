@@ -3,9 +3,9 @@ package org.lkg.ding;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.lkg.request.SimpleRequest;
+import org.lkg.request.InternalRequest;
+import org.lkg.request.InternalResponse;
 import org.lkg.request.SimpleRequestUtil;
-import org.lkg.request.SimpleResponse;
 import org.lkg.simple.JacksonUtil;
 import org.lkg.simple.ObjectUtil;
 import org.lkg.simple.UrlUtil;
@@ -46,9 +46,9 @@ public class DingDingUtil {
         HashMap<String, Object> map = new HashMap<>();
         map.put("appKey", appKey);
         map.put("appSecret", appSecret);
-        SimpleResponse response = SimpleRequestUtil.request(SimpleRequest.createPostRequest(REFRESH_TOKEN_URL, SimpleRequest.BodyEnum.RAW, map));
+        InternalResponse response = SimpleRequestUtil.request(InternalRequest.createPostRequest(REFRESH_TOKEN_URL, InternalRequest.BodyEnum.RAW, map));
         System.out.println(response);
-        HashMap<String, Object> result = JacksonUtil.readObj(response.getBody(), new TypeReference<HashMap<String, Object>>() {
+        HashMap<String, Object> result = JacksonUtil.readObj(response.getResult(), new TypeReference<HashMap<String, Object>>() {
         });
         Long aLong = (Long) result.get("expireIn");
         EXPIRED_IN = System.currentTimeMillis() + aLong;
@@ -68,7 +68,7 @@ public class DingDingUtil {
     public static void sendMessage(DingDingMsg dingDingMsg, String url, String secret, boolean atAll, String... at) {
         try {
             String finalUrl = buildUrl(url, secret);
-            SimpleResponse response = SimpleRequestUtil.request(SimpleRequest.createPostRequest(finalUrl, SimpleRequest.BodyEnum.RAW, dingDingMsg.buildRequestBody(atAll, at)));
+            InternalResponse response = SimpleRequestUtil.request(InternalRequest.createPostRequest(finalUrl, InternalRequest.BodyEnum.RAW, dingDingMsg.buildRequestBody(atAll, at)));
             response.isSuccess(ERR_CODE, 0);
         } catch (Exception e) {
             log.warn("send ding fail, reason:", e);

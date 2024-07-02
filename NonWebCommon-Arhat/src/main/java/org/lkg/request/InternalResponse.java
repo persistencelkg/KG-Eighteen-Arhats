@@ -5,36 +5,35 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.simple.JacksonUtil;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
- * Description:
+ * Description: 对内请求的响应：包括详细的返回信息
  * Author: 李开广
  * Date: 2024/2/27 7:31 PM
  */
 @Data
 @Slf4j
-public class SimpleResponse {
+public class InternalResponse {
 
-    private String body;
+    private String result;
 
-    private String url;
-
-    private Exception exception;
-
-    private Map<String, List<String>> header;
+    private LinkedList<Exception> exceptionList;
 
     private int statusCode;
 
+    private InternalRequest internalRequest;
+
+    public InternalResponse(InternalRequest request) {
+        this.internalRequest = request;
+    }
+
     public <T> T toEntity(Class<T> tClass) {
-        return JacksonUtil.readValue(body, tClass);
+        return JacksonUtil.readValue(result, tClass);
     }
 
     public <T> T toEntity(TypeReference<T> tClass) {
-        return JacksonUtil.readObj(body, tClass);
+        return JacksonUtil.readObj(result, tClass);
     }
 
     public boolean is2XXSuccess() {
@@ -49,6 +48,13 @@ public class SimpleResponse {
             return false;
         }
         return true;
+    }
+
+    public void addException(Exception e) {
+        if (Objects.isNull(exceptionList)) {
+            exceptionList = new LinkedList<>();
+        }
+        exceptionList.add(e);
     }
 
 

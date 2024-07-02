@@ -1,9 +1,5 @@
 package org.lkg.request;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.fasterxml.jackson.databind.util.JSONWrappedObject;
-import org.lkg.simple.JacksonUtil;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -15,9 +11,8 @@ import java.util.HashMap;
  * Date: 2024/2/27 7:31 PM
  */
 public class SimpleRequestUtil {
-    public static SimpleResponse request(SimpleRequest request) {
-        SimpleResponse response = new SimpleResponse();
-        response.setUrl(request.getUrl());
+    public static InternalResponse request(InternalRequest request) {
+        InternalResponse response = new InternalResponse(request);
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(request.getUrl()).openConnection();
             connection.setRequestMethod(request.getMethod());
@@ -34,13 +29,12 @@ public class SimpleRequestUtil {
                 out.close();
             }
             String str = parseInputStream(connection.getInputStream());
-            response.setHeader(connection.getHeaderFields());
             response.setStatusCode(connection.getResponseCode());
             connection.getInputStream();
-            response.setBody(str);
+            response.setResult(str);
             connection.disconnect();
         } catch (IOException e) {
-            response.setException(e);
+            response.addException(e);
         }
         return response;
     }
@@ -62,7 +56,7 @@ public class SimpleRequestUtil {
     public static void main(String[] args) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("url", "{{test-sgcx-pay-data-sync-8088}}/sys/");
-        SimpleResponse response = request(SimpleRequest.createGetRequest("http://dev-inside-gray-admin.songguo7.com/gray-server-admin/health/ip", SimpleRequest.BodyEnum.RAW, map));
+        InternalResponse response = request(InternalRequest.createGetRequest("http://dev-inside-gray-admin.songguo7.com/gray-server-admin/health/ip", InternalRequest.BodyEnum.RAW, map));
         System.out.println(response);
     }
 }

@@ -15,9 +15,31 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <commons.httplicent.version>3.1</commons.httplicent.version>
     </properties>
 
     <dependencies>
+        <!--非web-->
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>NonWebCommon-Arhat</artifactId>
+        </dependency>
+
+        <!-- http client begin -->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>${commons.httplicent.version}</version>
+
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+        <!-- http client end -->
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -43,5 +65,10 @@
         <!--上传下载-->
 
 
+        <!--测试-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
     </dependencies>
 </project>

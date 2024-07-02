@@ -8,22 +8,33 @@
     </parent>
 
     <groupId>org.lkg</groupId>
-    <artifactId>PerfMetrics-Arhat</artifactId>
+    <artifactId>QuickStart-Arhat</artifactId>
     <packaging>jar</packaging>
 
-    <name>PerfMetrics-Arhat</name>
+    <name>QuickStart-Arhat</name>
     <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <metric.version>1.1.0</metric.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-core</artifactId>
-            <version>${metric.version}</version>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>WebCommon-Arhat</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--springboot-test-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -33,6 +33,7 @@
         <module>DataCache-Arhat</module>
         <module>DynamicSharding-Arhat</module>
         <module>PerfMetrics-Arhat</module>
+        <module>QuickStart-Arhat</module>
     </modules>
 
     <dependencyManagement>
