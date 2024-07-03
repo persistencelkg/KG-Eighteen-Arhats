@@ -1,5 +1,6 @@
 package org.lkg.utils.http.httpclient;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -7,13 +8,16 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.lkg.enums.TrueFalseEnum;
+import org.lkg.request.CommonResp;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
+import org.lkg.simple.JacksonUtil;
 import org.lkg.utils.http.CustomWebClientConfig;
 import org.lkg.utils.http.CustomWebClientHolder;
 import org.springframework.util.Assert;
@@ -25,6 +29,7 @@ import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Description: 基于HTTP-client 自带重试请求
@@ -45,7 +50,21 @@ public class HttpClientUtil {
         customHttpRequest.getInternalRequest().getHeaders().forEach(customHttpRequest::addHeader);
         InternalResponse internalResponse = executeHttpRequest(customHttpRequest, customWebClientConfig);
         stop.stop();
+        // 日志记录
+        internalResponse.setCostTime(stop.getTotalTimeMillis());
         return internalResponse;
+    }
+
+    public static <T, C> CommonResp<T,C> convertToCommon(InternalResponse internalResponse) {
+        return JacksonUtil.readObj(internalResponse.getResult(), new TypeReference<CommonResp<T, C>>() {});
+    }
+
+    public static void main(String[] args) {
+        InternalRequest postRequest = InternalRequest.createPostRequest("ttet", InternalRequest.BodyEnum.RAW);
+        InternalResponse internalResponse = new InternalResponse(null);
+        internalResponse.setResult("{\"code\": 11, \"data\":{\"test\": 1}}");
+        CommonResp<Integer, Object> objectObjectCommonResp = convertToCommon(internalResponse);
+        System.out.println(objectObjectCommonResp);
     }
 
     private static InternalResponse executeHttpRequest(CustomHttpRequest uriRequest, CustomWebClientConfig config) {
@@ -92,8 +111,11 @@ public class HttpClientUtil {
         HttpRequestRetryHandler retryHandler = getHttpRequestRetryHandler(retryTimes);
         HttpClientBuilder builder = HttpClients.custom()
                 .setDefaultRequestConfig(requestConfig)
-                .setRetryHandler(retryHandler);
-        // 配置连接池管理对象
+                .setRetryHandler(retryHandler)
+                // http client 底层默认开启了连接池复用机制，同时也有默认的保活策略：来着服务端配置的keep_alive，解析响应的timeout即可
+                // 因此如果不加以定制，而依靠服务端的设置，一般来说服务端都是2小时，对于客户端来说无法及时识别到 使用了已经失效的链接，进而出现 Connection reset by peer错误
+                // 设置建议根据服务活跃程度适度增大或缩小
+                .setKeepAliveStrategy(((response, context) -> TimeUnit.MINUTES.toMillis(1)));
         if (TrueFalseEnum.isTrue(commonHttpClientConfig.getUsePool())) {
             builder.setConnectionManager(connManager);
         }

@@ -24,6 +24,8 @@ public class InternalResponse {
 
     private InternalRequest internalRequest;
 
+    private long costTime;
+
     public InternalResponse(InternalRequest request) {
         this.internalRequest = request;
     }

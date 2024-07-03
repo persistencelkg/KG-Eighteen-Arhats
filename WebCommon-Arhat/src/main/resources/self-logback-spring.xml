@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <springProperty scope="context" name="defaultLogAppName"  source="spring.application.name"/>
+
+
+    <!-- 收集日志目录，默认 /data/log/${defaultLogAppName} -->
+    <property name="defaultLogPath" value="${LOG_FILE_PATH:-logs}"/>
+
+    <!-- 异步任务队列长度 -->
+    <property name="asyncQueueSize" value="${LOG_QUEUE_SIZE:-4096}"/>
+
+    <!-- 防止进程退出时，内存中的数据丢失 -->
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+
+    <!--时间|日志进别|现成|traceId|cid|rid|user-id|压测标识|-->
+    <property name="printPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] [%thread][traceId:%X{traceId}][cid:%X{cid}][rid:%X{requestId}][uid:%X{uid}][x-flow-stress:%X{x-flow-stress}]:%logger [%M:%L] %msg%n"/>
+    <!-- <appender> begin -->
+
+    <!-- 着色输出到控制台，非json格式，方便debug -->
+    <appender name="SYNC-STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>${asyncQueueSize}</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="SYNC-STDOUT"/>
+    </appender>
+
+    <!-- 业务层日志  -->
+    <appender name="BIZ-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <file>${defaultLogPath}/${defaultLogAppName}-biz-info.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${defaultLogPath}/${defaultLogAppName}-info-%d{yyyy-MM-dd-HH}.log</fileNamePattern>
+            <maxHistory>5</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder charset="UTF-8">
+            <pattern>${printPattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="BIZ-INFO-LOG" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>${asyncQueueSize}</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <!-- 如果设置为true，队列满了会直接丢弃信息否则阻塞 -->
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="BIZ-INFO"/>
+    </appender>
+
+    <appender name="BIZ-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <file>${defaultLogPath}/${defaultLogAppName}-biz-error.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${defaultLogPath}/${defaultLogAppName}-error-%d{yyyy-MM-dd-HH}.log
+            </fileNamePattern>
+            <maxHistory>5</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder charset="UTF-8">
+            <pattern>${printPattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+
+    <appender name="BIZ-ERROR-LOG" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>${asyncQueueSize}</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <!-- 如果设置为true，队列满了会直接丢弃信息否则阻塞 -->
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="BIZ-ERROR"/>
+    </appender>
+
+    <!--  系统日志  -->
+    <appender name="SYS-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <file>${defaultLogPath}/${defaultLogAppName}-system-info.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${defaultLogPath}/${defaultLogAppName}-system-info-%d{yyyy-MM-dd-HH}.log</fileNamePattern>
+            <maxHistory>5</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder charset="UTF-8">
+            <pattern>${printPattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="SYS-INFO-LOG" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>${asyncQueueSize}</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <!-- 如果设置为true，队列满了会直接丢弃信息否则阻塞 -->
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="SYS-INFO"/>
+    </appender>
+
+    <appender name="SYS-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <file>${defaultLogPath}/${defaultLogAppName}-system-error.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${defaultLogPath}/${defaultLogAppName}-system-error-%d{yyyy-MM-dd-HH}.log</fileNamePattern>
+            <maxHistory>5</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder charset="UTF-8">
+            <pattern>${printPattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <appender name="SYS-ERROR-LOG" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>${asyncQueueSize}</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <!-- 如果设置为true，队列满了会直接丢弃信息否则阻塞 -->
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="SYS-ERROR"/>
+    </appender>
+
+
+    <!--  系统日志 nacos日志   -->
+    <logger name="com.alibaba.nacos" level="WARN" additivity="true">
+        <appender-ref ref="SYS-INFO-LOG"/>
+        <appender-ref ref="SYS-ERROR-LOG"/>
+    </logger>
+    <logger name="org.springframework" level="INFO" additivity="true">
+        <appender-ref ref="SYS-INFO-LOG"/>
+        <appender-ref ref="SYS-ERROR-LOG"/>
+    </logger>
+    <logger name="com.netflix" level="INFO" additivity="true">
+        <appender-ref ref="SYS-INFO-LOG"/>
+        <appender-ref ref="SYS-ERROR-LOG"/>
+    </logger>
+    <logger name="org.apache" level="INFO" additivity="true">
+        <appender-ref ref="SYS-INFO-LOG"/>
+        <appender-ref ref="SYS-ERROR-LOG"/>
+    </logger>
+
+    <!--  服务层  -->
+    <logger name="org.lkg" level="DEBUG" additivity="true">
+        <appender-ref ref="BIZ-INFO-LOG"/>
+        <appender-ref ref="BIZ-ERROR-LOG"/>
+    </logger>
+
+</included>

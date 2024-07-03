@@ -1,0 +1,4 @@
+# 定义在这可以避免 logback加载顺序导致读取不到该配置
+spring:
+  application:
+    name: LKG
