@@ -40,6 +40,11 @@
         <dependencies>
             <dependency>
                 <groupId>io.github.persistencelkg</groupId>
+                <artifactId>WebCommon-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
                 <artifactId>NonWebCommon-Arhat</artifactId>
                 <version>${eighteem-arhat.version}</version>
             </dependency>
@@ -135,17 +140,17 @@
     <build>
         <plugins>
 
-<!--            <plugin>-->
-<!--                <groupId>org.sonatype.central</groupId>-->
-<!--                <artifactId>central-publishing-maven-plugin</artifactId>-->
-<!--                <version>0.4.0</version>-->
-<!--                <extensions>true</extensions>-->
-<!--                <configuration>-->
-<!--                    <publishingServerId>central</publishingServerId>-->
-<!--                    <tokenAuth>true</tokenAuth>-->
-<!--&lt;!&ndash;                    <autoPublish>true</autoPublish>&ndash;&gt;-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.sonatype.central</groupId>-->
+            <!--                <artifactId>central-publishing-maven-plugin</artifactId>-->
+            <!--                <version>0.4.0</version>-->
+            <!--                <extensions>true</extensions>-->
+            <!--                <configuration>-->
+            <!--                    <publishingServerId>central</publishingServerId>-->
+            <!--                    <tokenAuth>true</tokenAuth>-->
+            <!--&lt;!&ndash;                    <autoPublish>true</autoPublish>&ndash;&gt;-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
 
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
@@ -222,7 +227,6 @@
             </resource>
         </resources>
     </build>
-
 
 
     <licenses>

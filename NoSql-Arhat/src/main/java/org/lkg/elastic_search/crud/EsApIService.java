@@ -11,24 +11,24 @@ import java.util.Map;
  * Author: 李开广
  * Date: 2024/5/14 8:25 PM
  */
-public interface EsApIService {
+public interface EsApIService<T> {
 
-    boolean createDocumentIfAbsent(RestHighLevelClient client, Object obj);
+    boolean createDocumentIfAbsent(RestHighLevelClient client, T obj);
 
-    boolean updateDocument(RestHighLevelClient client, Object obj);
+    boolean updateDocument(RestHighLevelClient client, T obj);
 
-    boolean deleteDocument(RestHighLevelClient client, Object obj);
+    boolean deleteDocument(RestHighLevelClient client, T obj);
 
     void batchUpdateDocument(RestHighLevelClient client, Collection<?> collection, boolean async);
 
     void batchDeleteDocument(RestHighLevelClient client, Collection<?> collection, boolean async);
 
 
-    Map<String, Object> getDocument(RestHighLevelClient client, String index, String type, String id);
+    T getDocument(RestHighLevelClient client, String index, String type, String id);
 
-    List<Map<String, Object>> multiGetDocument(RestHighLevelClient client, String index, String type, Collection<String> ids);
+    List<T> multiGetDocument(RestHighLevelClient client, String index, String type, Collection<String> ids);
 
-    List<Map<String, Object>> listDocumentWithCondition(RestHighLevelClient client, QueryContext queryContext);
+    List<T> listDocumentWithCondition(RestHighLevelClient client, QueryContext queryContext);
 
 
 }
