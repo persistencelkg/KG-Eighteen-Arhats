@@ -1,16 +1,16 @@
 package org.lkg.ding;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.lkg.enums.TrueFalseEnum;
-import org.lkg.simple.JacksonUtil;
 import org.lkg.simple.ObjectUtil;
 import org.lkg.simple.RegxUtil;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Description:

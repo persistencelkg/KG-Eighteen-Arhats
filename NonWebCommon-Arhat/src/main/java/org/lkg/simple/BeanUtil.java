@@ -1,13 +1,18 @@
 package org.lkg.simple;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
-/** @author zhoujiaqi1 on 2021/4/27 8:30 下午 */
+/**
+ * @author zhoujiaqi1 on 2021/4/27 8:30 下午
+ */
 @Component
 public class BeanUtil implements ApplicationContextAware {
 
@@ -15,7 +20,7 @@ public class BeanUtil implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext arg0) throws BeansException {
-        if (Objects.isNull(applicationContext)){
+        if (Objects.isNull(applicationContext)) {
             applicationContext = arg0;
         }
     }
@@ -24,12 +29,25 @@ public class BeanUtil implements ApplicationContextAware {
         return applicationContext;
     }
 
+
+    public static void addSingleTon(String beanName, Object obj) {
+        ((DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory()).registerSingleton(beanName, obj);
+    }
+
     public static Object getObject(String name) {
         return getApplicationContext().getBean(name);
     }
 
     public static <T> T getBean(Class<T> clazz) {
         return getApplicationContext().getBean(clazz);
+    }
+
+    public static <T> Collection<T> listBean(Class<T> tClass) {
+        Map<String, T> beansOfType = applicationContext.getBeansOfType(tClass);
+        if (ObjectUtil.isEmpty(beansOfType)) {
+            return null;
+        }
+        return beansOfType.values();
     }
 
     /**

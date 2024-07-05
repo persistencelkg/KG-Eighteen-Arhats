@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.persistencelkg</groupId>
+        <artifactId>KG-Eighteem-Arhats</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>WebCommon-Arhat</artifactId>
+    <packaging>jar</packaging>
+
+    <name>WebCommon-Arhat</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <commons.httplicent.version>3.1</commons.httplicent.version>
+    </properties>
+
+    <dependencies>
+        <!--非web-->
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>NonWebCommon-Arhat</artifactId>
+        </dependency>
+
+        <!-- http client begin -->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>${commons.httplicent.version}</version>
+
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+        <!-- http client end -->
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!--autoconfigure-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ctrip.framework.apollo</groupId>
+            <artifactId>apollo-client</artifactId>
+        </dependency>
+
+        <!-- open fegin -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+
+        <!--上传下载-->
+
+
+        <!--测试-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+    </dependencies>
+</project>

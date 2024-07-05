@@ -3,6 +3,8 @@ package org.lkg.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * Description:
  * Author: 李开广
@@ -17,5 +19,12 @@ public enum TrueFalseEnum {
     private final Integer code;
     private final String desc;
 
+    public static boolean isTrue(int code) {
+        return Objects.equals(TRUE.code, code);
+    }
 
+
+    public static boolean isFalse(int code) {
+        return Objects.equals(FALSE.code, code);
+    }
 }

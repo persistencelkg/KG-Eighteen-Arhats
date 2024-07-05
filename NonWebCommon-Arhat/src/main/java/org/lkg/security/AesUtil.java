@@ -96,7 +96,7 @@ public class AesUtil {
      * @param str
      * @param salt16b
      * @param encryptAlgorithm
-     * @return
+     * @return 加密结果
      */
     public static String encrypt(String str, String salt16b, EncryptAlgorithm encryptAlgorithm) {
         try {

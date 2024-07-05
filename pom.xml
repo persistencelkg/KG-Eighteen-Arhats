@@ -7,17 +7,21 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.6.RELEASE</version>
+        <version>2.3.4.RELEASE</version>
     </parent>
 
     <groupId>io.github.persistencelkg</groupId>
     <artifactId>KG-Eighteem-Arhats</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0.RELEASE</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <properties>
+        <eighteem-arhat.version>1.0.1-SNAPSHOT</eighteem-arhat.version>
         <java.version>1.8</java.version>
-        <eighteem-arhat.version>1.0.0.RELEASE</eighteem-arhat.version>
+        <spring-cloud.version>Hoxton.SR9</spring-cloud.version>
+        <spring-cloud-openfeign.version>2.2.10.RELEASE</spring-cloud-openfeign.version>
+        <es.version>6.4.2</es.version>
+        <apollo.verison>1.7.0</apollo.verison>
     </properties>
 
     <modules>
@@ -25,10 +29,20 @@
         <module>MessageQueue-Arhat</module>
         <module>MessageNotice-Arhat</module>
         <module>NoSql-Arhat</module>
+        <module>WebCommon-Arhat</module>
+        <module>DataCache-Arhat</module>
+        <module>DynamicSharding-Arhat</module>
+        <module>PerfMetrics-Arhat</module>
+        <module>QuickStart-Arhat</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
+                <artifactId>WebCommon-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.github.persistencelkg</groupId>
                 <artifactId>NonWebCommon-Arhat</artifactId>
@@ -41,13 +55,58 @@
             </dependency>
             <dependency>
                 <groupId>io.github.persistencelkg</groupId>
-                <artifactId>WebFrameWork-Arhat</artifactId>
+                <artifactId>MessageNotice-Arhat</artifactId>
                 <version>${eighteem-arhat.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.persistencelkg</groupId>
-                <artifactId>MessageNotice-Arhat</artifactId>
+                <artifactId>Webcommon-Arhat</artifactId>
                 <version>${eighteem-arhat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
+                <artifactId>NoSql-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
+            <!--es-->
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${es.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${es.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
+                <version>${es.version}</version>
+            </dependency>
+
+            <!--apollo-->
+
+            <dependency>
+                <groupId>com.ctrip.framework.apollo</groupId>
+                <artifactId>apollo-client</artifactId>
+                <version>${apollo.verison}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>${spring-cloud-openfeign.version}</version>
             </dependency>
 
 
@@ -56,16 +115,17 @@
 
     <dependencies>
 
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
+        <!--lombok start-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <!--lombok end-->
+
     </dependencies>
     <distributionManagement>
         <snapshotRepository>
@@ -80,17 +140,17 @@
     <build>
         <plugins>
 
-<!--            <plugin>-->
-<!--                <groupId>org.sonatype.central</groupId>-->
-<!--                <artifactId>central-publishing-maven-plugin</artifactId>-->
-<!--                <version>0.4.0</version>-->
-<!--                <extensions>true</extensions>-->
-<!--                <configuration>-->
-<!--                    <publishingServerId>central</publishingServerId>-->
-<!--                    <tokenAuth>true</tokenAuth>-->
-<!--&lt;!&ndash;                    <autoPublish>true</autoPublish>&ndash;&gt;-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.sonatype.central</groupId>-->
+            <!--                <artifactId>central-publishing-maven-plugin</artifactId>-->
+            <!--                <version>0.4.0</version>-->
+            <!--                <extensions>true</extensions>-->
+            <!--                <configuration>-->
+            <!--                    <publishingServerId>central</publishingServerId>-->
+            <!--                    <tokenAuth>true</tokenAuth>-->
+            <!--&lt;!&ndash;                    <autoPublish>true</autoPublish>&ndash;&gt;-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
 
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
@@ -167,7 +227,6 @@
             </resource>
         </resources>
     </build>
-
 
 
     <licenses>
