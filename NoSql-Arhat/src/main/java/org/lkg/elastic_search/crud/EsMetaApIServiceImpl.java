@@ -57,6 +57,7 @@ public class EsMetaApIServiceImpl implements EsMetaApIService<Orders> {
             for (java.lang.reflect.Field field : indexClass.getDeclaredFields()) {
                 mappingBuilder.startObject(ObjectUtil.camelToUnderline(field.getName()));
                 // 如何支持keyword
+
                 Class<?> fieldType = field.getType();
                 String esType = EsFieldType.getEsType(fieldType);
                 ObjectNode jsonNodes = new ObjectNode(JsonNodeFactory.instance);
