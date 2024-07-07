@@ -2,7 +2,10 @@ package org.lkg;
 
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.Test;
-import org.lkg.elastic_search.crud.AbstractEsApI;
+import org.lkg.elastic_search.crud.EsMetaApIService;
+import org.lkg.elastic_search.crud.EsMetaApIServiceImpl;
+import org.lkg.elastic_search.crud.MapDataEsApIService;
+import org.lkg.elastic_search.crud.demo.Orders;
 
 import javax.annotation.Resource;
 
@@ -14,13 +17,13 @@ import javax.annotation.Resource;
 public class TestNoSql extends TestBase{
 
     @Resource
-    private AbstractEsApI abstractEsApI;
+    private EsMetaApIService<Orders> esMetaApIService;
 
     @Resource
     private RestHighLevelClient order;
 
     @Test
     public void testEsApi() {
-        System.out.println(order);
+        esMetaApIService.createIndex(order, "order", Orders.class);
     }
 }

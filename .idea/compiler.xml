@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="DynamicSharding-Arhat" />
+        <module name="WebCommon-Arhat" />
+        <module name="MessageQueue-Arhat" />
+        <module name="NoSql-Arhat" />
+        <module name="PerfMetrics-Arhat" />
+        <module name="NonWebCommon-Arhat" />
+        <module name="QuickStart-Arhat" />
+        <module name="DataCache-Arhat" />
+        <module name="MessageNotice-Arhat" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="8" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="DataCache-Arhat" options="-parameters" />
+      <module name="DynamicSharding-Arhat" options="-parameters" />
+      <module name="MessageNotice-Arhat" options="-parameters" />
+      <module name="MessageQueue-Arhat" options="-parameters" />
+      <module name="NoSql-Arhat" options="-parameters" />
+      <module name="NonWebCommon-Arhat" options="-parameters" />
+      <module name="PerfMetrics-Arhat" options="-parameters" />
+      <module name="QuickStart-Arhat" options="-parameters" />
+      <module name="WebCommon-Arhat" options="-parameters" />
+    </option>
+  </component>
+</project>

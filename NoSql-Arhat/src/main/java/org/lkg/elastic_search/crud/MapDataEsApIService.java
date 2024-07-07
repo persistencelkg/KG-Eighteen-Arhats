@@ -1,9 +1,10 @@
 package org.lkg.elastic_search.crud;
 
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.springframework.stereotype.Service;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.common.settings.Settings;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,12 +15,13 @@ import java.util.Map;
  * Author: 李开广
  * Date: 2024/7/5 4:34 PM
  */
-public class AbstractEsApI implements EsApIService<Map<String, Object>>{
+public class MapDataEsApIService implements EsApIService<Map<String, Object>>{
 
     @Override
     public boolean createDocumentIfAbsent(RestHighLevelClient client, Map<String, Object> obj) {
-        CreateIndexRequest createIndexRequest = new CreateIndexRequest();
-        IndexRequest indexRequest = new IndexRequest();
+
+//        PutIndexTemplateRequest
+//        IndexRequest indexRequest = new IndexRequest();
         return false;
     }
 
