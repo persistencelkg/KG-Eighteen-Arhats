@@ -1,17 +1,17 @@
 package org.lkg.security;
 
 import lombok.extern.slf4j.Slf4j;
+import org.lkg.enums.StringEnum;
+import org.lkg.simple.ObjectUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 @Slf4j
 public class Md5Util {
 
-    private static final char[] DIGITS_LOWER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
-            'e', 'f'};
+    private static final char[] DIGITS_LOWER = ObjectUtil.concatMore(StringEnum.UPPER_CHAR, StringEnum.ONE_TO_NINE);
 
     private static final ThreadLocal<MessageDigest> MESSAGE_DIGEST_LOCAL = ThreadLocal.withInitial(() -> {
         try {
@@ -43,12 +43,16 @@ public class Md5Util {
         }
     }
 
-    public static String md5Hex(String value, String charset) {
+    public static String md5Hex(String value) {
         try {
-            return md5Hex(value.getBytes(charset));
+            return md5Hex(value.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(md5Hex("wxx"));
     }
 
     /**
