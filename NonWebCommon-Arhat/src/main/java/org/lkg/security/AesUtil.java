@@ -185,13 +185,15 @@ public class AesUtil {
 
 
     public static void main(String[] args) {
-        String encrypt = encrypt("测试", "lkg", EncryptAlgorithm.AES_CBC_Padding);
+        String encrypt = encrypt("SS6L51", "lkg", EncryptAlgorithm.AES_CBC_Padding);
         System.out.println(encrypt);
         System.out.println(decrypt(encrypt, "lkg", EncryptAlgorithm.AES_CBC_Padding));
 
 
         long a = 0x90001;
         System.out.println(Arrays.toString(String.valueOf(a).getBytes(StandardCharsets.UTF_8)));
+
+        System.out.println(EncryptAlgorithm.AES_CBC_Padding.getAlgorithmName());
     }
 }
 

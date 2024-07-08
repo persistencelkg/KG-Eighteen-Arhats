@@ -3,12 +3,11 @@ package org.lkg.simple;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.lkg.enums.StringEnum;
+import org.lkg.security.RandomUtil;
 import org.springframework.lang.Nullable;
 
 import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -17,6 +16,30 @@ import java.util.stream.Stream;
  * Date: 2024/2/28 9:09 PM
  */
 public class ObjectUtil {
+
+
+    public static char[] concatMore(char[]... chars) {
+        return concatMore(false, chars);
+    }
+
+
+    public static char[] concatMore(boolean isRandom, char[]... chars) {
+        char[] firstArr = new char[chars[0].length];
+        // 先拷贝的临时数组中
+        System.arraycopy(chars[0], 0, firstArr, 0, chars[0].length);
+        for (int i = 1; i < chars.length; i++) {
+            // 将临时 和 下一个数组都合并到新数组中
+            char[] newArr = new char[firstArr.length + chars[i].length];
+            System.arraycopy(firstArr, 0, newArr, 0, firstArr.length);
+            System.arraycopy(chars[i], 0, newArr, firstArr.length, chars[i].length);
+            firstArr = newArr;
+        }
+        if (isRandom) {
+            return RandomUtil.rangeSingle(firstArr.length, firstArr).toCharArray();
+        }
+        return firstArr;
+    }
+
 
     public static boolean isEmpty(@Nullable Object obj) {
         if (obj == null) {
@@ -88,5 +111,11 @@ public class ObjectUtil {
         ObjectNode jsonNodes = new ObjectNode(JsonNodeFactory.instance);
         jsonNodes.put("type", "lkg");
         System.out.println(jsonNodes.toString());
+
+
+        char[] array1 = {'H', 'e', 'l', 'l', 'o'};
+        char[] array2 = {' ', 'W', 'o', 'r', 'l', 'd'};
+        char[] result = concatMore(array1, array2);
+        System.out.println(Arrays.toString(result));
     }
 }

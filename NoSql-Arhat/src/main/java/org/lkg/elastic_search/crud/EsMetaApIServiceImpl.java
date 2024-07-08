@@ -91,8 +91,8 @@ public class EsMetaApIServiceImpl implements EsMetaApIService<Orders> {
             }
 
             mappingBuilder.endObject().endObject();
-            log.info("self build es mapping:{}", mappingBuilder.prettyPrint());
             createIndexRequest.mapping(type, mappingBuilder);
+            log.info("self build es mapping:{} settings:{}", createIndexRequest.mappings(), createIndexRequest.settings());
             CreateIndexResponse createIndexResponse = client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
             return createIndexResponse.isAcknowledged();
         } catch (IOException e) {
