@@ -11,6 +11,7 @@
         <module name="WebCommon-Arhat" />
         <module name="MessageQueue-Arhat" />
         <module name="NoSql-Arhat" />
+        <module name="DesignPatternApply-Arhat" />
         <module name="PerfMetrics-Arhat" />
         <module name="NonWebCommon-Arhat" />
         <module name="QuickStart-Arhat" />
@@ -23,6 +24,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="DataCache-Arhat" options="-parameters" />
+      <module name="DesignPatternApply-Arhat" options="-parameters" />
       <module name="DynamicSharding-Arhat" options="-parameters" />
       <module name="MessageNotice-Arhat" options="-parameters" />
       <module name="MessageQueue-Arhat" options="-parameters" />
