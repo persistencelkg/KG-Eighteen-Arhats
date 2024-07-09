@@ -1,5 +1,9 @@
 package org.lkg.up_download.upload;
 
+import org.lkg.request.CommonResp;
+import org.lkg.request.InternalResponse;
+import org.springframework.web.multipart.MultipartFile;
+
 /**
  * Description:
  * Author: 李开广
@@ -7,5 +11,5 @@ package org.lkg.up_download.upload;
  */
 public interface CommonUploadService {
 
-
+    CommonResp<Boolean, Integer> upload(MultipartFile multipartFile);
 }

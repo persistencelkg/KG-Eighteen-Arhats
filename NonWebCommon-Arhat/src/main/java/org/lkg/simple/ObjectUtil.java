@@ -66,6 +66,10 @@ public class ObjectUtil {
         return false;
     }
 
+    public static String firstLetterUpper(String str) {
+        return str.substring(0, 1).toUpperCase(Locale.ENGLISH) + str.substring(1);
+    }
+
 
     public static String underlineToCamel(String param) {
         if (isEmpty(param)) {
@@ -117,5 +121,7 @@ public class ObjectUtil {
         char[] array2 = {' ', 'W', 'o', 'r', 'l', 'd'};
         char[] result = concatMore(array1, array2);
         System.out.println(Arrays.toString(result));
+
+        System.out.println(firstLetterUpper("testdd"));
     }
 }
