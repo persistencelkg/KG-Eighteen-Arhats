@@ -2,6 +2,7 @@ package org.lkg.simple;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
@@ -12,6 +13,19 @@ import java.util.Objects;
  * date: 2023/6/1 4:17 PM
  */
 public class FileUtil {
+
+    public static String getCurrentResourceDir(Object obj, String subfolder) {
+        URL resource = obj.getClass().getClassLoader().getResource("");
+        if (Objects.isNull(resource)) {
+            throw new RuntimeException("loss resources dir");
+        }
+        File file = new File(resource.getPath() + File.separator + subfolder);
+        if (!file.exists() && !file.mkdirs()) {
+            throw new RuntimeException(file.getPath() + "文件权限不足，无法创建");
+        }
+        return file.getPath();
+    }
+
     public static String readFile(String url) throws IOException, URISyntaxException {
         InputStream resourceAsStream = FileUtil.class.getClassLoader().getResourceAsStream(url);
         if (Objects.isNull(resourceAsStream)) {

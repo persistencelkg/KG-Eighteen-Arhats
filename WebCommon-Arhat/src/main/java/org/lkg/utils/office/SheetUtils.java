@@ -129,6 +129,9 @@ public class SheetUtils {
     }
 
     public static void batchSaveRow(Sheet sheet, int rowIndex, Collection<?> list) {
+        if (ObjectUtil.isEmpty(list)) {
+            return;
+        }
         AtomicInteger atomic = new AtomicInteger(rowIndex);
         list.forEach(ref -> createStringCellWithObj(sheet.createRow(atomic.get()), ref));
         // sheet.autoSizeColumn(index++); 影响性能谨慎使用
@@ -194,16 +197,14 @@ public class SheetUtils {
         // 读取
         try {
             List<CustomInternalResponse> ts = iteratorSheetToJavaObj(CustomInternalResponse.class, ExcelUtils.createWorkBookWithLocal("tes3t.xls"));
-//            System.out.println(ts);
+            System.out.println(ts);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Data
-    static class CustomInternalResponse {
+    public static class CustomInternalResponse {
         private String result;
 
         private String exceptionList;
