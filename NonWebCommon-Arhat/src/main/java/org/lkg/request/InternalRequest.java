@@ -19,7 +19,7 @@ import static org.lkg.simple.ObjectUtil.isEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class InternalRequest{
+public class InternalRequest {
     private static final String GET = "GET";
     private static final String POST = "POST";
 
@@ -33,6 +33,10 @@ public class InternalRequest{
     private Map<String, String> headers = new HashMap<>();
 
     private Map<String, Object> body;
+
+    public static InternalRequest createGetRequest(String url) {
+        return createGetRequest(url, null, null, null);
+    }
 
 
     public static InternalRequest createGetRequest(String url, BodyEnum bodyEnum, Map<String, Object> body) {
@@ -59,7 +63,7 @@ public class InternalRequest{
 
     private static InternalRequest createRequest(String url, String method, BodyEnum bodyEnum, Map<String, Object> body, Map<String, String> headers) {
         if (isEmpty(bodyEnum)) {
-            throw new IllegalArgumentException(" request bodyEnum lack:");
+            bodyEnum = BodyEnum.URL_ENCODED;
         }
         InternalRequest request = InternalRequest.builder().body(body).method(method).bodyEnum(bodyEnum).build();
         request.addUrl(url);
@@ -128,7 +132,8 @@ public class InternalRequest{
          */
         FORM_DATA("multipart/form-data"),
         URL_ENCODED("application/x-www-form-urlencoded"),
-        RAW("application/json");
+        RAW("application/json"),
+        HTML("text/html");
         private final String contentTypeValue;
 
         public static boolean isUrlEncoded(BodyEnum bodyEnum) {

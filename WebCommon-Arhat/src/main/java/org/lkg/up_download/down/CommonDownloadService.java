@@ -1,18 +1,15 @@
 package org.lkg.up_download.down;
 
-import org.apache.poi.ss.usermodel.Workbook;
-import org.lkg.request.CommonResp;
-import org.lkg.simple.IOStreamUtil;
-import org.lkg.simple.UrlUtil;
-import org.lkg.utils.office.ExcelUtils;
-import org.lkg.utils.office.SheetUtils;
+import org.lkg.simple.DateTimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Description:
@@ -26,28 +23,17 @@ public class CommonDownloadService implements DownloadService {
 
     // db list -> input stream -> workbook -> output stream -> response
     @Override
-    public CommonResp<Boolean, Integer> download(Collection<?> list, String[] head, String fileName, HttpServletResponse response) {
-        Workbook emptyWorkBook;
-        ServletOutputStream outputStream = null;
-        try {
-            emptyWorkBook = ExcelUtils.createEmptyWorkBook();
-            SheetUtils.batchSaveRow(emptyWorkBook, list, head);
-            response.reset();
-            response.setContentType("application/vnd.ms-excel");
-            if (!(fileName.endsWith(".xlsx") || fileName.endsWith(".xls") || fileName.endsWith(".csv"))) {
-                fileName += ".xls";
-            }
-            String encodeFilename = UrlUtil.encodeUrl(fileName);
-            response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-            response.setHeader("Content-Disposition", "attachment;filename=" + encodeFilename);
-            outputStream = response.getOutputStream();
-            emptyWorkBook.write(outputStream);
-            log.info("{}下载完成", fileName);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return new CommonResp<>();
+    public void downloadWithExcel(Collection<?> list, String[] head, String fileName, HttpServletResponse response) {
+        DownFileUtil.downloadWithSingleExcel(list, head, fileName, response);
     }
 
+
+
+    @Override
+    public void downloadWithZip(HttpServletResponse response, String password, List<File> list) {
+        String fileName = DateTimeUtils.timeConvertToString(LocalDateTime.now(), DateTimeUtils.YYYY_MM_DD_HH_MM_SS_SSS_SEQ);
+        String zip = fileName + ".zip";
+        DownFileUtil.downLoadZipWithFileList(response, list, zip);
+    }
 
 }

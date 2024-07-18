@@ -18,6 +18,8 @@ public class InternalResponse {
 
     private String result;
 
+    private byte[] resultBytes;
+
     private LinkedList<Exception> exceptionList;
 
     private int statusCode;
@@ -25,6 +27,8 @@ public class InternalResponse {
     private InternalRequest internalRequest;
 
     private long costTime;
+
+    private String latestResponseUrl;
 
     public InternalResponse(InternalRequest request) {
         this.internalRequest = request;
