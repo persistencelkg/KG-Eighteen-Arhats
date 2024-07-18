@@ -16,6 +16,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <commons.httplicent.version>3.1</commons.httplicent.version>
+        <apache.poi.version>4.1.2</apache.poi.version>
     </properties>
 
     <dependencies>
@@ -63,6 +64,18 @@
 
 
         <!--上传下载-->
+        <!--Apache POI -->
+        <!-- mention BUG: https://bbs.huaweicloud.com/blogs/103994 -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${apache.poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${apache.poi.version}</version>
+        </dependency>
 
 
         <!--测试-->

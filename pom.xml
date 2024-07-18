@@ -32,6 +32,7 @@
         <module>WebCommon-Arhat</module>
         <module>DataCache-Arhat</module>
         <module>DynamicSharding-Arhat</module>
+        <module>DesignPatternApply-Arhat</module>
         <module>PerfMetrics-Arhat</module>
         <module>QuickStart-Arhat</module>
     </modules>

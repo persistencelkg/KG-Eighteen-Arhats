@@ -21,6 +21,8 @@ public interface StringEnum {
     String DOT = ".";
     String DOTDOT = "..";
 
+    String SPACE = " ";
+
     String UNDERSCORE = "_";
     String SEMICOLON = ";";
 
