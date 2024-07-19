@@ -40,6 +40,9 @@ public class ObjectUtil {
         return firstArr;
     }
 
+    public static boolean isNotEmpty(Object obj) {
+        return !isEmpty(obj);
+    }
 
     public static boolean isEmpty(@Nullable Object obj) {
         if (obj == null) {

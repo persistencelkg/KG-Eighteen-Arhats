@@ -17,6 +17,7 @@ import org.lkg.simple.BeanUtil;
 import org.lkg.simple.ObjectUtil;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Configuration;
@@ -35,8 +36,12 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @ConfigurationProperties(prefix = "es-config")
 @ConditionalOnClass(RestHighLevelClient.class)
+@ConditionalOnProperty(value = "es-config.enable", havingValue = "1", matchIfMissing = false)
 @Slf4j
 public class EsClientConfig {
+
+    private Integer enable;
+
     @Getter
     @Setter
     private Map<String, EsConfigMeta> meta;

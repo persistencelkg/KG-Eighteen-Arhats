@@ -16,6 +16,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatis-plus.version>3.2.0</mybatis-plus.version>
+        <jedis.version>3.3.0</jedis.version>
     </properties>
 
     <dependencies>
@@ -23,6 +24,8 @@
             <groupId>io.github.persistencelkg</groupId>
             <artifactId>NonWebCommon-Arhat</artifactId>
         </dependency>
+
+        <!--ES-->
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
@@ -45,6 +48,20 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
+
+        <!--redis-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${jedis.version}</version>
+        </dependency>
+
 
         <!-- mybatis plus -->
 
