@@ -38,6 +38,8 @@ public class TestNoSql extends TestBase {
 //    @Resource
 //    private RedisTemplate<String, Object> orderRedisTemplate;
 
+
+
     @Test
     public void testEsApi() {
         esMetaApIService.createIndex(order, "order", Orders.class);

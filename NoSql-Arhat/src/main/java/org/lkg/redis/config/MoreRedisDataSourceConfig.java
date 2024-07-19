@@ -4,21 +4,29 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.ReadFrom;
+import io.lettuce.core.TimeoutOptions;
+import io.lettuce.core.resource.DefaultClientResources;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.lkg.security.KernelUtil;
 import org.lkg.simple.JacksonUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -93,7 +101,8 @@ public class MoreRedisDataSourceConfig {
         redisTemplate.setKeySerializer(keySerializer());
         redisTemplate.setHashKeySerializer(keySerializer());
         redisTemplate.setHashValueSerializer(valueSerializer());
-        redisTemplate.setConnectionFactory(buildRedisConnectionFactory(redisPoolConfig));
+        redisTemplate.setConnectionFactory(buildLettuceConnectionFactory(redisPoolConfig));
+        redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
 
@@ -120,7 +129,7 @@ public class MoreRedisDataSourceConfig {
     }
 
 
-    public RedisConnectionFactory buildRedisConnectionFactory(RedisPoolConfig redisConfig) {
+    public RedisConnectionFactory buildJedisConnectionFactory(RedisPoolConfig redisConfig) {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         // basic redis config
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
@@ -142,5 +151,50 @@ public class MoreRedisDataSourceConfig {
 
         return new JedisConnectionFactory(redisStandaloneConfiguration, build);
     }
+
+    public RedisConnectionFactory buildLettuceConnectionFactory(RedisPoolConfig redisConfig) {
+        RedisProperties.Pool pool = new RedisProperties.Pool();
+        // basic redis config
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+        PropertyMapper propertyMapper = PropertyMapper.get();
+        propertyMapper.from(redisConfig::getHost).whenHasText().to(redisStandaloneConfiguration::setHostName);
+        propertyMapper.from(redisConfig::getPort).when(ref -> ref > 0).to(redisStandaloneConfiguration::setPort);
+        propertyMapper.from(redisConfig::getDatabase).when(ref -> ref >= 0).to(redisStandaloneConfiguration::setDatabase);
+        propertyMapper.from(RedisPassword.of(redisConfig.getPassword())).whenHasText().to(redisStandaloneConfiguration::setPassword);
+        // pool config
+        propertyMapper.from(redisConfig::getMinIdle).when(ref -> ref > 0).to(pool::setMinIdle);
+        propertyMapper.from(redisConfig::getMaxIdle).when(ref -> ref > 0).to(pool::setMaxIdle);
+        propertyMapper.from(redisConfig::getMaxConnection).when(ref -> ref > 0).to(pool::setMaxActive);
+        propertyMapper.from(redisConfig::getMaxWait).whenNonNull().to(pool::setMaxWait);
+        // remote config
+        LettucePoolingClientConfiguration.LettucePoolingClientConfigurationBuilder builder = LettucePoolingClientConfiguration.builder().poolConfig(getPoolConfig(pool));
+        propertyMapper.from(redisConfig::getConnectionTimeOut).whenNonNull().to(builder::commandTimeout);
+        builder.clientResources(DefaultClientResources.create());
+        builder.clientOptions(ClientOptions.builder().timeoutOptions(TimeoutOptions.enabled()).build());
+        LettucePoolingClientConfiguration build = builder.build();
+        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration, build);
+        // 这个初始化逻辑被spring接管了如果不手动调用， 会在使用时出现NPE
+        lettuceConnectionFactory.afterPropertiesSet();
+        return lettuceConnectionFactory;
+    }
+
+    LettuceClientConfiguration.LettuceClientConfigurationBuilder createBuilder(RedisProperties.Pool properties) {
+        return LettucePoolingClientConfiguration.builder().poolConfig(getPoolConfig(properties));
+    }
+
+    private GenericObjectPoolConfig<?> getPoolConfig(RedisProperties.Pool properties) {
+        GenericObjectPoolConfig<?> config = new GenericObjectPoolConfig<>();
+        config.setMaxTotal(properties.getMaxActive());
+        config.setMaxIdle(properties.getMaxIdle());
+        config.setMinIdle(properties.getMinIdle());
+        if (properties.getTimeBetweenEvictionRuns() != null) {
+            config.setTimeBetweenEvictionRunsMillis(properties.getTimeBetweenEvictionRuns().toMillis());
+        }
+        if (properties.getMaxWait() != null) {
+            config.setMaxWaitMillis(properties.getMaxWait().toMillis());
+        }
+        return config;
+    }
+
 
 }
