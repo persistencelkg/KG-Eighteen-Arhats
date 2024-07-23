@@ -8,6 +8,7 @@ import org.lkg.elastic_search.crud.EsMetaApIServiceImpl;
 import org.lkg.elastic_search.crud.MapDataEsApIService;
 import org.lkg.elastic_search.crud.demo.Orders;
 import org.lkg.redis.config.RedisTemplateHolder;
+import org.lkg.redis.crud.RedisService;
 import org.lkg.simple.JacksonUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -15,6 +16,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Description:
@@ -28,9 +30,6 @@ public class TestNoSql extends TestBase {
 
     @Resource
     private RestHighLevelClient order;
-
-    @Resource
-    private RedisTemplateHolder redisTemplateHolder;
 //
 //    @Resource
 //    private RedisTemplate<String, Object> featureRedisTemplate;
@@ -38,6 +37,8 @@ public class TestNoSql extends TestBase {
 //    @Resource
 //    private RedisTemplate<String, Object> orderRedisTemplate;
 
+    @Resource
+    private RedisService redisService;
 
 
     @Test
@@ -49,24 +50,27 @@ public class TestNoSql extends TestBase {
     public void testRedis() {
         Orders orders = new Orders();
         orders.setAge(3);
-        orders.setName("测试wkx");
+        orders.setName(null);
         orders.setFee(BigDecimal.TEN);
         orders.setStartTime(new Date(System.currentTimeMillis()));
 
-        RedisTemplate<String, Object> featureRedisTemplate = redisTemplateHolder.featureTemplate();
-        RedisTemplate<String, Object> orderRedisTemplate = redisTemplateHolder.orderTemplate();
-
-        ValueOperations<String, Object> opsForValue = featureRedisTemplate.opsForValue();
-        opsForValue.set("test-lkg", orders);
-
-        Object obj = opsForValue.get("test-lkg");
-        Orders orders1 = JacksonUtil.getMapper().convertValue(obj, Orders.class);
-        System.out.println(orders1);
-
-        ValueOperations<String, Object> operations = orderRedisTemplate.opsForValue();
-//        operations.getOperations()
-        System.out.println(operations.setIfAbsent("wkx", "NIL"));
-        System.out.println(operations.setIfAbsent("wkx", "2"));
-
+        // test set
+        redisService.setKeyWithSecond("test-lkg", "wkx", 846000L);
+        // test distribute lock
+        boolean l1 = redisService.getLock("lock-key", "0", 1L);
+        boolean l2 = redisService.getLock("lock-key", "0", 1L);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        boolean l3 = redisService.getLock("lock-key", "0", 1L);
+        System.out.println(l1 + "->" + l2 + "->" + l3);
+        // test del
+        System.out.println("del key: " + redisService.delKey("test-lkg"));
+        // test hash
+        redisService.hSet("lkg-2", "love", "wkx");
+        String s = redisService.hGet("lkg-2", "love", String.class);
+        System.out.println("hget:" + s);
     }
 }

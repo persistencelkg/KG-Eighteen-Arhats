@@ -51,10 +51,9 @@ import java.util.Map;
 public class MoreRedisDataSourceConfig {
 
     private Integer enable;
-
     private Map<String, RedisPoolConfig> config;
-    private static final String FEATURE_REDIS_NAME = "feature-redis";
-    private static final String ORDER_REDIS_NAME = "order-redis";
+    public static final String FEATURE_REDIS_NAME = "feature-redis";
+    public static final String ORDER_REDIS_NAME = "order-redis";
 
     @PostConstruct
     public void init() {
@@ -62,7 +61,7 @@ public class MoreRedisDataSourceConfig {
     }
 
     @Data
-    private static class RedisPoolConfig {
+    public static class RedisPoolConfig {
         // remote
         private Duration readTimeOut = Duration.ofSeconds(1);
         private Duration connectionTimeOut = Duration.ofSeconds(1);
@@ -71,6 +70,7 @@ public class MoreRedisDataSourceConfig {
         private String host;
         private int port = 6379;
         private String password;
+        private String keyPrefix = "";
         // pool
         private int minIdle = KernelUtil.CPU_CORE_NUM >> 1;
         private int maxIdle = KernelUtil.CPU_CORE_NUM;
@@ -112,7 +112,7 @@ public class MoreRedisDataSourceConfig {
 
     public RedisSerializer<Object> valueSerializer() {
         ObjectMapper objectMapper = new ObjectMapper();
-        // 忽略空值
+        // 要求数据不能为null
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         // 开启后就可以进行默认的类型推断，就会开启保留非java基本类型的元数据信息，带来额外的存储成本需要谨慎
         // objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.WRAPPER_OBJECT);
@@ -176,10 +176,6 @@ public class MoreRedisDataSourceConfig {
         // 这个初始化逻辑被spring接管了如果不手动调用， 会在使用时出现NPE
         lettuceConnectionFactory.afterPropertiesSet();
         return lettuceConnectionFactory;
-    }
-
-    LettuceClientConfiguration.LettuceClientConfigurationBuilder createBuilder(RedisProperties.Pool properties) {
-        return LettucePoolingClientConfiguration.builder().poolConfig(getPoolConfig(properties));
     }
 
     private GenericObjectPoolConfig<?> getPoolConfig(RedisProperties.Pool properties) {
