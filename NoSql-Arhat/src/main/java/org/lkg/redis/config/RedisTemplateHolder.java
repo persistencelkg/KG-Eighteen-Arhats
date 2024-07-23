@@ -1,5 +1,7 @@
 package org.lkg.redis.config;
 
+import org.lkg.redis.crud.TestInterFace;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,21 @@ public class RedisTemplateHolder {
 
     @Resource
     private MoreRedisDataSourceConfig moreRedisDataSourceConfig;
+
+
+    @Bean // spring在@Bean注多个同类型接口时 默认是按名字查询，但是如果注入多个同类型class类，必须要制定优先级
+    public TestInterFace testOne() {
+        return new TestInterFace() {};
+    }
+
+
+
+    @Bean
+    public TestInterFace testTwo() {
+        return new TestInterFace() {};
+    }
+
+
 
 
     public RedisTemplate<String, Object> featureTemplate() {

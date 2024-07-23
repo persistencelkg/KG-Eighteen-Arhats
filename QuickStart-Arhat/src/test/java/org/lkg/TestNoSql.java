@@ -9,6 +9,7 @@ import org.lkg.elastic_search.crud.MapDataEsApIService;
 import org.lkg.elastic_search.crud.demo.Orders;
 import org.lkg.redis.config.RedisTemplateHolder;
 import org.lkg.redis.crud.RedisService;
+import org.lkg.redis.crud.TestInterFace;
 import org.lkg.simple.JacksonUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -16,7 +17,10 @@ import org.springframework.data.redis.core.ValueOperations;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+
+import static org.lkg.redis.crud.RedisService.DYNAMIC_UPDATE_BY_LUA;
 
 /**
  * Description:
@@ -40,6 +44,12 @@ public class TestNoSql extends TestBase {
     @Resource
     private RedisService redisService;
 
+    @Resource
+    private TestInterFace testOne;
+
+    @Resource
+    private TestInterFace testTwo;
+
 
     @Test
     public void testEsApi() {
@@ -48,6 +58,7 @@ public class TestNoSql extends TestBase {
 
     @Test
     public void testRedis() {
+        System.out.println("testOne" + testOne + " =>" + testTwo);
         Orders orders = new Orders();
         orders.setAge(3);
         orders.setName(null);
@@ -72,5 +83,17 @@ public class TestNoSql extends TestBase {
         redisService.hSet("lkg-2", "love", "wkx");
         String s = redisService.hGet("lkg-2", "love", String.class);
         System.out.println("hget:" + s);
+
+        // tes lua
+        redisService.hSet("lkg-2", "wkx-lkg", 999);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("wkx-lkg", 99);
+        map.put("lua", "nb");
+        System.out.println("update lua count: " + redisService.execWithLua(DYNAMIC_UPDATE_BY_LUA, "lkg-2", map));
+
+        String s2 = redisService.hGet("lkg-2", "wkx-lkg", String.class);
+        System.out.println("hget:" + s2);
+
+
     }
 }

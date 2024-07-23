@@ -1,18 +1,26 @@
 package org.lkg.redis.crud;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.redis.config.RedisTemplateHolder;
+import org.lkg.simple.FileUtil;
 import org.lkg.simple.JacksonUtil;
+import org.lkg.simple.ObjectUtil;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.*;
+import java.util.stream.Collectors;
 
 /**
  * Description:
@@ -23,8 +31,23 @@ import java.util.function.*;
 @Slf4j
 public class RedisService {
 
+
     @Resource
     private RedisTemplateHolder redisTemplateHolder;
+
+    public static final String DYNAMIC_UPDATE_BY_LUA = "dynamic_update_by_lua.lua";
+
+    private static final Map<String, String> LUA_MAP = new HashMap<>();
+
+    static {
+        try {
+            String s = FileUtil.readFile(RedisService.class.getClassLoader().getResourceAsStream("lua" + File.separator + DYNAMIC_UPDATE_BY_LUA));
+            LUA_MAP.put(DYNAMIC_UPDATE_BY_LUA, s);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
 
     // 锁
     public boolean getLock(String key, Object val, long second) {
@@ -103,6 +126,7 @@ public class RedisService {
     }
 
 
+    @Nullable
     private <T> T executeFunction(BiFunction<RedisTemplate<String, Object>, String, T> supplier, String key, String methodNameToLog) {
         // 后续可以进行数据源切换
         RedisTemplate<String, Object> redisTemplate = redisTemplateHolder.featureTemplate();
@@ -125,5 +149,27 @@ public class RedisService {
         } catch (Exception e) {
             log.error("{}:{} exec fail:{}", methoNameToLog, finalKey, e.getMessage(), e);
         }
+    }
+
+    public long execWithLua(String luaFileName, String key, Map<String, Object> map) {
+        if (ObjectUtil.isEmpty(map)) {
+            return 0L;
+        }
+        ArrayList<String> keyList = new ArrayList<>();
+        ArrayList<Object> valList = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            valList.add(entry.getKey());
+            valList.add(entry.getValue());
+        }
+        Object[] array = valList.toArray();
+        Long aLong = executeFunction((template, baseKey) -> {
+                    keyList.add(baseKey);
+                    return template.execute(
+                            new DefaultRedisScript<>(LUA_MAP.get(luaFileName), Long.class),
+                            keyList,
+                            array);
+                },
+                key, "execWithLua");
+        return Optional.ofNullable(aLong).orElse(0L);
     }
 }

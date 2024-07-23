@@ -30,9 +30,13 @@ public class FileUtil {
         InputStream resourceAsStream = FileUtil.class.getClassLoader().getResourceAsStream(url);
         if (Objects.isNull(resourceAsStream)) {
             String workDir = System.getProperty("user.dir");
-            System.out.println(workDir + File.separator + url);
+//            System.out.println(workDir + File.separator + url);
             resourceAsStream = Files.newInputStream(Paths.get(workDir + File.separator + url));
         }
+        return readFile(resourceAsStream);
+    }
+
+    public static String readFile(InputStream resourceAsStream) throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(resourceAsStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
@@ -41,9 +45,7 @@ public class FileUtil {
         while ((line = bufferedReader.readLine()) != null) {
             stringBuilder.append(line).append(System.lineSeparator());
         }
-        bufferedReader.close();
-        inputStreamReader.close();
-        resourceAsStream.close();
+        IOStreamUtil.close(bufferedReader, inputStreamReader, resourceAsStream);
         return stringBuilder.delete(stringBuilder.lastIndexOf(System.lineSeparator()), stringBuilder.length()).toString();
     }
 
