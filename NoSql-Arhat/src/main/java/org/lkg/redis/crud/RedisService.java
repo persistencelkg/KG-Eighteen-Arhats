@@ -1,8 +1,5 @@
 package org.lkg.redis.crud;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.redis.config.RedisTemplateHolder;
 import org.lkg.simple.FileUtil;
@@ -10,7 +7,6 @@ import org.lkg.simple.JacksonUtil;
 import org.lkg.simple.ObjectUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.*;
-import java.util.stream.Collectors;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 /**
  * Description:
@@ -164,6 +160,7 @@ public class RedisService {
         Object[] array = valList.toArray();
         Long aLong = executeFunction((template, baseKey) -> {
                     keyList.add(baseKey);
+                    // 尽量不要对参数做定制化序列化，因为参数可能类型不一致
                     return template.execute(
                             new DefaultRedisScript<>(LUA_MAP.get(luaFileName), Long.class),
                             keyList,

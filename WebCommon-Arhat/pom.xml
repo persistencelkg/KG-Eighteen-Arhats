@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <commons.httplicent.version>3.1</commons.httplicent.version>
         <apache.poi.version>4.1.2</apache.poi.version>
+        <github.caffeine.version>2.6.2</github.caffeine.version>
     </properties>
 
     <dependencies>
@@ -24,6 +25,18 @@
         <dependency>
             <groupId>io.github.persistencelkg</groupId>
             <artifactId>NonWebCommon-Arhat</artifactId>
+        </dependency>
+
+        <!--cache-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${github.caffeine.version}</version>
         </dependency>
 
         <!-- http client begin -->
