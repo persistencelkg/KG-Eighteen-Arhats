@@ -5,6 +5,9 @@ import org.lkg.redis.config.RedisTemplateHolder;
 import org.lkg.simple.FileUtil;
 import org.lkg.simple.JacksonUtil;
 import org.lkg.simple.ObjectUtil;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.lang.Nullable;
@@ -17,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 /**
  * Description:
@@ -169,4 +173,61 @@ public class RedisService {
                 key, "execWithLua");
         return Optional.ofNullable(aLong).orElse(0L);
     }
+
+    public List<Object> pipeLine(String key) {
+
+//        SessionCallback<Object> sessionCallback = new SessionCallback<Object>() {
+//            @Override
+//            public Object execute(RedisOperations operations) throws DataAccessException {
+//                // pTtl
+//                operations.getExpire(key, TimeUnit.SECONDS);
+//                // get origin key
+//                operations.opsForValue().get(key);
+//                return null;
+//            }
+//        };
+//
+//        List<Object> results = featureRedisTemplate.executePipelined(sessionCallback);
+
+        return executeFunction((template, baseKey) -> template.executePipelined(new RedisCallback<Object>() {
+            @Nullable
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                connection.ttl(baseKey.getBytes());
+                connection.get(baseKey.getBytes());
+                return null;
+            }
+        }), key, "pipeLine");
+    }
+
+
+    public long ttl(String key) {
+        Long expire = executeFunction(RedisTemplate::getExpire, key, "ttl");
+        return Optional.ofNullable(expire).orElse(0L);
+    }
+
+    public void getLockWithAutoRelease(Supplier<Boolean> consumer, String key, long second) {
+        getLockWithAutoRelease(consumer, key, "locked", second);
+    }
+
+    public void getLockWithAutoRelease(Supplier<Boolean> consumer, String key, Object val, long second) {
+        boolean lock = false;
+        try {
+            lock = getLock(key, val, second);
+            if (lock) {
+                if (consumer.get()) {
+                    log.debug("success get lock:{} and finish operation", key);
+                } else {
+                    log.warn("success get lock:{} but exec fail!", key);
+                }
+            } else {
+                log.warn("fail get lock:{}", key);
+            }
+        } finally {
+            if (lock) {
+                delKey(key);
+            }
+        }
+    }
+
 }
