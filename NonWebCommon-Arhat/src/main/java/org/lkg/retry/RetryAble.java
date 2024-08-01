@@ -14,7 +14,7 @@ public interface RetryAble {
     }
 
     default int retrySleepMills() {
-        return 1000;
+        return 0;
     }
 
 
