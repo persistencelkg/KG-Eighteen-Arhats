@@ -15,6 +15,7 @@
         <module name="PerfMetrics-Arhat" />
         <module name="NonWebCommon-Arhat" />
         <module name="QuickStart-Arhat" />
+        <module name="ApolloDynamicConfig-Arhat" />
         <module name="DataCache-Arhat" />
         <module name="MessageNotice-Arhat" />
       </profile>
@@ -23,6 +24,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ApolloDynamicConfig-Arhat" options="-parameters" />
       <module name="DataCache-Arhat" options="-parameters" />
       <module name="DesignPatternApply-Arhat" options="-parameters" />
       <module name="DynamicSharding-Arhat" options="-parameters" />

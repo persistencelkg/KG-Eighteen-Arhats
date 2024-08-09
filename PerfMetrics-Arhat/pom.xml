@@ -20,10 +20,28 @@
     </properties>
 
     <dependencies>
+        <!-- basic -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-core</artifactId>
             <version>${metric.version}</version>
+        </dependency>
+
+
+        <!-- internal dependency -->
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>ApolloDynamicConfig-Arhat</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>NonWebCommon-Arhat</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
     </dependencies>
 </project>

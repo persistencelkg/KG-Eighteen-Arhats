@@ -35,7 +35,7 @@ public class RedisService {
     @Resource
     private RedisTemplateHolder redisTemplateHolder;
 
-    public static final String DYNAMIC_UPDATE_BY_LUA = "dynamic_update_by_lua.lua";
+    public static final String DYNAMIC_UPDATE_BY_LUA = "dynamic_update_hash_by_lua.lua";
 
     private static final Map<String, String> LUA_MAP = new HashMap<>();
 
