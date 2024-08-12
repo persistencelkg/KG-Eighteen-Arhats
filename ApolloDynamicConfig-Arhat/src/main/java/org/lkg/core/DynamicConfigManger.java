@@ -10,6 +10,16 @@ import java.util.function.Supplier;
 public class DynamicConfigManger {
 
 
+    public static String getEnv() {
+        // spring.profile.active -> env
+        return null;
+    }
+
+    public static String getServerName(){
+        // spring.application.name  -> appName
+        return "";
+    }
+
     public static <T> T getConfigValue(Class<T> classz) {
         return null;
     }

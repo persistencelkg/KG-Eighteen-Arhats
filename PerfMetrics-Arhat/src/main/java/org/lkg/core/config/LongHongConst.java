@@ -17,4 +17,12 @@ public interface LongHongConst {
 
 
     Duration DEFAULT_INTERVAL = Duration.ofMinutes(1);
+
+    interface TagConst{
+        String DEPT = "dept";
+        String SERVER_NAME = "app.name";
+        String IP = "server.ip";
+
+        String ENV = "env";
+    }
 }

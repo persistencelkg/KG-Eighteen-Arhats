@@ -31,6 +31,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class LongHengMeterRegistry extends StepMeterRegistry {
 
+    private static LongHengMeterRegistry REGISTRY = null;
+
     private LongHengStepRegistryConfig longHengStepRegistryConfig;
     private MetricExporterHandler metricExporterHandler;
 
@@ -59,6 +61,17 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
         initCollectInterval();
         // add change event;
         addChangeEvent();
+    }
+
+    public static LongHengMeterRegistry getInstance() {
+        if (Objects.isNull(REGISTRY)) {
+            synchronized (LongHengMeterRegistry.class) {
+                if (Objects.isNull(REGISTRY)) {
+                    REGISTRY = new LongHengMeterRegistry();
+                }
+            }
+        }
+        return REGISTRY;
     }
 
     private void addChangeEvent() {

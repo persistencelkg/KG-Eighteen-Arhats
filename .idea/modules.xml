@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DesignPatternApply-Arhat/DesignPatternApply-Arhat.iml" filepath="$PROJECT_DIR$/DesignPatternApply-Arhat/DesignPatternApply-Arhat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PerMetricsCollector-Arhat.iml" filepath="$PROJECT_DIR$/PerMetricsCollector-Arhat.iml" />
       <module fileurl="file://$PROJECT_DIR$/QuickStart-Arhat.iml" filepath="$PROJECT_DIR$/QuickStart-Arhat.iml" />
       <module fileurl="file://$PROJECT_DIR$/WebCommon-Arhat.iml" filepath="$PROJECT_DIR$/WebCommon-Arhat.iml" />
     </modules>

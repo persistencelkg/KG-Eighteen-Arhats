@@ -36,10 +36,16 @@
         <module>PerfMetrics-Arhat</module>
         <module>QuickStart-Arhat</module>
         <module>ApolloDynamicConfig-Arhat</module>
+        <module>PerMetricsCollector-Arhat</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
+                <artifactId>PerfMetrics-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.github.persistencelkg</groupId>
                 <artifactId>ApolloDynamicConfig-Arhat</artifactId>
