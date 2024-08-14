@@ -15,10 +15,14 @@ public interface LongHongConst {
 
     String INTERVAL_KEY = "long-heng.monitor.interval";
 
+    String KAFKA_CONFIG_KEY = "long-heng.kafka.config";
+
+    String KAFKA_CONFIG_BATCH_SIZE = KAFKA_CONFIG_KEY + ".poll-size";
+
 
     Duration DEFAULT_INTERVAL = Duration.ofMinutes(1);
 
-    interface TagConst{
+    interface TagConst {
         String DEPT = "dept";
         String SERVER_NAME = "app.name";
         String IP = "server.ip";

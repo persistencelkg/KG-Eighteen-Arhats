@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * Description:
@@ -25,13 +26,15 @@ public class InfluxDbService {
 
     @PostConstruct
     public void init() {
-        influxDB = initInfluxDb();
+        influxDB = initInfluxDb("default");
         log.info(">> init influx db config:{}", influxDbConfig);
     }
 
-    private InfluxDB initInfluxDb() {
-        influxDB = InfluxDBFactory.connect(influxDbConfig.getUrl(), influxDbConfig.getUserName(), influxDbConfig.getPassword());
-        influxDB.setDatabase(influxDbConfig.getDatabase());
+    public InfluxDB initInfluxDb(String dept) {
+        Map<String, InfluxDbConfig.DbConfig> config = influxDbConfig.getConfig();
+        InfluxDbConfig.DbConfig dbConfig = config.get(dept);
+        influxDB = InfluxDBFactory.connect(dbConfig.getUrl(), dbConfig.getUserName(), dbConfig.getPassword());
+        influxDB.setDatabase(dbConfig.getDatabase());
         return influxDB;
     }
 

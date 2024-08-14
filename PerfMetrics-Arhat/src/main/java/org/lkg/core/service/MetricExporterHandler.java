@@ -8,10 +8,9 @@ import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import io.micrometer.core.instrument.distribution.HistogramSupport;
 import io.micrometer.core.instrument.distribution.ValueAtPercentile;
 import org.lkg.core.bo.MeterBo;
-import org.lkg.core.service.impl.KafkaMetricExporter;
 import org.lkg.core.service.impl.SyncMetricExporter;
+import org.lkg.metric.threadpool.TrackableThreadPoolUtil;
 import org.lkg.simple.ObjectUtil;
-import org.lkg.thread.ThreadPoolUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class MetricExporterHandler {
 
-    private static final ExecutorService publishExecutorService = ThreadPoolUtil.newNonBizExecutor("metric-publish");
 
     private MetricExporter metricExporter = new SyncMetricExporter();
 
@@ -39,7 +37,7 @@ public class MetricExporterHandler {
             return;
         }
         // publish
-        publishExecutorService.execute(() -> {
+        MetricCoreExecutor.execute(() -> {
             metricExporter.publishMeter(idMeterBoHashMap);
         });
     }
@@ -51,7 +49,7 @@ public class MetricExporterHandler {
             // 浮动计数
             if (val instanceof Gauge) {
                 populateGauge((Gauge) val, meterBo);
-            // 耗时统计
+                // 耗时统计
             } else if (val instanceof HistogramSupport) {
                 populateTimer((HistogramSupport) val, meterBo);
             } else if (val instanceof Counter) {
@@ -84,7 +82,7 @@ public class MetricExporterHandler {
     private void populateTimer(HistogramSupport val, MeterBo meterBo) {
         HistogramSnapshot histogramSnapshot = val.takeSnapshot();
         TimeUnit timeUnit = TimeUnit.MILLISECONDS;
-        if (val instanceof  Timer) {
+        if (val instanceof Timer) {
             Timer timer = (Timer) val;
             timeUnit = timer.baseTimeUnit();
         }
@@ -104,16 +102,16 @@ public class MetricExporterHandler {
         for (ValueAtPercentile valueAtPercentile : valueAtPercentiles) {
             double value = valueAtPercentile.value(timeUnit);
             double percentile = valueAtPercentile.percentile();
-            if (Math.abs(percentile - 0.95) < threshold){
+            if (Math.abs(percentile - 0.95) < threshold) {
                 meterBo.setP95(value);
             }
-            if (Math.abs(percentile - 0.99) < threshold){
+            if (Math.abs(percentile - 0.99) < threshold) {
                 meterBo.setP99(value);
             }
-            if (Math.abs(percentile - 0.995) < threshold){
+            if (Math.abs(percentile - 0.995) < threshold) {
                 meterBo.setP995(value);
             }
-            if (Math.abs(percentile - 0.999) < threshold){
+            if (Math.abs(percentile - 0.999) < threshold) {
                 meterBo.setP999(value);
             }
         }

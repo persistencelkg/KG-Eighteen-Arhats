@@ -1,10 +1,9 @@
-package org.lkg.thread;
+package org.lkg.metric.threadpool;
 
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskDecorator;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -47,8 +46,6 @@ public class ThreadPoolConfig {
         /**
          * 创建默认调用者的线程
          * @param prefix
-         * @param maxThread
-         * @param coreSize
          * @param queueSize
          * @return
          */
@@ -60,7 +57,7 @@ public class ThreadPoolConfig {
         return new SelfExecutorService() {
             @Override
             public ExecutorService create(String prefix, int queueSize, RejectedExecutionHandler rejectedExecutionHandler) {
-                return ThreadPoolUtil.newNonBizExecutor(prefix, queueSize, new ThreadPoolExecutor.CallerRunsPolicy());
+                return TrackableThreadPoolUtil.newTrackableExecutor(prefix, queueSize, new ThreadPoolExecutor.CallerRunsPolicy());
             }
 
             @Override

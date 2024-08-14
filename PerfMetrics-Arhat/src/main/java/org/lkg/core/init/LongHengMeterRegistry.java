@@ -11,9 +11,7 @@ import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.config.LongHengStepRegistryConfig;
 import org.lkg.core.config.LongHengThreadFactory;
 import org.lkg.core.config.LongHongConst;
-import org.lkg.core.service.MetricExporter;
 import org.lkg.core.service.MetricExporterHandler;
-import org.springframework.util.ObjectUtils;
 
 import java.time.Duration;
 import java.util.List;
@@ -127,6 +125,6 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
 
     @Override
     protected TimeUnit getBaseTimeUnit() {
-        return TimeUnit.MILLISECONDS;
+        return TimeUnit.MICROSECONDS;
     }
 }

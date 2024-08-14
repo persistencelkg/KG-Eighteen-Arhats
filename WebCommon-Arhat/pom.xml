@@ -27,6 +27,12 @@
             <artifactId>NonWebCommon-Arhat</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>PerfMetrics-Arhat</artifactId>
+        </dependency>
+
+
         <!--cache-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

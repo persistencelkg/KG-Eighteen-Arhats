@@ -1,9 +1,12 @@
 package org.lkg.config;
 
 import lombok.Data;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * Description:
@@ -13,13 +16,23 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties("influx")
+@ConditionalOnProperty(value = "influx.enable", havingValue = "1", matchIfMissing = true)
 public class InfluxDbConfig {
 
-    private String url;
 
-    private String userName;
+    private Map<String, DbConfig> config;
 
-    private String password;
+    @Data
+    public  static class DbConfig {
 
-    private String database;
+        private String url;
+
+        private String userName;
+
+        private String password;
+
+        private String database;
+    }
+
+
 }

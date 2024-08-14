@@ -1,5 +1,7 @@
 package org.lkg.core;
 
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -24,14 +26,23 @@ public class DynamicConfigManger {
         return null;
     }
     public static String getConfigValue(String key) {
-        return getConfigValue(key, null);
+        return getConfigValue(key, (String) null);
     }
 
     public static String getConfigValue(String key, String defaultVal) {
         return "";
     }
 
+    public static Integer getConfigValue(String key, Integer defaultVal) {
+        return defaultVal;
+    }
+
     public static <T> T getConfigValueWithDefault(String key, Supplier<T> supplier) {
         return supplier.get();
+    }
+
+
+    public static <T> T initAndRegistChangeEvent(String key, Function<String, T> function, Consumer<T> consumer) {
+        return null;
     }
 }

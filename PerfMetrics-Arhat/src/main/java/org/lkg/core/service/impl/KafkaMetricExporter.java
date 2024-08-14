@@ -3,29 +3,44 @@ package org.lkg.core.service.impl;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.distribution.ValueAtPercentile;
+import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.bo.MeterBo;
+import org.lkg.core.client.KafkaProducerClient;
 import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.core.service.MetricExporter;
+import org.lkg.simple.JacksonUtil;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Description:
  * Author: 李开广
  * Date: 2024/8/9 2:04 PM
  */
-public class KafkaMetricExporter implements MetricExporter {
+@Component
+@Slf4j
+public class KafkaMetricExporter extends AbstractMetricExporter {
 
     // TODO client
+    //   Timer register = Timer.builder("").publishPercentiles().register(new LongHengMeterRegistry());
+
+
+    @Resource
+    private KafkaProducerClient kafkaProducerClient;
 
     @Override
-    public void publishMeter(Map<Meter.Id, MeterBo> meterBoMap) {
-        Timer register = Timer.builder("").publishPercentiles().register(new LongHengMeterRegistry());
-//        for (ValueAtPercentile valueAtPercentile : register.takeSnapshot().percentileValues()) {
-//            if (valueAtPercentile.percentile() == percentile) {
-//                return valueAtPercentile.value(unit);
-//            }
-//        }
+    protected void writeMsg(List<MeterBo> list) {
+        kafkaProducerClient.sendMsg(JacksonUtil.writeValue(list), (meta, exception) -> {
+            if (Objects.isNull(exception)) {
+
+            } else {
+                log.error("send kafka msg error", exception);
+            }
+        });
 
     }
 }
