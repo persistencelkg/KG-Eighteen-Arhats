@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Description:
+ * Description: for ttl component
  * Author: 李开广
  * Date: 2024/8/12 7:32 PM
  */

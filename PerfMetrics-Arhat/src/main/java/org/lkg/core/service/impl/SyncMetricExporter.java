@@ -18,7 +18,6 @@ public class SyncMetricExporter implements MetricExporter {
 
     @Override
     public void publishMeter(Map<Meter.Id, MeterBo> meterBoMap) {
-
-
+        System.out.println(meterBoMap);
     }
 }

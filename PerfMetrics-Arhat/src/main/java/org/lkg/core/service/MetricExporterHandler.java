@@ -7,11 +7,14 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import io.micrometer.core.instrument.distribution.HistogramSupport;
 import io.micrometer.core.instrument.distribution.ValueAtPercentile;
+import lombok.Getter;
+import lombok.Setter;
 import org.lkg.core.bo.MeterBo;
 import org.lkg.core.service.impl.SyncMetricExporter;
 import org.lkg.metric.threadpool.TrackableThreadPoolUtil;
 import org.lkg.simple.ObjectUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -24,22 +27,24 @@ import java.util.concurrent.TimeUnit;
  */
 public class MetricExporterHandler {
 
+    private MetricExporter metricExporter;
 
-    private MetricExporter metricExporter = new SyncMetricExporter();
 
     public void exportMeter(List<Meter> list) {
         if (ObjectUtil.isEmpty(list)) {
             return;
         }
+//        ArrayList<Meter> meters = new ArrayList<>(list);
         // CONVERT TO BO
         HashMap<Meter.Id, MeterBo> idMeterBoHashMap = convertToMeterBo(list);
         if (idMeterBoHashMap.isEmpty()) {
             return;
         }
+        metricExporter.publishMeter(idMeterBoHashMap);
         // publish
-        MetricCoreExecutor.execute(() -> {
-            metricExporter.publishMeter(idMeterBoHashMap);
-        });
+//        MetricCoreExecutor.execute(() -> {
+//            metricExporter.publishMeter(idMeterBoHashMap);
+//        });
     }
 
     private HashMap<Meter.Id, MeterBo> convertToMeterBo(List<Meter> list) {

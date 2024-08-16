@@ -15,6 +15,6 @@ public class MetricCoreExecutor {
 
 
     public static void execute(Runnable runnable) {
-        publishExecutorService.execute(runnable);
+        publishExecutorService.submit(runnable);
     }
 }

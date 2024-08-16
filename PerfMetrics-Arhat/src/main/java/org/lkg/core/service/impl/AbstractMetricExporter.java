@@ -3,6 +3,7 @@ package org.lkg.core.service.impl;
 import io.micrometer.core.instrument.Meter;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.bo.MeterBo;
+import org.lkg.core.config.LongHongAlarmConfig;
 import org.lkg.core.config.LongHongConst;
 import org.lkg.core.service.MetricExporter;
 import org.lkg.simple.ObjectUtil;
@@ -24,7 +25,9 @@ public abstract class AbstractMetricExporter implements MetricExporter {
         if (ObjectUtil.isEmpty(meterBoMap)) {
             return;
         }
-        Integer batchSize = DynamicConfigManger.getConfigValue(LongHongConst.KAFKA_CONFIG_BATCH_SIZE, 100);
+        // 先报警感知
+        LongHongAlarmManger.alarm(meterBoMap);
+        Integer batchSize = DynamicConfigManger.getInt(LongHongConst.KAFKA_CONFIG_BATCH_SIZE, 100);
         List<MeterBo> list = new ArrayList<>();
         meterBoMap.forEach((k, v) -> {
             list.add(v);

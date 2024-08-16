@@ -2,8 +2,10 @@ package org.lkg.core.config;
 
 import lombok.Data;
 import org.lkg.core.DynamicConfigManger;
+import org.lkg.core.DynamicKeyConfig;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Description:
@@ -11,8 +13,8 @@ import java.util.List;
  * Date: 2024/8/9 9:30 PM
  */
 @Data
-// TODO 基于注解的配置
-public class LongHongMonitorConfig {
+@DynamicKeyConfig(key = LongHongConst.KEY_PREFIX)
+public class LongHongAlarmConfig {
 
     private String dept;
 
@@ -26,7 +28,8 @@ public class LongHongMonitorConfig {
 
     private Duty duty;
 
-    private List<AlarmRule> alarmRule;
+    // key: namespace
+    private Map<String, List<AlarmRule>> alarmRule;
 
     @Data
     public static class Duty {
@@ -37,14 +40,13 @@ public class LongHongMonitorConfig {
 
     @Data
     public static class AlarmRule {
-        private String namespace;
-        // max > 3000 -> spring expression
+        // (count >= 3000) && (p995 > 1)
         private String expression;
-
+        // ding ding msg -> 短信 -> phone
         private boolean phoneAlarm;
     }
 
-    public static LongHongMonitorConfig getInstance() {
-        return DynamicConfigManger.getConfigValue(LongHongMonitorConfig.class);
+    public static LongHongAlarmConfig getInstance() {
+        return DynamicConfigManger.getTargetClassConfig(LongHongAlarmConfig.class);
     }
 }

@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
  * Date: 2024/8/13 9:03 PM
  */
 @Slf4j
-@Component
+//@Component
 public class KafkaProducerClient {
 
 
@@ -35,7 +35,7 @@ public class KafkaProducerClient {
         return INSTANCE;
     }
 
-    private KafkaProducerClient() {
+    public KafkaProducerClient() {
         DynamicConfigManger.initAndRegistChangeEvent(LongHongConst.KAFKA_CONFIG_KEY, DynamicConfigManger::getConfigValue, this::setProducer);
     }
 

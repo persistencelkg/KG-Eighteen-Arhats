@@ -21,20 +21,16 @@ import java.util.Objects;
  * Author: 李开广
  * Date: 2024/8/9 2:04 PM
  */
-@Component
+//@Component
 @Slf4j
 public class KafkaMetricExporter extends AbstractMetricExporter {
 
     // TODO client
     //   Timer register = Timer.builder("").publishPercentiles().register(new LongHengMeterRegistry());
 
-
-    @Resource
-    private KafkaProducerClient kafkaProducerClient;
-
     @Override
     protected void writeMsg(List<MeterBo> list) {
-        kafkaProducerClient.sendMsg(JacksonUtil.writeValue(list), (meta, exception) -> {
+        KafkaProducerClient.getInstance().sendMsg(JacksonUtil.writeValue(list), (meta, exception) -> {
             if (Objects.isNull(exception)) {
 
             } else {

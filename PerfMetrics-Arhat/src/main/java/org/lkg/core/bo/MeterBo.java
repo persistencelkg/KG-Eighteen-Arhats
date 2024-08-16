@@ -7,13 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.config.LongHongConst;
-import org.lkg.core.config.LongHongMonitorConfig;
+import org.lkg.core.config.LongHongAlarmConfig;
 import org.lkg.simple.NetUtils;
 import org.lkg.simple.ObjectUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.lkg.core.config.LongHongConst.TagConst.INTERNAL_TAG;
 
 /**
  * Description:
@@ -54,7 +56,7 @@ public class MeterBo {
     public void init() {
         tagMap = new HashMap<>();
 
-        LongHongMonitorConfig instance = LongHongMonitorConfig.getInstance();
+        LongHongAlarmConfig instance = LongHongAlarmConfig.getInstance();
         if (!ObjectUtil.isEmpty(instance)) {
             // 默认tag
             tagMap.put(LongHongConst.TagConst.IP, NetUtils.getLocalAddress());
@@ -69,5 +71,11 @@ public class MeterBo {
             return;
         }
         tagMap.put(tag.getKey(), tag.getValue());
+    }
+
+    public Map<String, String> getNotInternalTag() {
+        HashMap<String, String> map = new HashMap<>(tagMap);
+        INTERNAL_TAG.forEach(map::remove);
+        return map;
     }
 }

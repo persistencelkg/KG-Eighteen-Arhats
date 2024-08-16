@@ -22,5 +22,8 @@ public class LongHengStepRegistryConfig implements StepRegistryConfig {
         return DynamicConfigManger.getConfigValue(key);
     }
 
-
+    @Override
+    public Duration step() {
+        return Duration.ofSeconds(3);
+    }
 }
