@@ -1,15 +1,14 @@
 package org.lkg.core.service;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import io.micrometer.core.instrument.distribution.HistogramSupport;
 import io.micrometer.core.instrument.distribution.ValueAtPercentile;
 import lombok.Getter;
 import lombok.Setter;
 import org.lkg.core.bo.MeterBo;
+import org.lkg.core.bo.TimePercentEnum;
+import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.core.service.impl.SyncMetricExporter;
 import org.lkg.metric.threadpool.TrackableThreadPoolUtil;
 import org.lkg.simple.ObjectUtil;
@@ -34,17 +33,17 @@ public class MetricExporterHandler {
         if (ObjectUtil.isEmpty(list)) {
             return;
         }
-//        ArrayList<Meter> meters = new ArrayList<>(list);
         // CONVERT TO BO
         HashMap<Meter.Id, MeterBo> idMeterBoHashMap = convertToMeterBo(list);
         if (idMeterBoHashMap.isEmpty()) {
             return;
         }
-        metricExporter.publishMeter(idMeterBoHashMap);
-        // publish
-//        MetricCoreExecutor.execute(() -> {
-//            metricExporter.publishMeter(idMeterBoHashMap);
-//        });
+        // 清理
+        list.forEach(Metrics.globalRegistry::remove);
+        // async publish
+        MetricCoreExecutor.execute(() -> {
+            metricExporter.publishMeter(idMeterBoHashMap);
+        });
     }
 
     private HashMap<Meter.Id, MeterBo> convertToMeterBo(List<Meter> list) {
@@ -60,7 +59,7 @@ public class MetricExporterHandler {
             } else if (val instanceof Counter) {
                 populateCounter(((Counter) val), meterBo);
             }
-            if (meterBo.getCount() == 0) {
+            if (meterBo.getCount() <= 0) {
                 return;
             }
             idMeterBoHashMap.put(val.getId(), meterBo);
@@ -70,6 +69,7 @@ public class MetricExporterHandler {
 
     private void populateCounter(Counter val, MeterBo meterBo) {
         meterBo.setCount(val.count());
+
     }
 
     private MeterBo populateDefault(Meter val) {
@@ -97,13 +97,13 @@ public class MetricExporterHandler {
         meterBo.setCount(histogramSnapshot.count());
         meterBo.setTotal(histogramSnapshot.total(timeUnit));
         ValueAtPercentile[] valueAtPercentiles = histogramSnapshot.percentileValues();
-        // p95 p99 通过界面来配置 而不是自己去计算
         if (val instanceof Timer) {
             // 为了方便后面的TTL 链路统计使用
             TimerSnapshot.setMeter(val.getId(), meterBo, valueAtPercentiles);
         }
         final double threshold = 0.00001;
-
+        // 也开始使用
+//        TimerSnapshot.getValWithPercent(val.getId(), TimePercentEnum.P95);
         for (ValueAtPercentile valueAtPercentile : valueAtPercentiles) {
             double value = valueAtPercentile.value(timeUnit);
             double percentile = valueAtPercentile.percentile();

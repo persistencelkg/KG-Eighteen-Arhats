@@ -2,6 +2,7 @@ package org.lkg.core.service;
 
 import org.lkg.metric.threadpool.TrackableThreadPoolUtil;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -11,10 +12,13 @@ import java.util.concurrent.ExecutorService;
  */
 public class MetricCoreExecutor {
     // 采集 & 发布
-    private static final ExecutorService publishExecutorService = TrackableThreadPoolUtil.newTrackableExecutor("metric-core");
+    private static ExecutorService publishExecutorService = null;
 
 
     public static void execute(Runnable runnable) {
+        if (Objects.isNull(publishExecutorService)) {
+            publishExecutorService = TrackableThreadPoolUtil.newTrackableExecutor("metric-core");
+        }
         publishExecutorService.submit(runnable);
     }
 }

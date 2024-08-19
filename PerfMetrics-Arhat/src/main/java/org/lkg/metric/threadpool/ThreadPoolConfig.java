@@ -1,5 +1,6 @@
 package org.lkg.metric.threadpool;
 
+import org.lkg.simple.ObjectUtil;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,9 @@ public class ThreadPoolConfig {
         @Override
         public Runnable decorate(Runnable runnable) {
             Map<String, String> copyOfContextMap = MDC.getCopyOfContextMap();
+            if (ObjectUtil.isEmpty(copyOfContextMap)) {
+                return runnable;
+            }
             return () -> {
                 try {
                     MDC.setContextMap(copyOfContextMap);

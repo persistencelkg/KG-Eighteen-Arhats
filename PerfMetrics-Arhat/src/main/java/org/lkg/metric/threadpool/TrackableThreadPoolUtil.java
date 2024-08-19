@@ -28,6 +28,7 @@ public class TrackableThreadPoolUtil {
         executorService.setRejectedExecutionHandler(rejectedExecutionHandler);
         executorService.setWaitForTasksToCompleteOnShutdown(true);
         executorService.setTaskDecorator(new ThreadPoolConfig.MdcTaskDecorator());
+        executorService.afterPropertiesSet();
         // 启动才会创建，不存在性能问题无需
         ExecutorEventTracker.monit(executorService.getThreadPoolExecutor(), prefixName);
         return executorService.getThreadPoolExecutor();

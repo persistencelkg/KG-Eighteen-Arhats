@@ -1,16 +1,16 @@
 package org.lkg.core.init;
 
-import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.cumulative.CumulativeCounter;
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
+import io.micrometer.core.instrument.distribution.pause.PauseDetector;
 import io.micrometer.core.instrument.step.StepMeterRegistry;
 import io.micrometer.core.instrument.step.StepRegistryConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.DynamicConfigManger;
+import org.lkg.core.bo.TimePercentEnum;
 import org.lkg.core.config.LongHengStepRegistryConfig;
 import org.lkg.core.config.LongHengThreadFactory;
 import org.lkg.core.config.LongHongConst;
@@ -25,6 +25,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToLongFunction;
 
 /**
  * Description: 龙衡 指标观测系统
@@ -139,5 +141,14 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
     @Override
     protected Counter newCounter(Meter.Id id) {
         return new CumulativeCounter(id);
+    }
+
+    @Override
+    protected Timer newTimer(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, PauseDetector pauseDetector) {
+        return super.newTimer(id, distributionStatisticConfig.merge(buildConfig()), pauseDetector);
+    }
+
+    public DistributionStatisticConfig buildConfig() {
+        return DistributionStatisticConfig.builder().percentiles(TimePercentEnum.percentValues()).build();
     }
 }

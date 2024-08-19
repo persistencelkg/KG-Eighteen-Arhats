@@ -27,8 +27,8 @@ public class TimerSnapshot {
         }
     }
 
-    public static double getValWithPercent(String name, TimePercentEnum timePercentEnum) {
-        ValueAtPercentile[] valueAtPercentiles = TIMER_MAP.get(name);
+    public static double getValWithPercent(Meter.Id id, TimePercentEnum timePercentEnum) {
+        ValueAtPercentile[] valueAtPercentiles = TIMER_MAP.get(id.getName());
         for (ValueAtPercentile valueAtPercentile : valueAtPercentiles) {
             double value = valueAtPercentile.value();
             log.info("time value:{}", value);

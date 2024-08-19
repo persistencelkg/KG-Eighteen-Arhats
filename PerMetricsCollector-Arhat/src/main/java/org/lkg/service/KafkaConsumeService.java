@@ -23,9 +23,6 @@ import java.util.concurrent.ExecutorService;
 public class KafkaConsumeService {
 
 
-    private final LongHengMeterRegistry longHengMeterRegistry = LongHengMeterRegistry.getInstance();
-
-
     private final ExecutorService executorService = TrackableThreadPoolUtil.newTrackableExecutor("longheng-consume");
 
     @Resource  private MeterQueueService meterQueueService;
