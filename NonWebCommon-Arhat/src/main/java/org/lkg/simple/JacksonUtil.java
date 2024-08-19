@@ -75,6 +75,12 @@ public class JacksonUtil {
         return null;
     }
 
+    public static Map<String, Object> readMap(String json) {
+        return readObj(json, new TypeReference<Map<String, Object>>() {
+        });
+    }
+
+
     public static Map<String, Object> objToMap(Object obj) {
         String s = writeValue(obj);
         Map<String, Object> map = new HashMap<>();

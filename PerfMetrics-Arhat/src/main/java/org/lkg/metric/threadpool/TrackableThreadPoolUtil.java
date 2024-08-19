@@ -1,6 +1,5 @@
-package org.lkg.thread;
+package org.lkg.metric.threadpool;
 
-import org.lkg.security.KernelUtil;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.ExecutorService;
@@ -17,9 +16,9 @@ import static org.lkg.security.KernelUtil.CPU_CORE_NUM;
  * Author: 李开广
  * Date: 2024/8/9 7:25 PM
  */
-public class ThreadPoolUtil {
+public class TrackableThreadPoolUtil {
 
-    public static ExecutorService newNonBizExecutor(String prefixName, int queueSize, RejectedExecutionHandler rejectedExecutionHandler) {
+    public static ExecutorService newTrackableExecutor(String prefixName, int queueSize, RejectedExecutionHandler rejectedExecutionHandler) {
         ThreadPoolTaskExecutor executorService = new ThreadPoolTaskExecutor();
         executorService.setBeanName(prefixName);
         executorService.setThreadNamePrefix(prefixName);
@@ -29,10 +28,13 @@ public class ThreadPoolUtil {
         executorService.setRejectedExecutionHandler(rejectedExecutionHandler);
         executorService.setWaitForTasksToCompleteOnShutdown(true);
         executorService.setTaskDecorator(new ThreadPoolConfig.MdcTaskDecorator());
+        executorService.afterPropertiesSet();
+        // 启动才会创建，不存在性能问题无需
+        ExecutorEventTracker.monit(executorService.getThreadPoolExecutor(), prefixName);
         return executorService.getThreadPoolExecutor();
     }
 
-    public static ExecutorService newNonBizExecutor(String prefixName) {
-        return newNonBizExecutor(prefixName, 100, new ThreadPoolExecutor.DiscardOldestPolicy());
+    public static ExecutorService newTrackableExecutor(String prefixName) {
+        return newTrackableExecutor(prefixName, 100, new ThreadPoolExecutor.DiscardOldestPolicy());
     }
 }

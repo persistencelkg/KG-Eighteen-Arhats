@@ -1,18 +1,19 @@
 package org.lkg.core.service;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import io.micrometer.core.instrument.distribution.HistogramSupport;
 import io.micrometer.core.instrument.distribution.ValueAtPercentile;
+import lombok.Getter;
+import lombok.Setter;
 import org.lkg.core.bo.MeterBo;
-import org.lkg.core.service.impl.KafkaMetricExporter;
+import org.lkg.core.bo.TimePercentEnum;
+import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.core.service.impl.SyncMetricExporter;
+import org.lkg.metric.threadpool.TrackableThreadPoolUtil;
 import org.lkg.simple.ObjectUtil;
-import org.lkg.thread.ThreadPoolUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -25,9 +26,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class MetricExporterHandler {
 
-    private static final ExecutorService publishExecutorService = ThreadPoolUtil.newNonBizExecutor("metric-publish");
+    private MetricExporter metricExporter;
 
-    private MetricExporter metricExporter = new SyncMetricExporter();
 
     public void exportMeter(List<Meter> list) {
         if (ObjectUtil.isEmpty(list)) {
@@ -38,8 +38,10 @@ public class MetricExporterHandler {
         if (idMeterBoHashMap.isEmpty()) {
             return;
         }
-        // publish
-        publishExecutorService.execute(() -> {
+        // 清理
+        list.forEach(Metrics.globalRegistry::remove);
+        // async publish
+        MetricCoreExecutor.execute(() -> {
             metricExporter.publishMeter(idMeterBoHashMap);
         });
     }
@@ -51,13 +53,13 @@ public class MetricExporterHandler {
             // 浮动计数
             if (val instanceof Gauge) {
                 populateGauge((Gauge) val, meterBo);
-            // 耗时统计
+                // 耗时统计
             } else if (val instanceof HistogramSupport) {
                 populateTimer((HistogramSupport) val, meterBo);
             } else if (val instanceof Counter) {
                 populateCounter(((Counter) val), meterBo);
             }
-            if (meterBo.getCount() == 0) {
+            if (meterBo.getCount() <= 0) {
                 return;
             }
             idMeterBoHashMap.put(val.getId(), meterBo);
@@ -67,6 +69,7 @@ public class MetricExporterHandler {
 
     private void populateCounter(Counter val, MeterBo meterBo) {
         meterBo.setCount(val.count());
+
     }
 
     private MeterBo populateDefault(Meter val) {
@@ -84,7 +87,7 @@ public class MetricExporterHandler {
     private void populateTimer(HistogramSupport val, MeterBo meterBo) {
         HistogramSnapshot histogramSnapshot = val.takeSnapshot();
         TimeUnit timeUnit = TimeUnit.MILLISECONDS;
-        if (val instanceof  Timer) {
+        if (val instanceof Timer) {
             Timer timer = (Timer) val;
             timeUnit = timer.baseTimeUnit();
         }
@@ -94,26 +97,26 @@ public class MetricExporterHandler {
         meterBo.setCount(histogramSnapshot.count());
         meterBo.setTotal(histogramSnapshot.total(timeUnit));
         ValueAtPercentile[] valueAtPercentiles = histogramSnapshot.percentileValues();
-        // p95 p99 通过界面来配置 而不是自己去计算
         if (val instanceof Timer) {
             // 为了方便后面的TTL 链路统计使用
             TimerSnapshot.setMeter(val.getId(), meterBo, valueAtPercentiles);
         }
         final double threshold = 0.00001;
-
+        // 也开始使用
+//        TimerSnapshot.getValWithPercent(val.getId(), TimePercentEnum.P95);
         for (ValueAtPercentile valueAtPercentile : valueAtPercentiles) {
             double value = valueAtPercentile.value(timeUnit);
             double percentile = valueAtPercentile.percentile();
-            if (Math.abs(percentile - 0.95) < threshold){
+            if (Math.abs(percentile - 0.95) < threshold) {
                 meterBo.setP95(value);
             }
-            if (Math.abs(percentile - 0.99) < threshold){
+            if (Math.abs(percentile - 0.99) < threshold) {
                 meterBo.setP99(value);
             }
-            if (Math.abs(percentile - 0.995) < threshold){
+            if (Math.abs(percentile - 0.995) < threshold) {
                 meterBo.setP995(value);
             }
-            if (Math.abs(percentile - 0.999) < threshold){
+            if (Math.abs(percentile - 0.999) < threshold) {
                 meterBo.setP999(value);
             }
         }

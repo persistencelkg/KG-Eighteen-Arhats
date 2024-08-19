@@ -1,19 +1,22 @@
 package org.lkg.core.init;
 
-import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.config.MeterFilter;
+import io.micrometer.core.instrument.cumulative.CumulativeCounter;
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
+import io.micrometer.core.instrument.distribution.pause.PauseDetector;
 import io.micrometer.core.instrument.step.StepMeterRegistry;
 import io.micrometer.core.instrument.step.StepRegistryConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.DynamicConfigManger;
+import org.lkg.core.bo.TimePercentEnum;
 import org.lkg.core.config.LongHengStepRegistryConfig;
 import org.lkg.core.config.LongHengThreadFactory;
 import org.lkg.core.config.LongHongConst;
 import org.lkg.core.service.MetricExporter;
 import org.lkg.core.service.MetricExporterHandler;
-import org.springframework.util.ObjectUtils;
+import org.lkg.metric.threadpool.ExecutorEventTracker;
 
 import java.time.Duration;
 import java.util.List;
@@ -22,6 +25,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToLongFunction;
 
 /**
  * Description: 龙衡 指标观测系统
@@ -31,9 +36,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class LongHengMeterRegistry extends StepMeterRegistry {
 
-    private static LongHengMeterRegistry REGISTRY = null;
+    private static LongHengMeterRegistry REGISTRY = getInstance();
 
-    private LongHengStepRegistryConfig longHengStepRegistryConfig;
+    private final LongHengStepRegistryConfig longHengStepRegistryConfig;
     private MetricExporterHandler metricExporterHandler;
 
     @Getter
@@ -50,11 +55,11 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
 
     public LongHengMeterRegistry(LongHengStepRegistryConfig longHengStepRegistryConfig) {
         this(longHengStepRegistryConfig, Clock.SYSTEM);
-        this.longHengStepRegistryConfig = longHengStepRegistryConfig;
     }
 
-    public LongHengMeterRegistry(StepRegistryConfig config, Clock clock) {
+    public LongHengMeterRegistry(LongHengStepRegistryConfig config, Clock clock) {
         super(config, clock);
+        this.longHengStepRegistryConfig = config;
         // 添加默认过滤
 //        addMeterFilter(MeterFilter.deny(id -> id.getName().endsWith(".percentile") && !ObjectUtils.isEmpty(id.getTag("phi"))));
         // 初始化采集间隔 && 提供动态刷新能力
@@ -63,19 +68,17 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
         addChangeEvent();
     }
 
-    public static LongHengMeterRegistry getInstance() {
+    public synchronized static LongHengMeterRegistry getInstance() {
         if (Objects.isNull(REGISTRY)) {
-            synchronized (LongHengMeterRegistry.class) {
-                if (Objects.isNull(REGISTRY)) {
-                    REGISTRY = new LongHengMeterRegistry();
-                }
-            }
+            REGISTRY = new LongHengMeterRegistry();
+            Metrics.addRegistry(REGISTRY);
         }
         return REGISTRY;
     }
 
     private void addChangeEvent() {
         // TODO listen enable key
+        DynamicConfigManger.initDuration(LongHongConst.INTERVAL_KEY, this::setInterval);
         // interval key
     }
 
@@ -91,7 +94,7 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
                 scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new LongHengThreadFactory());
             }
             scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(this::publish, longHengStepRegistryConfig.step()
-                    .toMillis(), configValueWithDefault.toMillis(), getBaseTimeUnit());
+                    .toMillis() * 1000, configValueWithDefault.toMillis() * 1000, getBaseTimeUnit());
         }
     }
 
@@ -109,9 +112,13 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
         super.config().meterFilter(meterFilter);
     }
 
+    public void setPublisher(MetricExporter metricExporter){
+        this.metricExporterHandler.setMetricExporter(metricExporter);
+    }
 
     @Override
     protected void publish() {
+        log.info("开始推送...");
         List<Meter> meters = getMeters();
         try {
             metricExporterHandler.exportMeter(meters);
@@ -126,7 +133,22 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
     }
 
     @Override
-    protected TimeUnit getBaseTimeUnit() {
-        return TimeUnit.MILLISECONDS;
+    public TimeUnit getBaseTimeUnit() {
+        return TimeUnit.MICROSECONDS;
+    }
+
+
+    @Override
+    protected Counter newCounter(Meter.Id id) {
+        return new CumulativeCounter(id);
+    }
+
+    @Override
+    protected Timer newTimer(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, PauseDetector pauseDetector) {
+        return super.newTimer(id, distributionStatisticConfig.merge(buildConfig()), pauseDetector);
+    }
+
+    public DistributionStatisticConfig buildConfig() {
+        return DistributionStatisticConfig.builder().percentiles(TimePercentEnum.percentValues()).build();
     }
 }

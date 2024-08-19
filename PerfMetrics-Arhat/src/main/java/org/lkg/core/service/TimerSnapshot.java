@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Description:
+ * Description: for ttl component
  * Author: 李开广
  * Date: 2024/8/12 7:32 PM
  */
@@ -27,8 +27,8 @@ public class TimerSnapshot {
         }
     }
 
-    public static double getValWithPercent(String name, TimePercentEnum timePercentEnum) {
-        ValueAtPercentile[] valueAtPercentiles = TIMER_MAP.get(name);
+    public static double getValWithPercent(Meter.Id id, TimePercentEnum timePercentEnum) {
+        ValueAtPercentile[] valueAtPercentiles = TIMER_MAP.get(id.getName());
         for (ValueAtPercentile valueAtPercentile : valueAtPercentiles) {
             double value = valueAtPercentile.value();
             log.info("time value:{}", value);

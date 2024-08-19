@@ -27,7 +27,6 @@ import java.util.Set;
 
 @Configuration
 @EnableCaching
-
 @ConfigurationProperties(prefix = "feature.cache")
 @ConditionalOnClass(Caffeine.class)
 @ConditionalOnProperty(value = "feature.local-cache-switch", havingValue = "1", matchIfMissing = true)
