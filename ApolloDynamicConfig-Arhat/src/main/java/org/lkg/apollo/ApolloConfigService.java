@@ -5,6 +5,7 @@ import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.MetaDomainConsts;
 import com.ctrip.framework.apollo.core.enums.Env;
+import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.DynamicConfigService;
@@ -30,7 +31,16 @@ public class ApolloConfigService implements DynamicConfigService {
     private final Map<String, HashSet<KeyChangeHandler>> keyChangeListener = new HashMap<>();
 
 
-    public ApolloConfigService() {
+    private static ApolloConfigService INSTANCE;
+
+    public static ApolloConfigService getInstance() {
+        if (Objects.isNull(INSTANCE)) {
+            INSTANCE = new ApolloConfigService();
+        }
+        return INSTANCE;
+    }
+
+    private ApolloConfigService() {
         init();
     }
 
@@ -50,6 +60,7 @@ public class ApolloConfigService implements DynamicConfigService {
         Config config = ConfigService.getConfig(namespace);
         if (ObjectUtil.isEmpty(config)) {
             log.debug("ns:{} config empty", namespace);
+            return;
         }
         namespaceMap.put(namespace, config);
         config.addChangeListener(ref -> {
@@ -57,7 +68,9 @@ public class ApolloConfigService implements DynamicConfigService {
             changedKeys.forEach(key -> {
                 if (keyChangeListener.containsKey(key)) {
                     // dispatch event handler
-                    keyChangeListener.get(key).forEach(val -> val.onChange(ref.getChange(key)));
+                    ConfigChange change = ref.getChange(key);
+                    log.info("config key:{} {}, old value:{}, new val:{}", key, change.getChangeType().name(), change.getOldValue(), change.getNewValue());
+                    keyChangeListener.get(key).forEach(val -> val.onChange(change));
                 }
             });
         });
@@ -87,5 +100,10 @@ public class ApolloConfigService implements DynamicConfigService {
     @Override
     public void addChangeKeyPostHandler(String key, KeyChangeHandler keyChangeHandler) {
         keyChangeListener.computeIfAbsent(key, ref -> new HashSet<>()).add(keyChangeHandler);
+    }
+
+    @Override
+    public Set<KeyChangeHandler> setAllChangeKeySet(String key) {
+        return keyChangeListener.get(key);
     }
 }

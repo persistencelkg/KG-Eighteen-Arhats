@@ -1,5 +1,7 @@
 package org.lkg.core;
 
+import java.util.Set;
+
 /**
  * Description:
  * Author: 李开广
@@ -12,4 +14,6 @@ public interface DynamicConfigService {
     String getEnv();
 
     void addChangeKeyPostHandler(String key, KeyChangeHandler keyChangeHandler);
+
+    Set<KeyChangeHandler> setAllChangeKeySet(String key);
 }

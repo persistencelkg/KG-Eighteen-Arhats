@@ -48,6 +48,9 @@ public class JacksonUtil {
     }
 
     public static <T> T readValue(String json, Class<T> T) {
+        if (ObjectUtil.isEmpty(json)) {
+            return null;
+        }
         try {
             return mapper.readValue(json, T);
         } catch (IOException e) {
@@ -62,6 +65,9 @@ public class JacksonUtil {
     }
 
     public static <T> T readObj(String json, TypeReference<T> typeReference) {
+        if (ObjectUtil.isEmpty(json)) {
+            return null;
+        }
         try {
             return mapper.readValue(json, typeReference);
         } catch (IOException e) {
@@ -75,6 +81,9 @@ public class JacksonUtil {
     }
 
     public static <K,V> Map<K, V> readMap(String json, Class<K> keyClass, Class<V> valueClass) {
+        if (ObjectUtil.isEmpty(json)) {
+            return null;
+        }
         try {
             return mapper.readValue(json, mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass));
         } catch (IOException e) {
@@ -84,6 +93,9 @@ public class JacksonUtil {
     }
 
     public static <K,V> Map<K, V> readMap(String json, Class<K> keyClass, TypeReference<V> valueClass) {
+        if (ObjectUtil.isEmpty(json)) {
+            return null;
+        }
         try {
             return mapper.readValue(json, mapper.getTypeFactory().constructMapType(Map.class,
                     mapper.getTypeFactory().constructType(keyClass),
@@ -106,6 +118,10 @@ public class JacksonUtil {
     }
 
     public static <T> Collection<T> readCollection(String str, Class<T> tClass) {
+        if (ObjectUtil.isEmpty(str)) {
+            return null;
+        }
+
         try {
             return mapper.readValue(str, mapper.getTypeFactory().constructCollectionType(Collection.class, tClass));
         } catch (IOException e) {

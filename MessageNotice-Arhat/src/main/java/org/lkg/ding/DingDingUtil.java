@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -48,8 +49,7 @@ public class DingDingUtil {
         map.put("appSecret", appSecret);
         InternalResponse response = SimpleRequestUtil.request(InternalRequest.createPostRequest(REFRESH_TOKEN_URL, InternalRequest.BodyEnum.RAW, map));
         System.out.println(response);
-        HashMap<String, Object> result = JacksonUtil.readObj(response.getResult(), new TypeReference<HashMap<String, Object>>() {
-        });
+        Map<String, Object> result = JacksonUtil.readMap(response.getResult());
         Long aLong = (Long) result.get("expireIn");
         EXPIRED_IN = System.currentTimeMillis() + aLong;
         ACCESS_TOKEN = result.get("accessToken").toString();

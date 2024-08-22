@@ -10,6 +10,4 @@ import com.ctrip.framework.apollo.model.ConfigChange;
 public interface KeyChangeHandler {
 
     void onChange(ConfigChange keyChange);
-
-    void onChange();
 }
