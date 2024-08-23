@@ -6,6 +6,7 @@ import org.lkg.enums.StringEnum;
 import org.lkg.simple.JacksonUtil;
 import org.lkg.simple.ObjectUtil;
 
+import java.lang.reflect.ParameterizedType;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
@@ -46,17 +47,22 @@ public class DynamicConfigManger {
         return getConfigValue("spring.application.name", getConfigValue("app.id"));
     }
 
-    public static <T> T getTargetClassConfig(Class<T> classz) {
-        DynamicKeyConfig annotation = classz.getAnnotation(DynamicKeyConfig.class);
+    public static <T> T getAnnotationConfig(Class<T> clz) {
+        DynamicKeyConfig annotation = clz.getAnnotation(DynamicKeyConfig.class);
         if (ObjectUtil.isEmpty(annotation)) {
             return null;
         }
         String configValue = getConfigValue(annotation.key());
-        return JacksonUtil.readValue(configValue, classz);
+        return JacksonUtil.readValue(configValue, clz);
     }
 
     public static String getConfigValue(String key) {
         return getConfigValue(key, null);
+    }
+
+    public static Duration getDuration(String key, Duration defVal) {
+        String configValue = getConfigValue(key);
+        return Optional.ofNullable(AdvanceFunctions.STR_TO_DURATION.apply(configValue)).orElse(defVal);
     }
 
     public static String getConfigValue(String key, String def) {
@@ -130,12 +136,15 @@ public class DynamicConfigManger {
         return JacksonUtil.readCollection(stringJoiner.toString(), clz);
     }
 
-    public static Duration initDuration(String key, Consumer<Duration> durationConsumer) {
-        return initAndRegistChangeEvent(key, ref -> Duration.parse(getConfigValue(key, "PT15S")), durationConsumer);
+    public static Duration initDuration(String key, Duration defaultVal, Consumer<Duration> durationConsumer) {
+        return initAndRegistChangeEvent(key, ref -> getDuration(key, defaultVal), durationConsumer);
     }
 
     public static <T> T getConfigValueWithDefault(String key, Supplier<T> supplier) {
-        return supplier.get();
+        String configValue = getConfigValue(key, String.valueOf(supplier.get()));
+        ParameterizedType paramClass = ((ParameterizedType) supplier.getClass().getGenericInterfaces()[0]);
+        Class<T> componentType = (Class<T>) paramClass.getActualTypeArguments()[0].getClass();
+        return JacksonUtil.readValue(configValue, componentType);
     }
 
 

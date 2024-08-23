@@ -1,5 +1,6 @@
 package org.lkg.core.spring;
 
+import com.ctrip.framework.apollo.util.ConfigUtil;
 import io.micrometer.core.instrument.config.MeterFilter;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.client.KafkaProducerClient;
@@ -11,10 +12,12 @@ import org.lkg.core.service.NamespaceFilter;
 import org.lkg.core.service.impl.KafkaMetricExporter;
 import org.lkg.core.service.impl.SyncMetricExporter;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Description:

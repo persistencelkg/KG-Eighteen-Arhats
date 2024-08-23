@@ -33,14 +33,14 @@ public class ApolloConfigService implements DynamicConfigService {
 
     private static ApolloConfigService INSTANCE;
 
-    public static ApolloConfigService getInstance() {
+    public synchronized static ApolloConfigService getInstance() {
         if (Objects.isNull(INSTANCE)) {
             INSTANCE = new ApolloConfigService();
         }
         return INSTANCE;
     }
 
-    private ApolloConfigService() {
+    public ApolloConfigService() {
         init();
     }
 

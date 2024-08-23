@@ -1,5 +1,6 @@
 package org.lkg.core.init;
 
+import com.sun.javafx.binding.LongConstant;
 import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.cumulative.CumulativeCounter;
@@ -21,10 +22,7 @@ import org.lkg.metric.threadpool.ExecutorEventTracker;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToLongFunction;
 
@@ -36,7 +34,7 @@ import java.util.function.ToLongFunction;
 @Slf4j
 public class LongHengMeterRegistry extends StepMeterRegistry {
 
-    private static LongHengMeterRegistry REGISTRY = getInstance();
+    public static LongHengMeterRegistry REGISTRY;
 
     private final LongHengStepRegistryConfig longHengStepRegistryConfig;
     private MetricExporterHandler metricExporterHandler;
@@ -63,8 +61,6 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
         // 添加默认过滤
 //        addMeterFilter(MeterFilter.deny(id -> id.getName().endsWith(".percentile") && !ObjectUtils.isEmpty(id.getTag("phi"))));
         // 初始化采集间隔 && 提供动态刷新能力
-        initCollectInterval();
-        // add change event;
         addChangeEvent();
     }
 
@@ -77,25 +73,49 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
     }
 
     private void addChangeEvent() {
-        // TODO listen enable key
-        DynamicConfigManger.initDuration(LongHongConst.INTERVAL_KEY, this::setInterval);
+        // enable key
+        DynamicConfigManger.initAndRegistChangeEvent(LongHongConst.ENABLE_KEY, DynamicConfigManger::getBoolean, ref -> {
+            if (ref && stop) {
+               this.start(new LongHengThreadFactory());
+               log.info("restart metric long heng");
+               this.stop = false;
+            } else {
+                if (Objects.isNull(metricExporterHandler)) {
+                    return;
+                }
+                this.publish();
+                this.stop();
+                for (Meter meter : this.getMeters()) {
+                    meter.close();
+                }
+                this.stop = true;
+                log.info("stop metric long heng");
+            }
+        });
         // interval key
-    }
-
-    private void initCollectInterval() {
-        Duration configValueWithDefault = DynamicConfigManger.getConfigValueWithDefault(LongHongConst.INTERVAL_KEY, () -> LongHongConst.DEFAULT_INTERVAL);
-        log.info(">> long-heng collect interval:{}", configValueWithDefault);
+        Duration duration = DynamicConfigManger.initDuration(LongHongConst.INTERVAL_KEY, LongHongConst.DEFAULT_INTERVAL,this::setInterval);
+        log.info(">> long-heng collect interval:{}", duration);
     }
 
     private void setInterval(Duration configValueWithDefault) {
+        this.interval = configValueWithDefault;
+        start(new LongHengThreadFactory());
+    }
+
+    @Override
+    public void start(ThreadFactory threadFactory) {
         stop();
-        if (longHengStepRegistryConfig.enabled()) {
+        if (longHengStepRegistryConfig.enabled() && Objects.nonNull(interval)) {
             if (Objects.isNull(scheduledExecutorService)) {
                 scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new LongHengThreadFactory());
             }
             scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(this::publish, longHengStepRegistryConfig.step()
-                    .toMillis() * 1000, configValueWithDefault.toMillis() * 1000, getBaseTimeUnit());
+                    .toMillis() * 1000, interval.toMillis() * 1000, getBaseTimeUnit());
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Duration.parse("PT100s"));
     }
 
     @Override
@@ -112,7 +132,7 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
         super.config().meterFilter(meterFilter);
     }
 
-    public void setPublisher(MetricExporter metricExporter){
+    public void setPublisher(MetricExporter metricExporter) {
         this.metricExporterHandler.setMetricExporter(metricExporter);
     }
 

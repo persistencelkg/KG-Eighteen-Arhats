@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
  * Date: 2024/8/15 11:06 AM
  */
 public class LongHengBeanPostProcessor implements BeanPostProcessor {
-    private static final LongHengMeterRegistry REGISTRY = LongHengMeterRegistry.getInstance();
-    
+
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        LongHengMeterRegistry REGISTRY = LongHengMeterRegistry.getInstance();
         if (bean instanceof MetricExporter) {
             REGISTRY.setPublisher(((MetricExporter) bean));
         }

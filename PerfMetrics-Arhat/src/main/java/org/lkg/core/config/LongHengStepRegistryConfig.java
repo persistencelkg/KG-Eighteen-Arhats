@@ -6,7 +6,7 @@ import org.lkg.core.DynamicConfigManger;
 import java.time.Duration;
 
 /**
- * Description:
+ * Description: 按规范定义配置
  * Author: 李开广
  * Date: 2024/8/8 3:08 PM
  */
@@ -18,12 +18,6 @@ public class LongHengStepRegistryConfig implements StepRegistryConfig {
 
     @Override
     public String get(String key) {
-        // TODO configManger#getCofigValue
         return DynamicConfigManger.getConfigValue(key);
-    }
-
-    @Override
-    public Duration step() {
-        return Duration.ofSeconds(3);
     }
 }
