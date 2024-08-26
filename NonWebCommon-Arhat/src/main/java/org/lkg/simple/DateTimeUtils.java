@@ -59,9 +59,16 @@ public class DateTimeUtils {
         }
     }
 
+    public static LocalDate strCoverToDate(String timeStr) {
+        return strCovertToDate(timeStr, YYYY_MM_DD);
+    }
 
     public static LocalDate strCovertToDate(String timeStr, String pattern) {
         return strConvertToTime(timeStr, pattern, LocalDate.class);
+    }
+
+    public static LocalTime strCovertToTime(String timeStr) {
+        return strConvertToTime(timeStr, HH_MM_SS, LocalTime.class);
     }
 
     public static LocalTime strCovertToTime(String timeStr, String pattern) {

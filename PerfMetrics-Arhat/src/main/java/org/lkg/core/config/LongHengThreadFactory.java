@@ -8,7 +8,7 @@ public class LongHengThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable r) {
-        String prefix = "long-heng-publish-";
+        String prefix = "lh-publish-";
         Thread thread = new Thread(r);
         int seq = index.getAndIncrement();
         thread.setName(prefix + seq);

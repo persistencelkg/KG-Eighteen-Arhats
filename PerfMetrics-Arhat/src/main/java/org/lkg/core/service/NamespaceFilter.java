@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class NamespaceFilter {
 
-    private static Set<String> DISABLE_LIST = DynamicConfigManger.initAndRegistChangeEvent(LongHongConst.DISABLE_METER_KEY, DynamicConfigManger::toSet, NamespaceFilter::init);
+    private static Set<String> DISABLE_LIST = DynamicConfigManger.initAndRegistChangeEvent(LongHongConst.DISABLE_METER_KEY, ref -> DynamicConfigManger.toSet(ref, String.class), NamespaceFilter::init);
 
     public static boolean disable(String nameSpace) {
         return DISABLE_LIST.contains(nameSpace);

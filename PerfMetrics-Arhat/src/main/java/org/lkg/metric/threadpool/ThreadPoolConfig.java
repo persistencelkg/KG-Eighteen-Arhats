@@ -1,5 +1,6 @@
 package org.lkg.metric.threadpool;
 
+import lombok.extern.slf4j.Slf4j;
 import org.lkg.simple.ObjectUtil;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
@@ -13,10 +14,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 自定义线程池
+ *
  * @author likaiguang
  * @date 2023/2/12 8:48 下午
  */
 @Configuration
+@Slf4j
 public class ThreadPoolConfig {
 
 
@@ -32,6 +35,8 @@ public class ThreadPoolConfig {
                 try {
                     MDC.setContextMap(copyOfContextMap);
                     runnable.run();
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
                 } finally {
                     MDC.clear();
                 }
@@ -42,13 +47,13 @@ public class ThreadPoolConfig {
 
     interface SelfExecutorService {
         /**
-         *
          * @return @link SelfExecutorService
          */
         ExecutorService create(String prefix, int queueSize, RejectedExecutionHandler rejectedExecutionHandler);
 
         /**
          * 创建默认调用者的线程
+         *
          * @param prefix
          * @param queueSize
          * @return

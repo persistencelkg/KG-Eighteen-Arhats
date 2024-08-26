@@ -5,7 +5,7 @@ package org.lkg.function;
  * Author: 李开广
  * Date: 2024/5/15 1:55 PM
  */
-public interface ThrowableFunction<In, Out, E extends Throwable> extends StopAbleConsumer{
+public interface ThrowableFunction<In, Out, E extends Throwable>{
 
     Out apply(In input) throws E;
 }

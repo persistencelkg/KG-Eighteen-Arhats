@@ -1,7 +1,6 @@
 package org.lkg.core.spring;
 
 import io.micrometer.core.instrument.config.MeterFilter;
-import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.client.KafkaProducerClient;
 import org.lkg.core.config.EnableLongHengMetric;
 import org.lkg.core.config.LongHongConst;
@@ -12,7 +11,6 @@ import org.lkg.core.service.impl.KafkaMetricExporter;
 import org.lkg.core.service.impl.SyncMetricExporter;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,7 +40,7 @@ public class LongHengMetricAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(MetricExporter.class)
     public MetricExporter metricExporter() {
-        return new SyncMetricExporter();
+        return new KafkaMetricExporter();
     }
 
 

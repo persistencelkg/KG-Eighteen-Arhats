@@ -7,12 +7,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
+import org.lkg.request.InternalRequest;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * Description：
@@ -49,6 +48,9 @@ public class JacksonUtil {
     }
 
     public static <T> T readValue(String json, Class<T> T) {
+        if (ObjectUtil.isEmpty(json)) {
+            return null;
+        }
         try {
             return mapper.readValue(json, T);
         } catch (IOException e) {
@@ -58,15 +60,14 @@ public class JacksonUtil {
     }
 
     public static <T> List<T> readList(String json, Class<T> T) {
-        try {
-            return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, T));
-        } catch (IOException e) {
-            log.error("readList convert json to object list exception, {}", e.getMessage(), e);
-        }
-        return null;
+        Collection<T> ts = readCollection(json, T);
+        return Objects.isNull(ts) ? null : new ArrayList<>(ts);
     }
 
     public static <T> T readObj(String json, TypeReference<T> typeReference) {
+        if (ObjectUtil.isEmpty(json)) {
+            return null;
+        }
         try {
             return mapper.readValue(json, typeReference);
         } catch (IOException e) {
@@ -76,8 +77,33 @@ public class JacksonUtil {
     }
 
     public static Map<String, Object> readMap(String json) {
-        return readObj(json, new TypeReference<Map<String, Object>>() {
-        });
+        return readMap(json, String.class, Object.class);
+    }
+
+    public static <K,V> Map<K, V> readMap(String json, Class<K> keyClass, Class<V> valueClass) {
+        if (ObjectUtil.isEmpty(json)) {
+            return null;
+        }
+        try {
+            return mapper.readValue(json, mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass));
+        } catch (IOException e) {
+            log.error("readCollection convert json to object list exception, {}", e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public static <K,V> Map<K, V> readMap(String json, Class<K> keyClass, TypeReference<V> valueClass) {
+        if (ObjectUtil.isEmpty(json)) {
+            return null;
+        }
+        try {
+            return mapper.readValue(json, mapper.getTypeFactory().constructMapType(Map.class,
+                    mapper.getTypeFactory().constructType(keyClass),
+                    mapper.getTypeFactory().constructType(valueClass)));
+        } catch (IOException e) {
+            log.error("readCollection convert json to object list exception, {}", e.getMessage(), e);
+        }
+        return null;
     }
 
 
@@ -85,15 +111,48 @@ public class JacksonUtil {
         String s = writeValue(obj);
         Map<String, Object> map = new HashMap<>();
         if (Objects.nonNull(s)) {
-            return readObj(s, new TypeReference<HashMap<String, Object>>() {});
+            return readObj(s, new TypeReference<HashMap<String, Object>>() {
+            });
         }
         return map;
     }
 
+    public static <T> Collection<T> readCollection(String str, Class<T> tClass) {
+        if (ObjectUtil.isEmpty(str)) {
+            return null;
+        }
 
-//    public static void main(String[] args) {
-//        String s = writeValue(new BeanUtil());
-//        System.out.println(s);
-//    }
+        try {
+            return mapper.readValue(str, mapper.getTypeFactory().constructCollectionType(Collection.class, tClass));
+        } catch (IOException e) {
+            log.error("readCollection convert json to object list exception, {}", e.getMessage(), e);
+        }
+        return null;
+    }
+
+
+    public static void main(String[] args) {
+        List<InternalRequest> list = new ArrayList<>();
+        Collection<String> strings = readCollection("[23,34]", String.class);
+        System.out.println(strings);
+
+        InternalRequest internalRequest = new InternalRequest();
+        internalRequest.setUrl("ste");
+        internalRequest.setMethod("test");
+        Map<Integer, List<InternalRequest>> map = new HashMap<>();
+        list.add(internalRequest);
+        map.put(1, list);
+        internalRequest.setUrl("hhhhhhhh");
+        list.add(internalRequest);
+        map.put(222, list);
+        String s = writeValue(map);
+
+//        Map<Integer, String> integerInternalRequestMap = readMap(s, Integer.class, String.class);
+        Map<Integer, List<InternalRequest>> map2= readMap(s, Integer.class, new TypeReference<List<InternalRequest>>() {});
+        Map<String, Object> map3= readMap(s);
+//        System.out.println(integerInternalRequestMap.values());
+        System.out.println(map2.values());
+        System.out.println(map3);
+    }
 
 }

@@ -47,6 +47,6 @@ public class LongHongAlarmConfig {
     }
 
     public static LongHongAlarmConfig getInstance() {
-        return DynamicConfigManger.getTargetClassConfig(LongHongAlarmConfig.class);
+        return DynamicConfigManger.getAnnotationConfig(LongHongAlarmConfig.class);
     }
 }
