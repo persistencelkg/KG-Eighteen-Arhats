@@ -1,6 +1,5 @@
 package org.lkg.core;
 
-import com.ctrip.framework.apollo.util.function.Functions;
 import org.lkg.apollo.ApolloConfigService;
 import org.lkg.enums.StringEnum;
 import org.lkg.simple.JacksonUtil;
@@ -20,16 +19,16 @@ import java.util.function.Supplier;
  */
 public class DynamicConfigManger {
 
-    private static final ApolloConfigService apolloConfigService = ApolloConfigService.getInstance();
+    // 不直接初始化的原因是，使用了ApplicationContextInitializer 注入configService 但是如果此时初始化了ApolloConfigService
+    // 会在容器之初加载apollo核心配置，但是这个时候核心配置都还没有准备好，获取的一定是null，而走到默认值，甚至app-id 都获取不到
+    private static final ApolloConfigService apolloConfigService = null;
 
     private static final Map<String, Object> LOCAL_CACHE = new HashMap<>();
     private static final List<Function<String, String>> FILTERS = new ArrayList<>();
-
-
     // 未来如果要支持其他配置中心的动态key change, 例如nacos，但是需要注意nacos需要单独一个模块切记不能将 可以通过下面方式，目前apollo挺好的
-//    private static final Set<DynamicConfigService> list = new HashSet<>(4);
-    public static void registerConfigService(DynamicConfigService configService) {
-//        list.add(configService);
+    private static final Set<KeyConfigService> KEY_CONFIG_SERVICE_SET = new HashSet<>(4);
+    public static void registerConfigService(KeyConfigService configService) {
+        KEY_CONFIG_SERVICE_SET.add(configService);
     }
 
     public static void addValueFilter(Function<String, String> func) {
@@ -39,7 +38,7 @@ public class DynamicConfigManger {
 
     public static String getEnv() {
         // spring.profile.active -> env
-        return apolloConfigService.getEnv();
+        return ApolloConfigService.getInstance().getEnv();
     }
 
     public static String getServerName() {
@@ -66,19 +65,24 @@ public class DynamicConfigManger {
     }
 
     public static String getConfigValue(String key, String def) {
-        String strValue = apolloConfigService.getStrValue(key, def);
-        // 解决值本身是占位符的问题
-        if (ObjectUtil.isNotEmpty(strValue)) {
-            for (Function<String, String> filter : FILTERS) {
-                strValue = filter.apply(strValue);
+        String strValue = null;
+        for (KeyConfigService keyConfigService : KEY_CONFIG_SERVICE_SET) {
+            strValue = keyConfigService.getStrValue(key, def);
+            // 解决值本身是占位符的问题
+            if (ObjectUtil.isNotEmpty(strValue)) {
+                for (Function<String, String> filter : FILTERS) {
+                    strValue = filter.apply(strValue);
+                }
+                break;
             }
-        }
+        };
+
         return Optional.ofNullable(strValue).orElse(def);
     }
 
     public static Integer getInt(String key, Integer defaultVal) {
         String configValue = getConfigValue(key);
-        return Optional.ofNullable(Functions.TO_INT_FUNCTION.apply(configValue)).orElse(defaultVal);
+        return Optional.ofNullable(AdvanceFunctions.TO_INT_FUNCTION.apply(configValue)).orElse(defaultVal);
     }
 
     public static Integer getInt(String key) {
@@ -88,7 +92,7 @@ public class DynamicConfigManger {
 
     public static Long getLong(String key, Long def) {
         String configValue = getConfigValue(key);
-        return Optional.ofNullable(Functions.TO_LONG_FUNCTION.apply(configValue)).orElse(def);
+        return Optional.ofNullable(AdvanceFunctions.TO_LONG_FUNCTION.apply(configValue)).orElse(def);
     }
 
     public static Boolean getBoolean(String key) {
@@ -97,7 +101,7 @@ public class DynamicConfigManger {
 
     public static Boolean getBoolean(String key, boolean def) {
         String configValue = getConfigValue(key);
-        return Optional.ofNullable(Functions.TO_BOOLEAN_FUNCTION.apply(configValue)).orElse(def);
+        return Optional.ofNullable(AdvanceFunctions.TO_BOOLEAN_FUNCTION.apply(configValue)).orElse(def);
     }
 
     public static Long getLong(String key) {
@@ -157,7 +161,7 @@ public class DynamicConfigManger {
     }
 
     private static void addKeyChangeHandler(String key, KeyChangeHandler changeHandler) {
-        apolloConfigService.addChangeKeyPostHandler(key, changeHandler);
+        ApolloConfigService.getInstance().addChangeKeyPostHandler(key, changeHandler);
     }
 
     public static void addKeyChangeHandler(String key, Supplier<?> supplier) {

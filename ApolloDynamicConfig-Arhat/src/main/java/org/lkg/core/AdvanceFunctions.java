@@ -1,24 +1,70 @@
 package org.lkg.core;
 
-import com.ctrip.framework.apollo.util.function.Functions;
+import com.google.common.base.Function;
 import org.lkg.function.ThrowableFunction;
 import org.lkg.simple.DateTimeUtils;
+import org.lkg.simple.ObjectUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.*;
-import java.util.function.Function;
 
 /**
  * Description:
  * Author: 李开广
  * Date: 2024/8/23 1:38 PM
  */
-public interface AdvanceFunctions extends Functions {
+public interface AdvanceFunctions{
+
+    Logger log = LoggerFactory.getLogger(AdvanceFunctions.class);
+
+    Function<String, Integer> TO_INT_FUNCTION = input -> {
+        if (ObjectUtil.isEmpty(input)) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(input);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+
+    };
+
+    Function<String, Long> TO_LONG_FUNCTION = input -> {
+        if (ObjectUtil.isEmpty(input)) {
+            return null;
+        }
+        try {
+            return Long.parseLong(input);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+
+    };
+
+    Function<String, Boolean> TO_BOOLEAN_FUNCTION = input -> {
+        if (ObjectUtil.isEmpty(input)) {
+            return null;
+        }
+        try {
+            return Boolean.parseBoolean(input);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+
+    };
 
     ThrowableFunction<String, Duration, RuntimeException> STR_TO_DURATION = ref -> {
+        if (ObjectUtil.isEmpty(ref)) {
+            return null;
+        }
         try {
             return Duration.parse(ref);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             return null;
         }
     };

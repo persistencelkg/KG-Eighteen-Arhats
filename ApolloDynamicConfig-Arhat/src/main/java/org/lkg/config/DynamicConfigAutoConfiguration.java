@@ -33,37 +33,13 @@ import java.util.Arrays;
 @Configuration
 @ConditionalOnClass(Config.class)
 @ConditionalOnProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED)
-public class DynamicConfigAutoConfiguration implements SmartInitializingSingleton {
-
-    private final Environment environment;
-
-    public DynamicConfigAutoConfiguration(Environment environment) {
-        this.environment = environment;
-    }
+public class DynamicConfigAutoConfiguration {
 
     @Bean
     public BeanPostProcessor dynamicConfigBeanPostProcessor() {
         return new DynamicConfigBeanPostProcessor();
     }
 
-//    @Bean
-    public DynamicConfigService dynamicConfigService(Environment environment) {
-        ApolloConfigService apolloConfigService = ApolloConfigService.getInstance();
-        String property = environment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_NAMESPACES, ConfigConsts.NAMESPACE_APPLICATION);
-        Arrays.stream(property.split(StringEnum.COMMA)).forEach(apolloConfigService::registerNameSpace);
-        return apolloConfigService;
-    }
-
-    @Override
-    public void afterSingletonsInstantiated() {
-        DynamicConfigManger.addValueFilter(s -> {
-            try {
-                return environment.resolvePlaceholders(s);
-            } catch (Exception e) {
-                return s;
-            }
-        });
-    }
 
 
 }

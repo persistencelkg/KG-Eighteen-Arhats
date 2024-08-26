@@ -25,18 +25,15 @@ import java.util.Objects;
 @Slf4j
 public class KafkaMetricExporter extends AbstractMetricExporter {
 
-    // TODO client
-    //   Timer register = Timer.builder("").publishPercentiles().register(new LongHengMeterRegistry());
 
     @Override
     protected void writeMsg(List<MeterBo> list) {
         KafkaProducerClient.getInstance().sendMsg(JacksonUtil.writeValue(list), (meta, exception) -> {
             if (Objects.isNull(exception)) {
-
+                log.info("send kafka msg finish:{}", list);
             } else {
                 log.error("send kafka msg error", exception);
             }
         });
-
     }
 }

@@ -17,6 +17,7 @@ import org.lkg.core.config.LongHengThreadFactory;
 import org.lkg.core.config.LongHongConst;
 import org.lkg.core.service.MetricExporter;
 import org.lkg.core.service.MetricExporterHandler;
+import org.lkg.enums.TrueFalseEnum;
 import org.lkg.metric.threadpool.ExecutorEventTracker;
 
 import java.time.Duration;
@@ -74,11 +75,11 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
 
     private void addChangeEvent() {
         // enable key
-        DynamicConfigManger.initAndRegistChangeEvent(LongHongConst.ENABLE_KEY, DynamicConfigManger::getBoolean, ref -> {
-            if (ref && stop) {
-               this.start(new LongHengThreadFactory());
-               log.info("restart metric long heng");
-               this.stop = false;
+        DynamicConfigManger.initAndRegistChangeEvent(LongHongConst.ENABLE_KEY, ref -> DynamicConfigManger.getInt(ref, 1), ref -> {
+            if (TrueFalseEnum.isTrue(ref) && stop) {
+                this.start(new LongHengThreadFactory());
+                log.info("restart metric long heng");
+                this.stop = false;
             } else {
                 if (Objects.isNull(metricExporterHandler)) {
                     return;
@@ -93,7 +94,7 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
             }
         });
         // interval key
-        Duration duration = DynamicConfigManger.initDuration(LongHongConst.INTERVAL_KEY, LongHongConst.DEFAULT_INTERVAL,this::setInterval);
+        Duration duration = DynamicConfigManger.initDuration(LongHongConst.INTERVAL_KEY, LongHongConst.DEFAULT_INTERVAL, this::setInterval);
         log.info(">> long-heng collect interval:{}", duration);
     }
 

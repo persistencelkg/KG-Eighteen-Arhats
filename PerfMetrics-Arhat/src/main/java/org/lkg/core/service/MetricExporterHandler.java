@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.distribution.HistogramSupport;
 import io.micrometer.core.instrument.distribution.ValueAtPercentile;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.bo.MeterBo;
 import org.lkg.core.bo.TimePercentEnum;
 import org.lkg.core.init.LongHengMeterRegistry;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  * Author: 李开广
  * Date: 2024/8/9 4:36 PM
  */
+@Slf4j
 public class MetricExporterHandler {
 
     private MetricExporter metricExporter;
@@ -41,8 +43,13 @@ public class MetricExporterHandler {
         // 清理
         list.forEach(Metrics.globalRegistry::remove);
         // async publish
+//        metricExporter.publishMeter(idMeterBoHashMap);
         MetricCoreExecutor.execute(() -> {
-            metricExporter.publishMeter(idMeterBoHashMap);
+            try {
+                metricExporter.publishMeter(idMeterBoHashMap);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
         });
     }
 

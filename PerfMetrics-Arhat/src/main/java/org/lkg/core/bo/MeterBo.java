@@ -28,6 +28,8 @@ import static org.lkg.core.config.LongHongConst.TagConst.INTERNAL_TAG;
 @AllArgsConstructor
 public class MeterBo {
 
+    private String flag = "longheng";
+
     private String namespace;
 
     // 监控周期内总数
