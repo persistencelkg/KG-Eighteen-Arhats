@@ -50,13 +50,14 @@ public class ApolloConfigBeanFactoryPostProcessorInitializer implements Applicat
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        ApolloConfigService apolloConfigService = ApolloConfigService.getInstance();
-        String property = environment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_NAMESPACES, ConfigConsts.NAMESPACE_APPLICATION);
-        Arrays.stream(property.split(StringEnum.COMMA)).forEach(apolloConfigService::registerNameSpace);
         // 让配置中心早于 LongHengMeterRegistry的初始化，以便于能在一开始就能拿到初始化好的配置
         // 1. 避免long heng 相关的初始化配置获取不到 而一开始就走默认值
         // 2. 避免初始化依赖问题
-        beanFactory.registerSingleton("apolloConfigService", apolloConfigService);
+        ApolloConfigService apolloConfigService = ApolloConfigService.getInstance();
+        String property = environment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_NAMESPACES, ConfigConsts.NAMESPACE_APPLICATION);
+        Arrays.stream(property.split(StringEnum.COMMA)).forEach(apolloConfigService::registerNameSpace);
+
+//        DynamicConfigManger.registerConfigService(apolloConfigService); 这个可以不要，因为initialize 已经把所有可能的配置加入了
         // 初始化应用底层的环境信息
         initServerInfo();
     }

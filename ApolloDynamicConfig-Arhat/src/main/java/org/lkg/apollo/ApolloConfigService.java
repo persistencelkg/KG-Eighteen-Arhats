@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.DynamicConfigService;
 import org.lkg.core.KeyChangeHandler;
 import org.lkg.simple.ObjectUtil;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
 
 import java.util.*;
 
@@ -90,11 +89,6 @@ public class ApolloConfigService implements DynamicConfigService {
             }
         }
         return null;
-    }
-
-    @Override
-    public String getEnv() {
-        return getStrValue(ConfigFileApplicationListener.ACTIVE_PROFILES_PROPERTY, getStrValue("env", env));
     }
 
     @Override

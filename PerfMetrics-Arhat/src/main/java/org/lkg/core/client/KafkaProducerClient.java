@@ -6,6 +6,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.config.LongHongConst;
 import org.lkg.simple.JacksonUtil;
+import org.lkg.simple.ServerInfo;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -50,7 +51,7 @@ public class KafkaProducerClient {
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
             properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
             KafkaProducer<String, String> old = producer;
-            this.topic = properties.get("topic").toString() + "_" + DynamicConfigManger.getEnv();
+            this.topic = properties.get("topic").toString() ;   //+ "_" + ServerInfo.env();
             log.info("init kafka producer,configKey={},topic={},config={}", LongHongConst.KAFKA_CONFIG_KEY, topic, config);
             this.producer = new KafkaProducer<>(properties);
             log.info("init kafka producer success");
