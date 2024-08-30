@@ -1,11 +1,14 @@
 package org.lkg.test;
 import io.micrometer.core.instrument.Metrics;
 import org.apache.kafka.common.Metric;
+import org.lkg.bo.QcHolidayDict;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -37,4 +40,15 @@ public class TestV2 {
 
         return  "";
     }
+
+
+    @Resource private TestDao testDao;
+
+    @GetMapping("/test-mybatis/{id}")
+    public String testMybatis(@PathVariable("id") int id) {
+        List<QcHolidayDict> qcHolidayDicts = testDao.listData(id);
+        System.out.println(qcHolidayDicts);
+        return qcHolidayDicts.toString();
+    }
 }
+

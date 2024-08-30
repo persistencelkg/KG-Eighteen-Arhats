@@ -43,7 +43,6 @@ public class MetricExporterHandler {
         // 清理
         list.forEach(Metrics.globalRegistry::remove);
         // async publish
-//        metricExporter.publishMeter(idMeterBoHashMap);
         MetricCoreExecutor.execute(() -> {
             try {
                 metricExporter.publishMeter(idMeterBoHashMap);
@@ -93,7 +92,7 @@ public class MetricExporterHandler {
 
     private void populateTimer(HistogramSupport val, MeterBo meterBo) {
         HistogramSnapshot histogramSnapshot = val.takeSnapshot();
-        TimeUnit timeUnit = TimeUnit.MILLISECONDS;
+        TimeUnit timeUnit = TimeUnit.MICROSECONDS;
         if (val instanceof Timer) {
             Timer timer = (Timer) val;
             timeUnit = timer.baseTimeUnit();

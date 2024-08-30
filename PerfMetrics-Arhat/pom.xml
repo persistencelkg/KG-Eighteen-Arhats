@@ -19,6 +19,9 @@
         <metric.version>1.1.0</metric.version>
         <jsqlparser.version>4.6</jsqlparser.version>
         <apache-jexl.version>3.2.1</apache-jexl.version>
+
+        <mybaits-plus.version>3.2.0</mybaits-plus.version>
+        <mybaits.version>2.1.3</mybaits.version>
     </properties>
 
     <dependencies>
@@ -60,7 +63,21 @@
             <artifactId>NonWebCommon-Arhat</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybaits-plus.version}</version>
+            <optional>true</optional>
+            <scope>provided</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-autoconfigure</artifactId>
+            <version>${mybaits.version}</version>
+            <optional>true</optional>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>io.github.persistencelkg</groupId>
@@ -72,5 +89,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
+
     </dependencies>
 </project>
