@@ -10,6 +10,7 @@ import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.session.ResultHandler;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.enums.TrueFalseEnum;
 import org.lkg.metric.sql.SqlEventTracker;
@@ -37,7 +38,9 @@ import java.sql.Statement;
 
  * */
 @Intercepts({
-        @Signature(type = StatementHandler.class, method = "parameterize", args = {Statement.class}),
+        @Signature(type = StatementHandler.class, method = "query", args = {Statement.class, ResultHandler.class}),
+        @Signature(type = StatementHandler.class, method = "batch", args = {Statement.class}),
+        @Signature(type = StatementHandler.class, method = "update", args = {Statement.class}),
 })
 @Slf4j
 public class MybatisStatementInterceptor implements Interceptor {
