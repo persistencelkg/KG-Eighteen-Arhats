@@ -1,5 +1,7 @@
 package org.lkg.core.meter;
 
+import io.micrometer.core.instrument.distribution.HistogramSnapshot;
+
 /**
  * Description:
  * Author: 李开广
@@ -34,4 +36,8 @@ public interface LongHengSnapShot {
     default double getPercentile(double percent){
         return 0;
     }
+
+
+    HistogramSnapshot getInternalSnapshot();
+
 }

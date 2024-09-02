@@ -30,7 +30,6 @@ public class MybatisMonitorAutoConfiguration {
 
         return ref -> {
             ref.setCacheEnabled(false);
-//            ref.addInterceptor(mybatisInterceptor);
         };
     }
 

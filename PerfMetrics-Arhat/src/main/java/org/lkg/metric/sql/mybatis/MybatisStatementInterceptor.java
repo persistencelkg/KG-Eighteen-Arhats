@@ -1,18 +1,21 @@
 package org.lkg.metric.sql.mybatis;
 
-import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.executor.SimpleExecutor;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.binding.MapperMethod;
+import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
-import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.plugin.*;
-import org.apache.ibatis.session.ResultHandler;
-import org.apache.ibatis.session.RowBounds;
+import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.plugin.Intercepts;
+import org.apache.ibatis.plugin.Invocation;
+import org.apache.ibatis.plugin.Signature;
+import org.lkg.core.DynamicConfigManger;
+import org.lkg.enums.TrueFalseEnum;
 import org.lkg.metric.sql.SqlEventTracker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Statement;
-import java.util.Properties;
 
 /**
  * Description:
@@ -36,6 +39,7 @@ import java.util.Properties;
 @Intercepts({
         @Signature(type = StatementHandler.class, method = "parameterize", args = {Statement.class}),
 })
+@Slf4j
 public class MybatisStatementInterceptor implements Interceptor {
 
 
@@ -48,8 +52,31 @@ public class MybatisStatementInterceptor implements Interceptor {
             StatementHandler target = (StatementHandler) invocation.getTarget();
             BoundSql boundSql = target.getBoundSql();
             sql = boundSql.getSql();
-            Object[] args = invocation.getArgs();
-            System.out.println(sql);
+            // mybatis plus 会为sql增加换行符，给他去掉
+            sql = sql.replaceAll("\n", "");
+            ParameterHandler args = target.getParameterHandler();
+            Object obj = args.getParameterObject();
+
+            if (obj instanceof MapperMethod.ParamMap) {
+                StringBuilder sb = new StringBuilder();
+                ((MapperMethod.ParamMap) obj).forEach((k, v) -> {
+                    sb.append(k).append("=");
+                    // support mp param print
+                    if (v instanceof LambdaQueryWrapper) {
+                        sb.append(((LambdaQueryWrapper<?>) v).getParamNameValuePairs().values()).append(";");
+                    } else {
+                        sb.append(v).append(";");
+                    }
+                });
+                obj = sb.toString();
+            }
+            final String finalSql = sql;
+            final Object finalObj = obj;
+            DynamicConfigManger.initAndRegistChangeEvent("monit.sql.print.enable", DynamicConfigManger::getInt, ref -> {
+                if (TrueFalseEnum.isTrue(ref)) {
+                    log.info("monit full sql:{}, args:{}", finalSql, finalObj);
+                }
+            });
             return invocation.proceed();
         } catch (InvocationTargetException | IllegalAccessException e) {
             suc = false;

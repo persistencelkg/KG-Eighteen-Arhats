@@ -31,7 +31,7 @@ public class SqlEventTracker {
                         Timer.builder(namespace)
                                 .tags(tag)
                                 .register(instance)
-                                .record((System.nanoTime() - startTime) / 1000, instance.getBaseTimeUnit());
+                                .record(Duration.ofNanos(System.nanoTime() - startTime));
                     } catch (JSQLParserException e) {
                         log.error("sql:{} parse error", sql);
                     }
