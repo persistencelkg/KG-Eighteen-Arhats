@@ -17,7 +17,7 @@ public class MetricCoreExecutor {
 
     public static void execute(Runnable runnable) {
         if (Objects.isNull(publishExecutorService)) {
-            publishExecutorService = TrackableThreadPoolUtil.newTrackableExecutor("metric-core", 10,null);
+            publishExecutorService = TrackableThreadPoolUtil.newTrackableExecutor("long-heng-metric-reporter", 10,null);
         }
         publishExecutorService.submit(runnable);
     }

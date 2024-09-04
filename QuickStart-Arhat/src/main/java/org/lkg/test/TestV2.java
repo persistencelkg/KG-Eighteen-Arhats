@@ -3,6 +3,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.util.TimeUtils;
 import org.apache.kafka.common.Metric;
 import org.lkg.bo.QcHolidayDict;
 import org.lkg.bo.User;
@@ -14,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Description:
@@ -31,6 +36,8 @@ public class TestV2 {
     @Value("${config-set:测试,hh,hh,ff,ff}")
     private Set<String> set;
 
+    @Resource
+    private ExecutorService kgService;
 
     @GetMapping("/test-list")
     public String get() {
@@ -39,6 +46,17 @@ public class TestV2 {
         for (int i = 0; i < 10 ; i++) {
             Metrics.counter("inc" + i).increment(10);
         }
+        kgService.execute(()-> {
+            synchronized (TestV2.class) {
+                try {
+                    TimeUnit.SECONDS.sleep(20);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.println("锁释放--------");
+            }
+        });
+
 
         return  "";
     }

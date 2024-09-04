@@ -30,7 +30,7 @@ public class TrackableThreadPoolUtil {
         executorService.setWaitForTasksToCompleteOnShutdown(true);
         executorService.setTaskDecorator(new ThreadPoolConfig.MdcTaskDecorator());
         executorService.afterPropertiesSet();
-        // 启动才会创建，不存在性能问题无需
+        // 可追踪，如果这里需要注释，就需要打开：ThreadPoolMetricBeanPostProcessor的注入 保证可追溯
         ExecutorEventTracker.monit(executorService.getThreadPoolExecutor(), prefixName);
         return executorService.getThreadPoolExecutor();
     }

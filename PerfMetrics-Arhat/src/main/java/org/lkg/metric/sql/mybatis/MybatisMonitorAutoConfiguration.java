@@ -18,9 +18,12 @@ import org.springframework.context.annotation.Configuration;
 @EnableLongHengMetric
 public class MybatisMonitorAutoConfiguration {
 
+    /**
+     * mybatis、mybatis-plus 通用
+     * @return
+     */
     @Bean
     public Interceptor mybatisInterceptor() {
-
         return new MybatisStatementInterceptor();
     }
 

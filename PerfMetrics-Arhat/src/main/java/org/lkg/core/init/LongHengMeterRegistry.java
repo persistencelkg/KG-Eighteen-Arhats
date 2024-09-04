@@ -18,6 +18,8 @@ import org.lkg.core.meter.histogram.LongHengTimer;
 import org.lkg.core.service.MetricExporter;
 import org.lkg.core.service.MetricExporterHandler;
 import org.lkg.enums.TrueFalseEnum;
+import org.lkg.metric.threadpool.ExecutorEventTracker;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.time.Duration;
 import java.util.List;
@@ -30,7 +32,7 @@ import java.util.concurrent.*;
  * Date: 2024/8/8 2:56 PM
  */
 @Slf4j
-public class LongHengMeterRegistry extends StepMeterRegistry {
+public class LongHengMeterRegistry extends StepMeterRegistry implements InitializingBean {
 
     public static LongHengMeterRegistry REGISTRY;
 
@@ -66,6 +68,11 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
         if (Objects.isNull(REGISTRY)) {
             REGISTRY = new LongHengMeterRegistry();
             Metrics.addRegistry(REGISTRY);
+            try {
+                REGISTRY.afterPropertiesSet();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return REGISTRY;
     }
@@ -177,5 +184,12 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
     @Override
     protected DistributionSummary newDistributionSummary(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, double scale) {
         return new LongHengDistributionSummary(id, distributionStatisticConfig, scale);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (Objects.nonNull(scheduledExecutorService)) {
+            ExecutorEventTracker.monit(scheduledExecutorService, "long-heng-metric-collector");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package org.lkg.core.spring;
 
+import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
 import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.core.service.MetricExporter;
@@ -22,6 +23,9 @@ public class LongHengBeanPostProcessor implements BeanPostProcessor {
         }
         if (bean instanceof MeterFilter) {
             REGISTRY.addMeterFilter(((MeterFilter) bean));
+        }
+        if (bean instanceof MeterBinder) {
+            ((MeterBinder) bean).bindTo(REGISTRY);
         }
         return bean;
     }
