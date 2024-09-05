@@ -5,6 +5,7 @@ import io.micrometer.core.instrument.distribution.ValueAtPercentile;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.bo.MeterBo;
 import org.lkg.core.bo.TimePercentEnum;
+import org.lkg.simple.ObjectUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,10 +30,13 @@ public class TimerSnapshot {
 
     public static double getValWithPercent(Meter.Id id, TimePercentEnum timePercentEnum) {
         ValueAtPercentile[] valueAtPercentiles = TIMER_MAP.get(id.getName());
+        if (ObjectUtil.isEmpty(valueAtPercentiles)) {
+            return 0;
+        }
         for (ValueAtPercentile valueAtPercentile : valueAtPercentiles) {
             double value = valueAtPercentile.value();
-            log.info("time value:{}", value);
-            if (timePercentEnum.getValue() == value) {
+//            log.info("time value:{}", value);
+            if (timePercentEnum.getValue() == valueAtPercentile.percentile()) {
                 return value;
             }
         }

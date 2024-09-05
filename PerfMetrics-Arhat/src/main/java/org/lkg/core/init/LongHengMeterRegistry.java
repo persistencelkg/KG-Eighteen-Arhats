@@ -1,31 +1,30 @@
 package org.lkg.core.init;
 
-import com.sun.javafx.binding.LongConstant;
 import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.cumulative.CumulativeCounter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micrometer.core.instrument.distribution.pause.PauseDetector;
 import io.micrometer.core.instrument.step.StepMeterRegistry;
-import io.micrometer.core.instrument.step.StepRegistryConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.DynamicConfigManger;
-import org.lkg.core.bo.TimePercentEnum;
 import org.lkg.core.config.LongHengStepRegistryConfig;
 import org.lkg.core.config.LongHengThreadFactory;
 import org.lkg.core.config.LongHongConst;
+import org.lkg.core.meter.LongHengHistogramSupport;
+import org.lkg.core.meter.histogram.LongHengDistributionSummary;
+import org.lkg.core.meter.histogram.LongHengTimer;
 import org.lkg.core.service.MetricExporter;
 import org.lkg.core.service.MetricExporterHandler;
 import org.lkg.enums.TrueFalseEnum;
 import org.lkg.metric.threadpool.ExecutorEventTracker;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToLongFunction;
 
 /**
  * Description: 龙衡 指标观测系统
@@ -33,7 +32,7 @@ import java.util.function.ToLongFunction;
  * Date: 2024/8/8 2:56 PM
  */
 @Slf4j
-public class LongHengMeterRegistry extends StepMeterRegistry {
+public class LongHengMeterRegistry extends StepMeterRegistry implements InitializingBean {
 
     public static LongHengMeterRegistry REGISTRY;
 
@@ -69,6 +68,11 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
         if (Objects.isNull(REGISTRY)) {
             REGISTRY = new LongHengMeterRegistry();
             Metrics.addRegistry(REGISTRY);
+            try {
+                REGISTRY.afterPropertiesSet();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return REGISTRY;
     }
@@ -139,12 +143,20 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
 
     @Override
     protected void publish() {
-        log.info("开始推送...");
+        log.info("开始拉取指标...");
         List<Meter> meters = getMeters();
         try {
             metricExporterHandler.exportMeter(meters);
         } catch (Exception e) {
             log.warn("export meters failed", e);
+        } finally {
+            // 清理
+            meters.forEach(Metrics.globalRegistry::remove);
+            for (Meter meter : meters) {
+                if (meter instanceof LongHengHistogramSupport) {
+                    ((LongHengHistogramSupport) meter).reset();
+                }
+            }
         }
     }
 
@@ -166,10 +178,18 @@ public class LongHengMeterRegistry extends StepMeterRegistry {
 
     @Override
     protected Timer newTimer(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, PauseDetector pauseDetector) {
-        return super.newTimer(id, distributionStatisticConfig.merge(buildConfig()), pauseDetector);
+        return new LongHengTimer(id, distributionStatisticConfig, getBaseTimeUnit());
     }
 
-    public DistributionStatisticConfig buildConfig() {
-        return DistributionStatisticConfig.builder().percentiles(TimePercentEnum.percentValues()).build();
+    @Override
+    protected DistributionSummary newDistributionSummary(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, double scale) {
+        return new LongHengDistributionSummary(id, distributionStatisticConfig, scale);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (Objects.nonNull(scheduledExecutorService)) {
+            ExecutorEventTracker.monit(scheduledExecutorService, "long-heng-metric-collector");
+        }
     }
 }

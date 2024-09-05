@@ -14,6 +14,7 @@ public class DynamicConfigBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        // 为后续自定义提供扩展，本框架并未直接使用
         if (bean instanceof DynamicConfigService) {
             DynamicConfigManger.registerConfigService(((DynamicConfigService) bean));
         }

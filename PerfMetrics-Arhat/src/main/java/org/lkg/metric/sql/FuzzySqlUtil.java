@@ -40,6 +40,7 @@ public class FuzzySqlUtil {
 
         Statement stmt = CCJSqlParserUtil.parse(sql);
         stmt.accept(stmtDeParser);
+
         return stmtDeParser.getBuffer().toString();
     }
 

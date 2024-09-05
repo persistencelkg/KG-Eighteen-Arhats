@@ -7,6 +7,7 @@ import org.lkg.simple.JacksonUtil;
 import org.lkg.simple.ObjectUtil;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisKeyCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -174,7 +175,8 @@ public class RedisService {
         return Optional.ofNullable(aLong).orElse(0L);
     }
 
-    public List<Object> pipeLine(String key) {
+
+    public List<Object> pipeLineDemo(String key) {
 
 //        SessionCallback<Object> sessionCallback = new SessionCallback<Object>() {
 //            @Override
@@ -193,6 +195,7 @@ public class RedisService {
             @Nullable
             @Override
             public Object doInRedis(RedisConnection connection) throws DataAccessException {
+
                 connection.ttl(baseKey.getBytes());
                 connection.get(baseKey.getBytes());
                 return null;

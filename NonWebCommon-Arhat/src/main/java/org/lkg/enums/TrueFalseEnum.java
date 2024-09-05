@@ -19,12 +19,12 @@ public enum TrueFalseEnum {
     private final Integer code;
     private final String desc;
 
-    public static boolean isTrue(int code) {
+    public static boolean isTrue(Integer code) {
         return Objects.equals(TRUE.code, code);
     }
 
 
-    public static boolean isFalse(int code) {
+    public static boolean isFalse(Integer code) {
         return Objects.equals(FALSE.code, code);
     }
 }

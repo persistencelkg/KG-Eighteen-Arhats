@@ -24,12 +24,13 @@ public class SqlEventTracker {
 
     public static void monitorSql(String sql, boolean suc, long startTime) {
         MetricCoreExecutor.execute(() -> {
+                    LongHengMeterRegistry instance = LongHengMeterRegistry.getInstance();
                     String namespace = suc ? SUC : FAIL;
                     try {
                         Tags tag = Tags.of("sql", FuzzySqlUtil.cleanStatement(sql));
                         Timer.builder(namespace)
                                 .tags(tag)
-                                .register(LongHengMeterRegistry.getInstance())
+                                .register(instance)
                                 .record(Duration.ofNanos(System.nanoTime() - startTime));
                     } catch (JSQLParserException e) {
                         log.error("sql:{} parse error", sql);

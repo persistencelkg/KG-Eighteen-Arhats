@@ -4,6 +4,7 @@ import org.lkg.apollo.ApolloConfigService;
 import org.lkg.enums.StringEnum;
 import org.lkg.simple.JacksonUtil;
 import org.lkg.simple.ObjectUtil;
+import org.springframework.boot.context.config.ConfigFileApplicationListener;
 
 import java.lang.reflect.ParameterizedType;
 import java.time.Duration;
@@ -38,7 +39,7 @@ public class DynamicConfigManger {
 
     public static String getEnv() {
         // spring.profile.active -> env
-        return ApolloConfigService.getInstance().getEnv();
+        return getConfigValue(ConfigFileApplicationListener.ACTIVE_PROFILES_PROPERTY, getConfigValue("env"));
     }
 
     public static String getServerName() {

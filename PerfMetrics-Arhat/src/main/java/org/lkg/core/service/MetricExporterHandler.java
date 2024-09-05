@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.bo.MeterBo;
 import org.lkg.core.bo.TimePercentEnum;
 import org.lkg.core.init.LongHengMeterRegistry;
+import org.lkg.core.meter.LongHengHistogramSupport;
 import org.lkg.core.service.impl.SyncMetricExporter;
 import org.lkg.metric.threadpool.TrackableThreadPoolUtil;
 import org.lkg.simple.ObjectUtil;
@@ -17,6 +18,7 @@ import org.lkg.simple.ObjectUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +34,7 @@ public class MetricExporterHandler {
 
 
     public void exportMeter(List<Meter> list) {
-        if (ObjectUtil.isEmpty(list)) {
+        if (ObjectUtil.isEmpty(list) || Objects.isNull(metricExporter)) {
             return;
         }
         // CONVERT TO BO
@@ -40,10 +42,7 @@ public class MetricExporterHandler {
         if (idMeterBoHashMap.isEmpty()) {
             return;
         }
-        // 清理
-        list.forEach(Metrics.globalRegistry::remove);
         // async publish
-//        metricExporter.publishMeter(idMeterBoHashMap);
         MetricCoreExecutor.execute(() -> {
             try {
                 metricExporter.publishMeter(idMeterBoHashMap);
@@ -93,7 +92,7 @@ public class MetricExporterHandler {
 
     private void populateTimer(HistogramSupport val, MeterBo meterBo) {
         HistogramSnapshot histogramSnapshot = val.takeSnapshot();
-        TimeUnit timeUnit = TimeUnit.MILLISECONDS;
+        TimeUnit timeUnit = TimeUnit.MICROSECONDS;
         if (val instanceof Timer) {
             Timer timer = (Timer) val;
             timeUnit = timer.baseTimeUnit();
@@ -108,26 +107,10 @@ public class MetricExporterHandler {
             // 为了方便后面的TTL 链路统计使用
             TimerSnapshot.setMeter(val.getId(), meterBo, valueAtPercentiles);
         }
-        final double threshold = 0.00001;
-        // 也开始使用
-//        TimerSnapshot.getValWithPercent(val.getId(), TimePercentEnum.P95);
-        for (ValueAtPercentile valueAtPercentile : valueAtPercentiles) {
-            double value = valueAtPercentile.value(timeUnit);
-            double percentile = valueAtPercentile.percentile();
-            if (Math.abs(percentile - 0.95) < threshold) {
-                meterBo.setP95(value);
-            }
-            if (Math.abs(percentile - 0.99) < threshold) {
-                meterBo.setP99(value);
-            }
-            if (Math.abs(percentile - 0.995) < threshold) {
-                meterBo.setP995(value);
-            }
-            if (Math.abs(percentile - 0.999) < threshold) {
-                meterBo.setP999(value);
-            }
-        }
-
+        meterBo.setP95(TimerSnapshot.getValWithPercent(val.getId(), TimePercentEnum.P95));
+        meterBo.setP999(TimerSnapshot.getValWithPercent(val.getId(), TimePercentEnum.P999));
+        meterBo.setP99(TimerSnapshot.getValWithPercent(val.getId(), TimePercentEnum.P99));
+        meterBo.setP995(TimerSnapshot.getValWithPercent(val.getId(), TimePercentEnum.P995));
     }
 
     private void populateGauge(Gauge val, MeterBo meterBo) {

@@ -1,5 +1,6 @@
 package org.lkg.metric.threadpool;
 
+import org.lkg.core.DynamicConfigManger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.ExecutorService;
@@ -24,12 +25,12 @@ public class TrackableThreadPoolUtil {
         executorService.setThreadNamePrefix(prefixName);
         executorService.setCorePoolSize(CPU_CORE_NUM);
         executorService.setMaxPoolSize((int) (CPU_CORE_NUM * 1.5));
-        executorService.setQueueCapacity(Math.min(queueSize, 1000));
+        executorService.setQueueCapacity(Math.min(queueSize, DynamicConfigManger.getInt("self-executor-queue-size", 100)));
         executorService.setRejectedExecutionHandler(rejectedExecutionHandler);
         executorService.setWaitForTasksToCompleteOnShutdown(true);
         executorService.setTaskDecorator(new ThreadPoolConfig.MdcTaskDecorator());
         executorService.afterPropertiesSet();
-        // 启动才会创建，不存在性能问题无需
+        // 可追踪，如果这里需要注释，就需要打开：ThreadPoolMetricBeanPostProcessor的注入 保证可追溯
         ExecutorEventTracker.monit(executorService.getThreadPoolExecutor(), prefixName);
         return executorService.getThreadPoolExecutor();
     }

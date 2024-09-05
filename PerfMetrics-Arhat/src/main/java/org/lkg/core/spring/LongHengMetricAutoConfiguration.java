@@ -44,8 +44,6 @@ public class LongHengMetricAutoConfiguration {
     }
 
 
-
-
     // 大小过滤
     @Bean
     public MeterFilter limitMeterSizeFilter() {
@@ -56,5 +54,11 @@ public class LongHengMetricAutoConfiguration {
     @Bean
     public MeterFilter namespaceMeterFilter() {
         return MeterFilter.deny(ref -> NamespaceFilter.disable(ref.getName()));
+    }
+
+    // Timer 自动添加百分比的监控
+//    @Bean
+    public MeterFilter percentDenyFilter() {
+        return MeterFilter.deny(id -> id.getName().endsWith(".percentile") && id.getTag("phi") != null);
     }
 }

@@ -129,6 +129,7 @@ public class MoreRedisDataSourceConfig {
     }
 
 
+
     public RedisConnectionFactory buildJedisConnectionFactory(RedisPoolConfig redisConfig) {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         // basic redis config
@@ -148,7 +149,7 @@ public class MoreRedisDataSourceConfig {
         propertyMapper.from(redisConfig::getConnectionTimeOut).whenNonNull().to(builder::connectTimeout);
         propertyMapper.from(redisConfig::getReadTimeOut).whenNonNull().to(builder::readTimeout);
         JedisClientConfiguration build = builder.usePooling().poolConfig(jedisPoolConfig).build();
-
+        // 具备可监控能力redis connection
         return new JedisConnectionFactory(redisStandaloneConfiguration, build);
     }
 

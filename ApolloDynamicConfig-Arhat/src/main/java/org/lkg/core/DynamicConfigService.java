@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public interface DynamicConfigService extends KeyConfigService{
 
-    String getEnv();
-
     void addChangeKeyPostHandler(String key, KeyChangeHandler keyChangeHandler);
 
     Set<KeyChangeHandler> setAllChangeKeySet(String key);

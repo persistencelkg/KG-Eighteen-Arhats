@@ -66,7 +66,7 @@ public class ThreadPoolConfig {
         return new SelfExecutorService() {
             @Override
             public ExecutorService create(String prefix, int queueSize, RejectedExecutionHandler rejectedExecutionHandler) {
-                return TrackableThreadPoolUtil.newTrackableExecutor(prefix, queueSize, new ThreadPoolExecutor.CallerRunsPolicy());
+                return TrackableThreadPoolUtil.newTrackableExecutor(prefix, queueSize, rejectedExecutionHandler);
             }
 
             @Override
