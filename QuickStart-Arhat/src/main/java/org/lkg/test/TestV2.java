@@ -7,6 +7,8 @@ import io.micrometer.core.instrument.util.TimeUtils;
 import org.apache.kafka.common.Metric;
 import org.lkg.bo.QcHolidayDict;
 import org.lkg.bo.User;
+import org.lkg.redis.crud.RedisService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static org.lkg.redis.crud.RedisService.DYNAMIC_UPDATE_BY_LUA;
+
 /**
  * Description:
  * Author: 李开广
@@ -27,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 @RequestMapping("/")
-public class TestV2 {
+public class TestV2 implements InitializingBean {
 
     @Value("${config-list:测试,hh,lkg}")
     private List<String> list;
@@ -79,6 +83,25 @@ public class TestV2 {
 //        queryWrapper.ge(User::getAge, 1);
 //        System.out.println(testMpDao.selectList(queryWrapper));
         return qcHolidayDicts.toString();
+    }
+
+    @Resource private RedisService redisService;
+
+    @GetMapping("/test-redis")
+    public boolean testRedis() {
+        redisService.setKey("lkg", "wkx", 1, TimeUnit.SECONDS);
+        System.out.println(redisService.getKey("lkg", String.class));
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("wkx-lkg", 99);
+        map.put("lua", "nb");
+        System.out.println("update lua count: " + redisService.execWithLua(DYNAMIC_UPDATE_BY_LUA, "lkg-2", map));
+
+        return true;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        redisService.getKey("lkg", String.class);
     }
 }
 

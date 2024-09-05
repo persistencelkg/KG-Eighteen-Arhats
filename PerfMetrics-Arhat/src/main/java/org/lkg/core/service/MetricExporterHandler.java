@@ -18,6 +18,7 @@ import org.lkg.simple.ObjectUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +34,7 @@ public class MetricExporterHandler {
 
 
     public void exportMeter(List<Meter> list) {
-        if (ObjectUtil.isEmpty(list)) {
+        if (ObjectUtil.isEmpty(list) || Objects.isNull(metricExporter)) {
             return;
         }
         // CONVERT TO BO

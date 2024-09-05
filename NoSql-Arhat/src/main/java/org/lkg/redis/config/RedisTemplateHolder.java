@@ -39,8 +39,6 @@ public class RedisTemplateHolder {
     }
 
 
-
-
     public RedisTemplate<String, Object> featureTemplate() {
         return redisTemplateMap.get(MoreRedisDataSourceConfig.FEATURE_REDIS_NAME);
     }
