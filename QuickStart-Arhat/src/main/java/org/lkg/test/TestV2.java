@@ -8,6 +8,9 @@ import org.apache.kafka.common.Metric;
 import org.lkg.bo.QcHolidayDict;
 import org.lkg.bo.User;
 import org.lkg.redis.crud.RedisService;
+import org.lkg.request.InternalRequest;
+import org.lkg.request.InternalResponse;
+import org.lkg.utils.http.httpclient.HttpClientUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,24 +48,22 @@ public class TestV2 implements InitializingBean {
 
     @GetMapping("/test-list")
     public String get() {
-        System.out.println(list);
-        System.out.println(set);
-        for (int i = 0; i < 10 ; i++) {
-            Metrics.counter("inc" + i).increment(10);
-        }
-        kgService.execute(()-> {
-            synchronized (TestV2.class) {
-                try {
-                    TimeUnit.SECONDS.sleep(20);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                System.out.println("锁释放--------");
-            }
-        });
+//        kgService.execute(()-> {
+//            synchronized (TestV2.class) {
+//                try {
+//                    TimeUnit.SECONDS.sleep(20);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                System.out.println("锁释放--------");
+//            }
+//        });
 
+        // test http
+        InternalRequest postRequest = InternalRequest.createPostRequest("https://oapi.dingtalk.com/robot/send?access_token=37c083e9fffc155f5a5014cca52f01a07c8fee318da79e9a3f339bfd6a102e98", InternalRequest.BodyEnum.RAW);
+        InternalResponse server = HttpClientUtil.invoke("server", postRequest);
 
-        return  "";
+        return  server.toString();
     }
 
 

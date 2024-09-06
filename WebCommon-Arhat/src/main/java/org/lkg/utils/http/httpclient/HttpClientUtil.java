@@ -14,6 +14,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.lkg.enums.TrueFalseEnum;
+import org.lkg.metric.rpc.http.MetricHttpProcessor;
 import org.lkg.request.CommonResp;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
@@ -45,6 +46,7 @@ public class HttpClientUtil {
         CustomWebClientConfig customWebClientConfig = CustomWebClientHolder.getCustomWebClientConfig();
         StopWatch stop = new StopWatch();
         stop.start(serverName);
+//        long start = System.currentTimeMillis();
         CustomHttpRequest customHttpRequest = new CustomHttpRequest(request, serverName);
         // head 准备
         customHttpRequest.getInternalRequest().getHeaders().forEach(customHttpRequest::addHeader);
@@ -52,6 +54,7 @@ public class HttpClientUtil {
         stop.stop();
         // 日志记录
         internalResponse.setCostTime(stop.getTotalTimeMillis());
+//        MetricHttpProcessor.httpMetricRecord(internalResponse.getStatusCode(), request.getUrl(), start);
         return internalResponse;
     }
 
@@ -80,7 +83,7 @@ public class HttpClientUtil {
             result.setStatusCode(currentStatusCode);
             result.setResult(EntityUtils.toString(responseEntity, StandardCharsets.UTF_8));
         } catch (IOException e) {
-            result.setStatusCode(0);
+            result.setStatusCode(40000);
             result.addException(e);
         } finally {
             if (response != null) {
@@ -112,10 +115,12 @@ public class HttpClientUtil {
         HttpClientBuilder builder = HttpClients.custom()
                 .setDefaultRequestConfig(requestConfig)
                 .setRetryHandler(retryHandler)
+                .setHttpProcessor(MetricHttpProcessor.getInstance())
                 // http client 底层默认开启了连接池复用机制，同时也有默认的保活策略：来着服务端配置的keep_alive，解析响应的timeout即可
                 // 因此如果不加以定制，而依靠服务端的设置，一般来说服务端都是2小时，对于客户端来说无法及时识别到 使用了已经失效的链接，进而出现 Connection reset by peer错误
                 // 设置建议根据服务活跃程度适度增大或缩小
                 .setKeepAliveStrategy(((response, context) -> TimeUnit.MINUTES.toMillis(1)));
+
         if (TrueFalseEnum.isTrue(commonHttpClientConfig.getUsePool())) {
             builder.setConnectionManager(connManager);
         }
