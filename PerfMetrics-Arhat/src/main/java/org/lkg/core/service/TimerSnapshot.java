@@ -3,12 +3,14 @@ package org.lkg.core.service;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.distribution.ValueAtPercentile;
 import lombok.extern.slf4j.Slf4j;
+import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.bo.MeterBo;
 import org.lkg.core.bo.TimePercentEnum;
 import org.lkg.simple.ObjectUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Description: for ttl component
@@ -18,13 +20,23 @@ import java.util.Map;
 @Slf4j
 public class TimerSnapshot {
 
-    private static Map<String, ValueAtPercentile[]> TIMER_MAP = new HashMap<>();
+    // 注意这里在高并发下，会存在gc压力，所以默认最多保留一个周期，因此基于此做的TTL耗时预警、流量管控等都是
+    private static ConcurrentHashMap<String, ValueAtPercentile[]> TIMER_MAP = new ConcurrentHashMap<>(1024);
 
     public static void setMeter(Meter.Id id, MeterBo meterBo, ValueAtPercentile[] percentiles) {
         if (meterBo.getCount() > 0) {
+            System.out.println("snapshot size：" + TIMER_MAP.size());
             TIMER_MAP.put(id.getName(), percentiles);
         } else {
             TIMER_MAP.remove(id.getName());
+        }
+    }
+
+
+    public static void clear() {
+        Integer anInt = DynamicConfigManger.getInt("longheng.snapshot.max-size", 4096);
+        if (TIMER_MAP.size() > anInt) {
+            TIMER_MAP.clear();
         }
     }
 

@@ -19,6 +19,9 @@
         <mybatis-page.version>1.3.0</mybatis-page.version>
         <mybatis.version>2.1.3</mybatis.version>
         <mybatis-plus.version>3.2.0</mybatis-plus.version>
+
+        <nacos-client.version>2.0.3</nacos-client.version>
+        <spring-cloud-nacos.version>2.2.7.RELEASE</spring-cloud-nacos.version>
     </properties>
 
     <dependencies>
@@ -84,5 +87,37 @@
             <version>${mysql.version}</version>
             <scope>runtime</scope>
         </dependency>
+
+
+        <!--open feign-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
+<!--            <version>${spring-cloud-nacos.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.nacos</groupId>-->
+<!--            <artifactId>nacos-client</artifactId>-->
+<!--            <version>${nacos-client.version}</version>-->
+<!--        </dependency>-->
+
+        <!--静态服务发现-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+        </dependency>
+
+        <!--Apache HttpClient的依赖，目的是使用其连接池的配置 -->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

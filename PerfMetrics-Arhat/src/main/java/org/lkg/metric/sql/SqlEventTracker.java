@@ -17,6 +17,7 @@ import java.time.Duration;
  */
 @Slf4j
 public class SqlEventTracker {
+    // TODO sharding
 
     private static final String SUC = "sql.suc";
 

@@ -5,8 +5,10 @@ import com.google.common.collect.Lists;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.util.TimeUtils;
 import org.apache.kafka.common.Metric;
+import org.aspectj.weaver.ast.Test;
 import org.lkg.bo.QcHolidayDict;
 import org.lkg.bo.User;
+import org.lkg.feign.TestFeign;
 import org.lkg.redis.crud.RedisService;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
@@ -103,6 +105,19 @@ public class TestV2 implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         redisService.getKey("lkg", String.class);
+    }
+
+
+    @Resource private TestFeign testFeign;
+
+    @GetMapping("/test-feign")
+    public boolean testFeign() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("params", new HashMap<String, Object>(){{
+            put("user_id", 1L);
+        }});
+        System.out.println(testFeign.getUserCard(map));
+        return true;
     }
 }
 

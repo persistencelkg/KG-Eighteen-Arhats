@@ -23,6 +23,7 @@
         <mybaits-plus.version>3.2.0</mybaits-plus.version>
         <mybaits.version>2.1.3</mybaits.version>
         <commons.httplicent.version>3.1</commons.httplicent.version>
+        <spring-cloud-openfeign.version>2.2.10.RELEASE</spring-cloud-openfeign.version>
     </properties>
 
     <dependencies>
@@ -127,6 +128,15 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>${spring-cloud-openfeign.version}</version>
+<!--            <scope>provided</scope>-->
             <optional>true</optional>
         </dependency>
 

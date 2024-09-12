@@ -7,6 +7,7 @@ import io.micrometer.core.instrument.Timer;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.lkg.core.init.LongHengMeterRegistry;
+import org.lkg.core.service.MetricCoreExecutor;
 import org.lkg.simple.ObjectUtil;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.data.redis.connection.RedisCommands;
@@ -63,7 +64,11 @@ public abstract class AbstractRedisConnectionProxy<T> implements MethodIntercept
             suc = false;
             throw e;
         } finally {
-            monitorRedisCommand(suc, method.getName(), startTime);
+            boolean finalSuc = suc;
+            // 不影响业务的执行
+            MetricCoreExecutor.execute(() -> {
+                monitorRedisCommand(finalSuc, method.getName(), startTime);
+            });
         }
     }
 
