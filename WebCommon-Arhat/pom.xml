@@ -29,7 +29,7 @@
 
         <dependency>
             <groupId>io.github.persistencelkg</groupId>
-            <artifactId>PerfMetrics-Arhat</artifactId>
+            <artifactId>Metrics-Arhat</artifactId>
         </dependency>
 
 

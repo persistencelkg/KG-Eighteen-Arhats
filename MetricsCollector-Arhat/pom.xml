@@ -6,13 +6,10 @@
         <artifactId>KG-Eighteem-Arhats</artifactId>
         <version>1.0.1-SNAPSHOT</version>
     </parent>
-
-    <groupId>io.github.persistencelkg</groupId>
-    <artifactId>PerMetricsCollector-Arhat</artifactId>
+    <artifactId>MetricsCollector-Arhat</artifactId>
     <packaging>jar</packaging>
 
-    <name>PerMetricsCollector-Arhat</name>
-    <url>http://maven.apache.org</url>
+    <name>MetricsCollector-Arhat</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,7 +23,7 @@
 
         <dependency>
             <groupId>io.github.persistencelkg</groupId>
-            <artifactId>PerfMetrics-Arhat</artifactId>
+            <artifactId>Metrics-Arhat</artifactId>
         </dependency>
 
 
