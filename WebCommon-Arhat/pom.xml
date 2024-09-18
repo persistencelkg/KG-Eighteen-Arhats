@@ -50,7 +50,6 @@
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>${commons.httplicent.version}</version>
-
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -68,11 +67,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.ctrip.framework.apollo</groupId>
-            <artifactId>apollo-client</artifactId>
         </dependency>
 
         <!-- open fegin -->

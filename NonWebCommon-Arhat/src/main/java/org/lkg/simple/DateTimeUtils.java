@@ -36,6 +36,11 @@ public class DateTimeUtils {
     public static final String YYYY_MM_DD_HH_MM_SS_SSS = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String YYYY_MM_DD_HH_MM_SS_SSS_SEQ = "yyyyMMddHHmmssSSS";
 
+    public static final String YYYYMMDD_WITH_SHARDING = "yyyyMMdd";
+    public static final String YYYYMM_WITH_SHARDING = "yyyyMM";
+    public static final String YYYY_WITH_SHARDING = "yyyy";
+
+
 
     public static final String MM_DD = "MM月dd日";
 

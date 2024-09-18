@@ -22,6 +22,7 @@ public interface TestDao{
     List<QcHolidayDict> listData(@Param("id") int id);
 
 
-    @Insert("insert into user(username,password,age) values(#{obj.username},#{obj.password},#{obj.age})")
+
+    @Insert("insert into user(user_id,username,password,age) values(#{obj.userId}, #{obj.username},#{obj.password},#{obj.age})")
     boolean insertDict(@Param("obj") User qcHolidayDict);
 }

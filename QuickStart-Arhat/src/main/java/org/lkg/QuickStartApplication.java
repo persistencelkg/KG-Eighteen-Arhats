@@ -1,7 +1,10 @@
 package org.lkg;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
@@ -11,6 +14,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  */
 @EnableAspectJAutoProxy
 @SpringBootApplication
+//@EnableDiscoveryClient
+@EnableFeignClients(basePackages = "org.lkg")
+//@MapperScan("org.lkg")
 public class QuickStartApplication {
 
     public static void main(String[] args) {

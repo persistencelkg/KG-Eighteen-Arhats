@@ -16,6 +16,7 @@ import org.lkg.enums.TrueFalseEnum;
 import org.lkg.metric.sql.SqlEventTracker;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Statement;
 
 /**
@@ -53,6 +54,8 @@ public class MybatisStatementInterceptor implements Interceptor {
         long start = System.nanoTime();
         try {
             StatementHandler target = (StatementHandler) invocation.getTarget();
+            Method method = invocation.getMethod();
+            String name = method.getName();
             BoundSql boundSql = target.getBoundSql();
             sql = boundSql.getSql();
             // mybatis plus 会为sql增加换行符，给他去掉
@@ -73,6 +76,7 @@ public class MybatisStatementInterceptor implements Interceptor {
                 });
                 obj = sb.toString();
             }
+            sql = name.contains("batch") ? name + " " + sql : sql;
             final String finalSql = sql;
             final Object finalObj = obj;
             DynamicConfigManger.initAndRegistChangeEvent("monit.sql.print.enable", DynamicConfigManger::getInt, ref -> {

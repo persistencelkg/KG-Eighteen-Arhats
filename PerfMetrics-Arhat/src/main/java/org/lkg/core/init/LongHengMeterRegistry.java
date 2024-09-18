@@ -17,6 +17,7 @@ import org.lkg.core.meter.histogram.LongHengDistributionSummary;
 import org.lkg.core.meter.histogram.LongHengTimer;
 import org.lkg.core.service.MetricExporter;
 import org.lkg.core.service.MetricExporterHandler;
+import org.lkg.core.service.TimerSnapshot;
 import org.lkg.enums.TrueFalseEnum;
 import org.lkg.metric.threadpool.ExecutorEventTracker;
 import org.springframework.beans.factory.InitializingBean;
@@ -157,6 +158,8 @@ public class LongHengMeterRegistry extends StepMeterRegistry implements Initiali
                     ((LongHengHistogramSupport) meter).reset();
                 }
             }
+            // 清理快照
+            TimerSnapshot.clear();
         }
     }
 

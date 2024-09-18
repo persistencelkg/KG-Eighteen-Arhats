@@ -21,7 +21,7 @@
         <spring-cloud.version>Hoxton.SR9</spring-cloud.version>
         <spring-cloud-openfeign.version>2.2.10.RELEASE</spring-cloud-openfeign.version>
         <es.version>6.4.2</es.version>
-        <apollo.verison>1.7.0</apollo.verison>
+        <apollo1-client.verison>1.7.0</apollo1-client.verison>
     </properties>
 
     <modules>
@@ -81,29 +81,11 @@
                 <artifactId>NoSql-Arhat</artifactId>
                 <version>${eighteem-arhat.version}</version>
             </dependency>
-            <!--es-->
             <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch</artifactId>
-                <version>${es.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch.client</groupId>
-                <artifactId>elasticsearch-rest-high-level-client</artifactId>
-                <version>${es.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch.client</groupId>
-                <artifactId>elasticsearch-rest-client</artifactId>
-                <version>${es.version}</version>
-            </dependency>
+                <groupId>io.github.persistencelkg</groupId>
+                <artifactId>DynamicSharding-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
 
-            <!--apollo-->
-
-            <dependency>
-                <groupId>com.ctrip.framework.apollo</groupId>
-                <artifactId>apollo-client</artifactId>
-                <version>${apollo.verison}</version>
             </dependency>
 
 
@@ -115,13 +97,11 @@
                 <scope>import</scope>
             </dependency>
 
-
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-openfeign</artifactId>
                 <version>${spring-cloud-openfeign.version}</version>
             </dependency>
-
 
         </dependencies>
     </dependencyManagement>

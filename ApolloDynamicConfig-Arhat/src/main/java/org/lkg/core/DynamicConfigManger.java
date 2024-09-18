@@ -52,7 +52,7 @@ public class DynamicConfigManger {
         if (ObjectUtil.isEmpty(annotation)) {
             return null;
         }
-        String configValue = getConfigValue(annotation.key());
+        String configValue = getConfigValue(annotation.key(), annotation.def());
         return JacksonUtil.readValue(configValue, clz);
     }
 

@@ -5,9 +5,14 @@ import com.google.common.collect.Lists;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.util.TimeUtils;
 import org.apache.kafka.common.Metric;
+import org.aspectj.weaver.ast.Test;
 import org.lkg.bo.QcHolidayDict;
 import org.lkg.bo.User;
+import org.lkg.feign.TestFeign;
 import org.lkg.redis.crud.RedisService;
+import org.lkg.request.InternalRequest;
+import org.lkg.request.InternalResponse;
+import org.lkg.utils.http.httpclient.HttpClientUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,24 +50,22 @@ public class TestV2 implements InitializingBean {
 
     @GetMapping("/test-list")
     public String get() {
-        System.out.println(list);
-        System.out.println(set);
-        for (int i = 0; i < 10 ; i++) {
-            Metrics.counter("inc" + i).increment(10);
-        }
-        kgService.execute(()-> {
-            synchronized (TestV2.class) {
-                try {
-                    TimeUnit.SECONDS.sleep(20);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                System.out.println("锁释放--------");
-            }
-        });
+//        kgService.execute(()-> {
+//            synchronized (TestV2.class) {
+//                try {
+//                    TimeUnit.SECONDS.sleep(20);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                System.out.println("锁释放--------");
+//            }
+//        });
 
+        // test http
+        InternalRequest postRequest = InternalRequest.createPostRequest("https://oapi.dingtalk.com/robot/send?access_token=37c083e9fffc155f5a5014cca52f01a07c8fee318da79e9a3f339bfd6a102e98", InternalRequest.BodyEnum.RAW);
+        InternalResponse server = HttpClientUtil.invoke("server", postRequest);
 
-        return  "";
+        return  server.toString();
     }
 
 
@@ -73,15 +76,18 @@ public class TestV2 implements InitializingBean {
     @GetMapping("/test-mybatis/{id}")
     public String testMybatis(@PathVariable("id") int id) {
         List<QcHolidayDict> qcHolidayDicts = testDao.listData(id);
-        System.out.println(testDao.insertDict(new User(UUID.randomUUID().toString(), "xxx", 1)));
+        long aLong = (int) (Math.random() * 1000000);
+        System.out.println(testDao.insertDict(new User(aLong,UUID.randomUUID().toString(), "xxx", 1)));
         // insert
         System.out.println("test mybatis plus ------->");
-        System.out.println(testMpService.saveBatch(Lists.newArrayList(
-                new User(UUID.randomUUID().toString(), "wlkx",
-                        (int) (Math.random() * 100)), new User(UUID.randomUUID().toString(), "wlkx", (int) (Math.random() * 100)))));
-//        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-//        queryWrapper.ge(User::getAge, 1);
-//        System.out.println(testMpDao.selectList(queryWrapper));
+        ArrayList<User> objects = Lists.newArrayList();
+        for (int i = 0; i < 10 ; i++) {
+            aLong = (int) (Math.random() * 1000000);
+            objects.add(new User(aLong, UUID.randomUUID().toString(), "wlkx",
+                    (int) (Math.random() * 100)));
+
+        }
+        testMpService.saveBatch(objects);
         return qcHolidayDicts.toString();
     }
 
@@ -102,6 +108,19 @@ public class TestV2 implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         redisService.getKey("lkg", String.class);
+    }
+
+
+    @Resource private TestFeign testFeign;
+
+    @GetMapping("/test-feign")
+    public boolean testFeign() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("params", new HashMap<String, Object>(){{
+            put("user_id", 1L);
+        }});
+        System.out.println(testFeign.getUserCard(map));
+        return true;
     }
 }
 
