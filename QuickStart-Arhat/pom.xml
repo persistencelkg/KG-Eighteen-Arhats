@@ -28,6 +28,10 @@
         <!--通用web-->
         <dependency>
             <groupId>io.github.persistencelkg</groupId>
+            <artifactId>DynamicSharding-Arhat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
             <artifactId>WebCommon-Arhat</artifactId>
         </dependency>
         <!--NoSQl-->

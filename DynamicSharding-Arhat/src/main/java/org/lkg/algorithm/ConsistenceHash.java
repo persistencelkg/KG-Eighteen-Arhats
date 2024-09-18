@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.TreeMap;
 
 /**
  * Description:
@@ -26,23 +28,24 @@ public class ConsistenceHash {
     @Getter
     private final CommonHashAlgorithm commonHashAlgorithm;
 
-    @Getter
+
     private final TreeMap<Long, Node> HASH_CIRCLE = new TreeMap<>();
+
     private int fallbackCount;
 
 
-    private ConsistenceHash(int nodeCount, int virtualNodeCount) {
+    private ConsistenceHash(CommonHashAlgorithm shardingAlgorithm, int nodeCount, int virtualNodeCount) {
         if (nodeCount < 1 || virtualNodeCount < 1) {
             throw new IllegalArgumentException("hash cycle node or virtual node count not lt 1");
         }
         this.nodeCount = nodeCount;
         this.virtualNodeCount = virtualNodeCount;
-        this.commonHashAlgorithm = CommonHashAlgorithm.NATIVE_HASH;
+        this.commonHashAlgorithm = shardingAlgorithm;
     }
 
 
-    public static ConsistenceHash getInstance(int nodeCount, int virtualNodeCount) {
-        ConsistenceHash consistenceHash = new ConsistenceHash(nodeCount, virtualNodeCount);
+    public static ConsistenceHash getInstance(CommonHashAlgorithm shardingAlgorithm, int nodeCount, int virtualNodeCount) {
+        ConsistenceHash consistenceHash = new ConsistenceHash(shardingAlgorithm, nodeCount, virtualNodeCount);
         consistenceHash.buildCircle();
         return consistenceHash;
     }
@@ -57,21 +60,25 @@ public class ConsistenceHash {
                 HASH_CIRCLE.put(hash, node);
             }
         }
+        System.out.println(HASH_CIRCLE);
     }
 
-    public static String joinWithSpit(Object...obj) {
+    public static String joinWithSpit(Object... obj) {
         String[] array = Arrays.stream(obj).map(ref -> ref + EMPTY).toArray(String[]::new);
         return String.join(SPLIT, array);
     }
 
 
     public String getActualNode(String key) {
-        long hash = this.commonHashAlgorithm.hash(key);
+        Long hash = this.commonHashAlgorithm.hash(key);
         Node node = HASH_CIRCLE.get(hash);
         if (Objects.isNull(node)) {
             // 递增向上查找
             hash = HASH_CIRCLE.ceilingKey(hash);
-            node = HASH_CIRCLE.get(hash);
+            if (Objects.nonNull(hash)) {
+                node = HASH_CIRCLE.get(hash);
+            }
+
         }
         if (Objects.isNull(node)) {
             node = HASH_CIRCLE.firstEntry().getValue();
@@ -87,7 +94,7 @@ public class ConsistenceHash {
     }
 
     public static void main(String[] args) {
-        System.out.println(getInstance(1, 3));
-        System.out.println(getInstance(4, 10));
+        System.out.println(getInstance(CommonHashAlgorithm.ELF_HASH, 4, 1));
+        System.out.println(getInstance(CommonHashAlgorithm.NATIVE_HASH, 4, 1));
     }
 }

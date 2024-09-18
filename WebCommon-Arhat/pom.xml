@@ -69,11 +69,6 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.ctrip.framework.apollo</groupId>
-            <artifactId>apollo-client</artifactId>
-        </dependency>
-
         <!-- open fegin -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

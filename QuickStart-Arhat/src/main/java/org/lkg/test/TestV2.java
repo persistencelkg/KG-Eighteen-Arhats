@@ -76,15 +76,18 @@ public class TestV2 implements InitializingBean {
     @GetMapping("/test-mybatis/{id}")
     public String testMybatis(@PathVariable("id") int id) {
         List<QcHolidayDict> qcHolidayDicts = testDao.listData(id);
-        System.out.println(testDao.insertDict(new User(UUID.randomUUID().toString(), "xxx", 1)));
+        long aLong = (int) (Math.random() * 1000000);
+        System.out.println(testDao.insertDict(new User(aLong,UUID.randomUUID().toString(), "xxx", 1)));
         // insert
         System.out.println("test mybatis plus ------->");
-        System.out.println(testMpService.saveBatch(Lists.newArrayList(
-                new User(UUID.randomUUID().toString(), "wlkx",
-                        (int) (Math.random() * 100)), new User(UUID.randomUUID().toString(), "wlkx", (int) (Math.random() * 100)))));
-//        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-//        queryWrapper.ge(User::getAge, 1);
-//        System.out.println(testMpDao.selectList(queryWrapper));
+        ArrayList<User> objects = Lists.newArrayList();
+        for (int i = 0; i < 10 ; i++) {
+            aLong = (int) (Math.random() * 1000000);
+            objects.add(new User(aLong, UUID.randomUUID().toString(), "wlkx",
+                    (int) (Math.random() * 100)));
+
+        }
+        testMpService.saveBatch(objects);
         return qcHolidayDicts.toString();
     }
 
