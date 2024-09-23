@@ -4,8 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ApolloDynamicConfig-Arhat.iml" filepath="$PROJECT_DIR$/ApolloDynamicConfig-Arhat.iml" />
       <module fileurl="file://$PROJECT_DIR$/DesignPatternApply-Arhat/DesignPatternApply-Arhat.iml" filepath="$PROJECT_DIR$/DesignPatternApply-Arhat/DesignPatternApply-Arhat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MetricsCollector-Arhat.iml" filepath="$PROJECT_DIR$/MetricsCollector-Arhat.iml" />
       <module fileurl="file://$PROJECT_DIR$/NoSql-Arhat.iml" filepath="$PROJECT_DIR$/NoSql-Arhat.iml" />
-      <module fileurl="file://$PROJECT_DIR$/PerMetricsCollector-Arhat.iml" filepath="$PROJECT_DIR$/PerMetricsCollector-Arhat.iml" />
       <module fileurl="file://$PROJECT_DIR$/QuickStart-Arhat.iml" filepath="$PROJECT_DIR$/QuickStart-Arhat.iml" />
       <module fileurl="file://$PROJECT_DIR$/WebCommon-Arhat.iml" filepath="$PROJECT_DIR$/WebCommon-Arhat.iml" />
     </modules>

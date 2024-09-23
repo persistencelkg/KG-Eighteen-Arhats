@@ -1,5 +1,7 @@
 package org.lkg.feign;
 
+import feign.Request;
+import org.elasticsearch.client.RequestOptions;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +25,7 @@ public interface TestFeign {
             value = {"/user-coupon/validCard/byClient"},
             method = {RequestMethod.POST}
     )
-    Map<String, Object>  getUserCard(@RequestBody Map<String, Object> bikeReq);
+    Map<String, Object>  getUserCard(@RequestBody Map<String, Object> bikeReq, Request.Options options);
 
     @GetMapping(
             value = {"/user-coupon/{id}"}

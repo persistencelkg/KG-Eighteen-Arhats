@@ -1,7 +1,9 @@
 package org.lkg.test;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
+import feign.Request;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.util.TimeUtils;
 import org.apache.kafka.common.Metric;
@@ -65,23 +67,25 @@ public class TestV2 implements InitializingBean {
         InternalRequest postRequest = InternalRequest.createPostRequest("https://oapi.dingtalk.com/robot/send?access_token=37c083e9fffc155f5a5014cca52f01a07c8fee318da79e9a3f339bfd6a102e98", InternalRequest.BodyEnum.RAW);
         InternalResponse server = HttpClientUtil.invoke("server", postRequest);
 
-        return  server.toString();
+        return server.toString();
     }
 
 
-    @Resource private TestDao testDao;
+    @Resource
+    private TestDao testDao;
 
-    @Resource private TestMpService testMpService;
+    @Resource
+    private TestMpService testMpService;
 
     @GetMapping("/test-mybatis/{id}")
     public String testMybatis(@PathVariable("id") int id) {
         List<QcHolidayDict> qcHolidayDicts = testDao.listData(id);
         long aLong = (int) (Math.random() * 1000000);
-        System.out.println(testDao.insertDict(new User(aLong,UUID.randomUUID().toString(), "xxx", 1)));
+        System.out.println(testDao.insertDict(new User(aLong, UUID.randomUUID().toString(), "xxx", 1)));
         // insert
         System.out.println("test mybatis plus ------->");
         ArrayList<User> objects = Lists.newArrayList();
-        for (int i = 0; i < 10 ; i++) {
+        for (int i = 0; i < 10; i++) {
             aLong = (int) (Math.random() * 1000000);
             objects.add(new User(aLong, UUID.randomUUID().toString(), "wlkx",
                     (int) (Math.random() * 100)));
@@ -91,7 +95,8 @@ public class TestV2 implements InitializingBean {
         return qcHolidayDicts.toString();
     }
 
-    @Resource private RedisService redisService;
+    @Resource
+    private RedisService redisService;
 
     @GetMapping("/test-redis")
     public boolean testRedis() {
@@ -111,15 +116,17 @@ public class TestV2 implements InitializingBean {
     }
 
 
-    @Resource private TestFeign testFeign;
+    @Resource
+    private TestFeign testFeign;
 
     @GetMapping("/test-feign")
     public boolean testFeign() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("params", new HashMap<String, Object>(){{
+        map.put("params", new HashMap<String, Object>() {{
             put("user_id", 1L);
         }});
-        System.out.println(testFeign.getUserCard(map));
+        testFeign.testId(map);
+        System.out.println(testFeign.getUserCard(map, new Request.Options(23, TimeUnit.MILLISECONDS, 101, TimeUnit.MILLISECONDS, true)));
         return true;
     }
 }

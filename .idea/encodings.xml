@@ -7,10 +7,10 @@
     <file url="file://$PROJECT_DIR$/DynamicSharding-Arhat/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MessageNotice-Arhat/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MessageQueue-Arhat/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Metrics-Arhat/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MetricsCollector-Arhat/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/NoSql-Arhat/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/NonWebCommon-Arhat/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/PerMetricsCollector-Arhat/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/PerfMetrics-Arhat/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/QuickStart-Arhat/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/WebCommon-Arhat/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />

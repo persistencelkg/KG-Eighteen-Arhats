@@ -2,6 +2,7 @@ package org.lkg.metric.rpc.feign;
 
 import feign.Client;
 import org.lkg.core.config.EnableLongHengMetric;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -21,8 +22,8 @@ import org.springframework.core.env.Environment;
 public class FeignMetricAutoConfiguration {
 
     @Bean
-    public BeanPostProcessor feignMetricBeanProcessor(ObjectProvider<SelfFeignInterceptor> selfFeignInterceptorObjectProvider, Environment environment) {
-        return new FeignMetricBeanPostProcessor(selfFeignInterceptorObjectProvider, environment);
+    public BeanPostProcessor feignMetricBeanProcessor(ObjectProvider<SelfFeignInterceptor> selfFeignInterceptorObjectProvider, Environment environment, BeanFactory beanFactory) {
+        return new FeignMetricBeanPostProcessor(selfFeignInterceptorObjectProvider, environment, beanFactory);
     }
 
     @Bean
