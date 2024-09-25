@@ -26,14 +26,16 @@ import java.util.Set;
  */
 
 @Configuration
-@EnableCaching
-@ConfigurationProperties(prefix = "feature.cache")
+@EnableCaching // 开启缓存注入
+@ConfigurationProperties(prefix = LocalCacheConfig.PREFIX_LOCAL_CACHE)
 @ConditionalOnClass(Caffeine.class)
 @ConditionalOnProperty(value = "feature.local-cache-switch", havingValue = "1", matchIfMissing = true)
 public class LocalCacheConfig {
 
     private final static String FEATURE_CACHE_MANAGER = "simpleCacheManager";
     private Map<String, FeatureCache> config;
+
+    final static String PREFIX_LOCAL_CACHE = "feature.cache";
 
     @Data
     public static class FeatureCache {
@@ -53,13 +55,13 @@ public class LocalCacheConfig {
     private Collection<CaffeineCache> buildCaffeineCache() {
         Set<CaffeineCache> set = new HashSet<>();
         if (CollectionUtils.isEmpty(config)) {
-            throw new RuntimeException("lose config");
+            throw new RuntimeException("your open cache，but lose config for key:" + PREFIX_LOCAL_CACHE);
         }
         addCache(set, config);
         return set;
     }
 
-    private void addCache(Set<CaffeineCache> set,Map<String, FeatureCache> featureCacheMap) {
+    private void addCache(Set<CaffeineCache> set, Map<String, FeatureCache> featureCacheMap) {
         featureCacheMap.forEach((k, v) -> {
             Cache<Object, Object> build = Caffeine.newBuilder()
                     .expireAfterWrite(v.getExpireAfterWrite())

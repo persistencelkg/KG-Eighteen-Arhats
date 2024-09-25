@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import feign.Request;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.util.TimeUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.Metric;
 import org.aspectj.weaver.ast.Test;
 import org.lkg.bo.QcHolidayDict;
@@ -37,6 +38,7 @@ import static org.lkg.redis.crud.RedisService.DYNAMIC_UPDATE_BY_LUA;
  * Date: 2024/8/13 11:40 AM
  */
 @RestController
+@Slf4j
 @RequestMapping("/")
 public class TestV2 implements InitializingBean {
 
@@ -125,8 +127,9 @@ public class TestV2 implements InitializingBean {
         map.put("params", new HashMap<String, Object>() {{
             put("user_id", 1L);
         }});
-        testFeign.testId(map);
-        System.out.println(testFeign.getUserCard(map, new Request.Options(23, TimeUnit.MILLISECONDS, 101, TimeUnit.MILLISECONDS, true)));
+        log.info("test: param");
+//        testFeign.testId(map);
+        log.info("{}",(testFeign.getUserCard(map, new Request.Options(23, TimeUnit.MILLISECONDS, 101, TimeUnit.MILLISECONDS, true))));
         return true;
     }
 }

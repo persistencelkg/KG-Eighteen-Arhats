@@ -36,6 +36,7 @@ public abstract class AbstractFeignChain implements SelfFeignInterceptor.FeignCh
 
     @Override
     public Response process(Request request, Request.Options options) throws IOException {
+        // 为啥这里用迭代器，目的就是只设置1次
         if (iterator.hasNext()) {
             iterator.next().interceptor(this);
         }
