@@ -16,7 +16,7 @@ import java.util.Objects;
  * RocketMQ 生产者
  */
 @Slf4j
-@Component
+//@Component
 public class MqSendService {
 
     @Resource

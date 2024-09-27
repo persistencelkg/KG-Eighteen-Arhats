@@ -40,10 +40,18 @@
             <artifactId>NoSql-Arhat</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>MessageQueue-Arhat</artifactId>
+        </dependency>
         <!--Long Heng -->
         <dependency>
             <groupId>io.github.persistencelkg</groupId>
             <artifactId>Metrics-Arhat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>MetricsCollector-Arhat</artifactId>
         </dependency>
 
 
@@ -99,17 +107,17 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
-<!--            <version>${spring-cloud-nacos.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <version>${spring-cloud-nacos.version}</version>
+        </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.nacos</groupId>-->
-<!--            <artifactId>nacos-client</artifactId>-->
-<!--            <version>${nacos-client.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>${nacos-client.version}</version>
+        </dependency>
 
         <!--静态服务发现-->
         <dependency>
@@ -117,11 +125,11 @@
             <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
         </dependency>
 
-        <!--Apache HttpClient的依赖，目的是使用其连接池的配置 -->
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-httpclient</artifactId>
-        </dependency>
+        <!--Apache HttpClient的依赖，目的是让feign使用其连接池的配置 引入就会自动携带连接池能力 而无需其他配置 -->
+<!--        <dependency>-->
+<!--            <groupId>io.github.openfeign</groupId>-->
+<!--            <artifactId>feign-httpclient</artifactId>-->
+<!--        </dependency>-->
 
     </dependencies>
 </project>

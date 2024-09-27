@@ -8,17 +8,19 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="DynamicSharding-Arhat" />
-        <module name="WebCommon-Arhat" />
-        <module name="MessageQueue-Arhat" />
+        <module name="MetricsCollector-Arhat" />
+        <module name="EighteenArhat-spring-boot-starter" />
         <module name="NoSql-Arhat" />
-        <module name="DesignPatternApply-Arhat" />
-        <module name="PerfMetrics-Arhat" />
-        <module name="NonWebCommon-Arhat" />
         <module name="QuickStart-Arhat" />
         <module name="ApolloDynamicConfig-Arhat" />
-        <module name="PerMetricsCollector-Arhat" />
-        <module name="DataCache-Arhat" />
+        <module name="FullTrace-Arhat" />
         <module name="MessageNotice-Arhat" />
+        <module name="WebCommon-Arhat" />
+        <module name="MessageQueue-Arhat" />
+        <module name="DesignPatternApply-Arhat" />
+        <module name="NonWebCommon-Arhat" />
+        <module name="Metrics-Arhat" />
+        <module name="DataCache-Arhat" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8" />
@@ -29,12 +31,14 @@
       <module name="DataCache-Arhat" options="-parameters" />
       <module name="DesignPatternApply-Arhat" options="-parameters" />
       <module name="DynamicSharding-Arhat" options="-parameters" />
+      <module name="EighteenArhat-spring-boot-starter" options="-parameters" />
+      <module name="FullTrace-Arhat" options="-parameters" />
       <module name="MessageNotice-Arhat" options="-parameters" />
       <module name="MessageQueue-Arhat" options="-parameters" />
+      <module name="Metrics-Arhat" options="-parameters" />
+      <module name="MetricsCollector-Arhat" options="-parameters" />
       <module name="NoSql-Arhat" options="-parameters" />
       <module name="NonWebCommon-Arhat" options="-parameters" />
-      <module name="PerMetricsCollector-Arhat" options="-parameters" />
-      <module name="PerfMetrics-Arhat" options="-parameters" />
       <module name="QuickStart-Arhat" options="-parameters" />
       <module name="WebCommon-Arhat" options="-parameters" />
     </option>

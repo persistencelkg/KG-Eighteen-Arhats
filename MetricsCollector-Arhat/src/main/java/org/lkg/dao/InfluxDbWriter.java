@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Author: 李开广
  * Date: 2024/8/13 2:50 PM
  */
-@Service
+//@Service
 public class InfluxDbWriter extends AbstractDataWriter<Point>{
 
     @Resource private InfluxDbService influxDbService;

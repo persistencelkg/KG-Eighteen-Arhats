@@ -28,17 +28,18 @@ import java.util.concurrent.TimeUnit;
 public class MeterQueueService {
 
 
-    @Resource
+//    @Resource
     private DataWriter dataWriter;
-
-    @Resource
-    private MetricCollectorConfig metricCollectorConfig;
 
     private final LinkedBlockingQueue<MeterBo> meterBoQueue = new LinkedBlockingQueue<>(100000);
 
 
     public void off(MeterBo meterBo) {
         if (Objects.isNull(dataWriter) || Objects.isNull(meterBo)) {
+            return;
+        }
+        MetricCollectorConfig metricCollectorConfig = MetricCollectorConfig.getInstance();
+        if (Objects.isNull(metricCollectorConfig)) {
             return;
         }
 
@@ -59,6 +60,10 @@ public class MeterQueueService {
 
     @Scheduled(cron="0/5 * * * * ? ")
     public void flush() {
+        MetricCollectorConfig metricCollectorConfig = MetricCollectorConfig.getInstance();
+        if (Objects.isNull(metricCollectorConfig)) {
+            return;
+        }
         Integer batchSize = metricCollectorConfig.getBatchSize();
         List<MeterBo> list = new ArrayList<>((int) (batchSize * 1.5));
         while(!meterBoQueue.isEmpty()) {

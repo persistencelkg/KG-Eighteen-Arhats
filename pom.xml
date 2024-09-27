@@ -37,13 +37,25 @@
         <module>QuickStart-Arhat</module>
         <module>ApolloDynamicConfig-Arhat</module>
         <module>MetricsCollector-Arhat</module>
+        <module>FullTrace-Arhat</module>
+        <module>EighteenArhat-spring-boot-starter</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>io.github.persistencelkg</groupId>
+                <artifactId>FullTrace-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
                 <artifactId>Metrics-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
+                <artifactId>MetricsCollector-Arhat</artifactId>
                 <version>${eighteem-arhat.version}</version>
             </dependency>
             <dependency>

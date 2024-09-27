@@ -1,5 +1,6 @@
 package org.lkg.feign;
 
+import feign.Request;
 import feign.hystrix.FallbackFactory;
 import org.aspectj.weaver.ast.Test;
 import org.springframework.stereotype.Component;
@@ -16,8 +17,9 @@ public class TestCouponFeignFallBack implements FallbackFactory<TestFeign> {
     @Override
     public TestFeign create(Throwable throwable) {
         return new TestFeign() {
+
             @Override
-            public Map<String, Object> getUserCard(Map<String, Object> bikeReq) {
+            public Map<String, Object> getUserCard(Map<String, Object> bikeReq, Request.Options options) {
                 return null;
             }
 

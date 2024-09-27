@@ -16,7 +16,7 @@ import java.util.Map;
  * Author: 李开广
  * Date: 2024/8/12 8:57 PM
  */
-@Service
+//@Service
 @Slf4j
 public class InfluxDbService {
 

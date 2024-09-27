@@ -28,13 +28,13 @@ public class KafkaMetricExporter extends AbstractMetricExporter {
 
     @Override
     protected void writeMsg(List<MeterBo> list) {
-        System.out.println(list);
-//        KafkaProducerClient.getInstance().sendMsg(JacksonUtil.writeValue(list), (meta, exception) -> {
-//            if (Objects.isNull(exception)) {
-//                log.info("send kafka msg finish:{}", meta);
-//            } else {
-//                log.error("send kafka msg error", exception);
-//            }
-//        });
+//        System.out.println(list);
+        KafkaProducerClient.getInstance().sendMsg(JacksonUtil.writeValue(list), (meta, exception) -> {
+            if (Objects.isNull(exception)) {
+                log.info("send kafka msg finish:{}", meta);
+            } else {
+                log.error("send kafka msg error", exception);
+            }
+        });
     }
 }

@@ -4,7 +4,11 @@ import feign.Client;
 import feign.Contract;
 import feign.Feign;
 import org.lkg.simple.ReflectUtil;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.cloud.openfeign.FeignContext;
+import org.springframework.cloud.openfeign.ribbon.CachingSpringLoadBalancerFactory;
+import org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient;
 import org.springframework.core.env.Environment;
 
 import java.util.*;
@@ -19,11 +23,15 @@ public class FeignContextDecorator extends FeignContext {
     private final List<SelfFeignInterceptor> selfFeignInterceptors;
     private final Environment environment;
     private final FeignContext feignContext;
+    private final BeanFactory beanFactory;
+    private CachingSpringLoadBalancerFactory cachingSpringLoadBalancerFactory;
+    private SpringClientFactory springClientFactory;
 
-    public FeignContextDecorator(List<SelfFeignInterceptor> list, Environment environment, FeignContext context) {
+    public FeignContextDecorator(List<SelfFeignInterceptor> list, Environment environment, BeanFactory beanFactory, FeignContext context) {
         this.selfFeignInterceptors = new LinkedList<>(list);
         this.environment = environment;
         this.feignContext = context;
+        this.beanFactory = beanFactory;
     }
 
     @Override
@@ -35,6 +43,7 @@ public class FeignContextDecorator extends FeignContext {
             Client client = Objects.isNull(instance) ? new Client.Default(null, null) : ((Client) instance);
             return (T) new FeignClientDecorator(selfFeignInterceptors, client);
         }
+
         // 元数据的拦截
         if (Contract.class.isAssignableFrom(type)) {
             Contract contract = Objects.isNull(instance) ? new Contract.Default() : ((Contract) instance);
@@ -44,13 +53,29 @@ public class FeignContextDecorator extends FeignContext {
         if (Feign.Builder.class.isAssignableFrom(type)) {
             Feign.Builder feignBuilder = Objects.isNull(instance) ? Feign.builder() : ((Feign.Builder) instance);
             Client client = ReflectUtil.findField(feignBuilder, Client.class, "client");
-            if (client != null) {
-                feignBuilder.client(new FeignClientDecorator(selfFeignInterceptors, client));
+            if (Objects.nonNull(client)) {
+                if (client instanceof LoadBalancerFeignClient) {
+                    feignBuilder.client(new LoadBalanceFeignClientDecorator(selfFeignInterceptors, ((LoadBalancerFeignClient) client).getDelegate(), springClientFactory(), cachingSpringLoadBalancerFactory()));
+                } else {
+                    feignBuilder.client(new FeignClientDecorator(selfFeignInterceptors, client));
+                }
             }
         }
         return instance;
     }
 
+    private CachingSpringLoadBalancerFactory cachingSpringLoadBalancerFactory() {
+        if (Objects.isNull(cachingSpringLoadBalancerFactory)) {
+            cachingSpringLoadBalancerFactory = beanFactory.getBean(CachingSpringLoadBalancerFactory.class);
+        }
+        return cachingSpringLoadBalancerFactory;
+    }
+    private SpringClientFactory springClientFactory() {
+        if (Objects.isNull(springClientFactory)) {
+            springClientFactory = beanFactory.getBean(SpringClientFactory.class);
+        }
+        return springClientFactory;
+    }
 
 
     @Override

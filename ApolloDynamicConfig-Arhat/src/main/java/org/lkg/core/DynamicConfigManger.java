@@ -114,7 +114,8 @@ public class DynamicConfigManger {
     }
 
     public static <T> Set<T> toSet(String key, Class<T> clz) {
-        return new HashSet<>(toCollection(key, clz));
+        Collection<T> collection = toCollection(key, clz);
+        return ObjectUtil.isEmpty(collection) ? new HashSet<>() : new HashSet<>(collection);
     }
 
     public static List<String> toList(String key) {
@@ -122,7 +123,8 @@ public class DynamicConfigManger {
     }
 
     public static <T> List<T> toList(String key, Class<T> clz) {
-        return new ArrayList<>(toCollection(key, clz));
+        Collection<T> collection = toCollection(key, clz);
+        return ObjectUtil.isEmpty(collection) ? new ArrayList<>() : new ArrayList<>(collection);
     }
 
     public static Map<String, Object> toMap(String key) {
@@ -136,6 +138,9 @@ public class DynamicConfigManger {
 
     public static <T> Collection<T> toCollection(String key, Class<T> clz) {
         String configValue = getConfigValue(key);
+        if (ObjectUtil.isEmpty(configValue)) {
+            return null;
+        }
         StringJoiner stringJoiner = new StringJoiner(StringEnum.EMPTY, StringEnum.LEFT_SQ_BRACKET, StringEnum.RIGHT_SQ_BRACKET);
         stringJoiner.add(configValue);
         return JacksonUtil.readCollection(stringJoiner.toString(), clz);

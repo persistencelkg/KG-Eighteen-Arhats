@@ -19,6 +19,7 @@ import java.util.Objects;
 public class RedisTemplateHolder {
 
 
+    // 基于类注入的多个实例，默认不能@Resource注解注入名字，而是需要结合map or List or objectProvider去处理
     @Resource
     private Map<String, RedisTemplate<String, Object>> redisTemplateMap;
 
@@ -26,7 +27,7 @@ public class RedisTemplateHolder {
     private MoreRedisDataSourceConfig moreRedisDataSourceConfig;
 
 
-    @Bean // spring在@Bean注多个同类型接口时 默认是按名字查询，但是如果注入多个同类型class类，必须要制定优先级
+    @Bean
     public TestInterFace testOne() {
         return new TestInterFace() {};
     }

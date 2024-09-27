@@ -1,6 +1,7 @@
 package org.lkg.config;
 
 import lombok.Data;
+import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.DynamicKeyConfig;
 
 import java.util.List;
@@ -21,4 +22,7 @@ public class MetricCollectorConfig {
 
     private Integer batchSize;
 
+    public static MetricCollectorConfig getInstance() {
+        return DynamicConfigManger.getAnnotationConfig(MetricCollectorConfig.class);
+    }
 }

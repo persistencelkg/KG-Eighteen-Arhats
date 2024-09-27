@@ -1,14 +1,18 @@
 package org.lkg.test;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
+import feign.Request;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.util.TimeUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.Metric;
 import org.aspectj.weaver.ast.Test;
 import org.lkg.bo.QcHolidayDict;
 import org.lkg.bo.User;
 import org.lkg.feign.TestFeign;
+import org.lkg.kafka.biz.KafkaService;
 import org.lkg.redis.crud.RedisService;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
@@ -35,6 +39,7 @@ import static org.lkg.redis.crud.RedisService.DYNAMIC_UPDATE_BY_LUA;
  * Date: 2024/8/13 11:40 AM
  */
 @RestController
+@Slf4j
 @RequestMapping("/")
 public class TestV2 implements InitializingBean {
 
@@ -50,38 +55,39 @@ public class TestV2 implements InitializingBean {
 
     @GetMapping("/test-list")
     public String get() {
-//        kgService.execute(()-> {
-//            synchronized (TestV2.class) {
-//                try {
-//                    TimeUnit.SECONDS.sleep(20);
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
-//                System.out.println("锁释放--------");
-//            }
-//        });
 
-        // test http
-        InternalRequest postRequest = InternalRequest.createPostRequest("https://oapi.dingtalk.com/robot/send?access_token=37c083e9fffc155f5a5014cca52f01a07c8fee318da79e9a3f339bfd6a102e98", InternalRequest.BodyEnum.RAW);
-        InternalResponse server = HttpClientUtil.invoke("server", postRequest);
 
-        return  server.toString();
+        kgService.execute(() -> {
+            // test http
+            InternalRequest postRequest = InternalRequest.createPostRequest("https://oapi.dingtalk.com/robot/send?access_token=37c083e9fffc155f5a5014cca52f01a07c8fee318da79e9a3f339bfd6a102e98", InternalRequest.BodyEnum.RAW);
+            InternalResponse server = HttpClientUtil.invoke("server", postRequest);
+            log.info(">>> server:{}", server);
+        });
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+        }
+
+        return "true";
     }
 
 
-    @Resource private TestDao testDao;
+    @Resource
+    private TestDao testDao;
 
-    @Resource private TestMpService testMpService;
+    @Resource
+    private TestMpService testMpService;
 
     @GetMapping("/test-mybatis/{id}")
     public String testMybatis(@PathVariable("id") int id) {
         List<QcHolidayDict> qcHolidayDicts = testDao.listData(id);
         long aLong = (int) (Math.random() * 1000000);
-        System.out.println(testDao.insertDict(new User(aLong,UUID.randomUUID().toString(), "xxx", 1)));
+        System.out.println(testDao.insertDict(new User(aLong, UUID.randomUUID().toString(), "xxx", 1)));
         // insert
         System.out.println("test mybatis plus ------->");
         ArrayList<User> objects = Lists.newArrayList();
-        for (int i = 0; i < 10 ; i++) {
+        for (int i = 0; i < 10; i++) {
             aLong = (int) (Math.random() * 1000000);
             objects.add(new User(aLong, UUID.randomUUID().toString(), "wlkx",
                     (int) (Math.random() * 100)));
@@ -91,7 +97,8 @@ public class TestV2 implements InitializingBean {
         return qcHolidayDicts.toString();
     }
 
-    @Resource private RedisService redisService;
+    @Resource
+    private RedisService redisService;
 
     @GetMapping("/test-redis")
     public boolean testRedis() {
@@ -111,16 +118,32 @@ public class TestV2 implements InitializingBean {
     }
 
 
-    @Resource private TestFeign testFeign;
+    @Resource
+    private TestFeign testFeign;
 
     @GetMapping("/test-feign")
     public boolean testFeign() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("params", new HashMap<String, Object>(){{
+        map.put("params", new HashMap<String, Object>() {{
             put("user_id", 1L);
         }});
-        System.out.println(testFeign.getUserCard(map));
+        log.info("test: param");
+//        testFeign.testId(map);
+        log.info("{}", (testFeign.getUserCard(map, new Request.Options(23, TimeUnit.MILLISECONDS, 101, TimeUnit.MILLISECONDS, true))));
         return true;
     }
+
+
+    @Resource
+    private KafkaService kafkaService;
+
+    @GetMapping("/test-kafka/{topic}")
+    public boolean sendMsg(@PathVariable("topic") String topic) {
+        kafkaService.sendMsg(topic, "随机消息:" + UUID.randomUUID());
+        return true;
+    }
+
+
+
 }
 

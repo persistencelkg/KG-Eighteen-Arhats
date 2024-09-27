@@ -24,20 +24,22 @@ import java.util.concurrent.ExecutorService;
 @Service
 @Slf4j
 public class KafkaConsumeService {
+    private static final String METRIC_TOPIC = "metric-topic";
 
 
     private final ExecutorService executorService = TrackableThreadPoolUtil.newTrackableExecutor("longheng-consume");
 
-    @Resource  private MeterQueueService meterQueueService;
+    @Resource
+    private MeterQueueService meterQueueService;
 
 
-     @KafkaListener(topics = "user_feature_collect_topic",groupId = "longheng-group-id")
+    @KafkaListener(topics = METRIC_TOPIC, groupId = "longheng-group-id")
     public void consume(ConsumerRecord<String, String> record) {
-         if (Objects.isNull(record) || Objects.isNull(record.value()) || !record.value().contains("longheng")) {
-             log.error("topic:[user_feature_collect_topic] get a null value");
-             return;
-         }
-         log.info("topic = [{}], offset = [{}], value = [{}]", record.topic(), record.offset(), record.value());
+        if (Objects.isNull(record) || Objects.isNull(record.value()) || !record.value().contains("long-heng")) {
+            log.error("topic:[{}] get a null value", METRIC_TOPIC);
+            return;
+        }
+        log.info("topic = [{}], offset = [{}], value = [{}]", record.topic(), record.offset(), record.value());
         List<MeterBo> meterBos = JacksonUtil.readList(record.value(), MeterBo.class);
         if (ObjectUtil.isEmpty(meterBos)) {
             return;
