@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class MqRetryConfigValue {
 
-    @Value("${rocket-mq-retry-count:3")
+    @Value("${rocket-mq-retry-count:3}")
     private Integer rocketMqRetryCount;
 
 

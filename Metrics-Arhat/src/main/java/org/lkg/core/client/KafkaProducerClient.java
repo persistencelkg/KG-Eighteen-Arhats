@@ -21,7 +21,7 @@ import java.util.concurrent.Future;
 //@Component
 public class KafkaProducerClient {
 
-
+    // 具备动态更新配置能力
     private KafkaProducer<String, String> producer;
 
     private String topic;

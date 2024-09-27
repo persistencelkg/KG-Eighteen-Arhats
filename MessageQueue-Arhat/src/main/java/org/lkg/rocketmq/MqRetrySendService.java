@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  * Author: 李开广
  * Date: 2023/10/11 8:46 PM
  */
-@Service
+//@Service
 @Slf4j
 public class MqRetrySendService {
 

@@ -15,7 +15,7 @@ import java.time.Duration;
  */
 public interface CommonFilter extends Ordered {
 
-    void filter(SelfChain selfChain);
+    void filter(SelfChain selfChain) throws ServletException, IOException;
 
     interface SelfChain {
 

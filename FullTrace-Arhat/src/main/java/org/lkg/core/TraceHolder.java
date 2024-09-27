@@ -1,9 +1,12 @@
 package org.lkg.core;
 
 import org.lkg.constant.LinkKeyConst;
+import org.lkg.simple.ObjectUtil;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.ObjectProvider;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,29 @@ public class TraceHolder {
 
     public static boolean existCurrentContext() {
         return Objects.nonNull(TraceContext.getCurrentContext());
+    }
+
+
+    private final static FullLinkPropagation.Setter<Runnable> DEFAUT_SETTER = (carrier, key, val) -> {
+        Map<String, String> copyOfContextMap = MDC.getCopyOfContextMap();
+        Runnable runnable = () -> {
+            if (ObjectUtil.isNotEmpty(copyOfContextMap)) {
+                MDC.setContextMap(copyOfContextMap);
+                MDC.put(key, val);
+            }
+            try {
+                carrier.run();
+            } finally {
+                MDC.clear();
+            }
+        };
+
+        runnable.run();
+
+    };
+
+    public TraceClose newTraceScope(Runnable runnable) {
+        return newTraceScope(DEFAUT_SETTER, runnable);
     }
 
     // 需要创建传播

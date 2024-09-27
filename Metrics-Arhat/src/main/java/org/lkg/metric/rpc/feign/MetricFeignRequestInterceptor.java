@@ -29,7 +29,8 @@ public class MetricFeignRequestInterceptor implements SelfFeignInterceptor {
             log.debug("{} match {}", url, FeignMetaDataContext.getFeignMetaContext(url));
         }
         RequestTemplate requestTemplate = feignChain.request().requestTemplate();
-        requestTemplate.header(requestTemplate.feignTarget().name(), "lkgxxx");
+        // TODO 测试
+        requestTemplate.header(requestTemplate.feignTarget().name(), "test-lkg");
         try {
             return response = feignChain.process();
         } finally {
@@ -44,6 +45,6 @@ public class MetricFeignRequestInterceptor implements SelfFeignInterceptor {
 
     @Override
     public int getOrder() {
-        return HIGHEST_PRECEDENCE;
+        return HIGHEST_PRECEDENCE + 1;
     }
 }

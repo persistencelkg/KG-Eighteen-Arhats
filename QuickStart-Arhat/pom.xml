@@ -40,10 +40,18 @@
             <artifactId>NoSql-Arhat</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>MessageQueue-Arhat</artifactId>
+        </dependency>
         <!--Long Heng -->
         <dependency>
             <groupId>io.github.persistencelkg</groupId>
             <artifactId>Metrics-Arhat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>MetricsCollector-Arhat</artifactId>
         </dependency>
 
 

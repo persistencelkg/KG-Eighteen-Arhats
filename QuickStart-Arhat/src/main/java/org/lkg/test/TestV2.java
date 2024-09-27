@@ -12,6 +12,7 @@ import org.aspectj.weaver.ast.Test;
 import org.lkg.bo.QcHolidayDict;
 import org.lkg.bo.User;
 import org.lkg.feign.TestFeign;
+import org.lkg.kafka.biz.KafkaService;
 import org.lkg.redis.crud.RedisService;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
@@ -54,22 +55,21 @@ public class TestV2 implements InitializingBean {
 
     @GetMapping("/test-list")
     public String get() {
-//        kgService.execute(()-> {
-//            synchronized (TestV2.class) {
-//                try {
-//                    TimeUnit.SECONDS.sleep(20);
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
-//                System.out.println("锁释放--------");
-//            }
-//        });
 
-        // test http
-        InternalRequest postRequest = InternalRequest.createPostRequest("https://oapi.dingtalk.com/robot/send?access_token=37c083e9fffc155f5a5014cca52f01a07c8fee318da79e9a3f339bfd6a102e98", InternalRequest.BodyEnum.RAW);
-        InternalResponse server = HttpClientUtil.invoke("server", postRequest);
 
-        return server.toString();
+        kgService.execute(() -> {
+            // test http
+            InternalRequest postRequest = InternalRequest.createPostRequest("https://oapi.dingtalk.com/robot/send?access_token=37c083e9fffc155f5a5014cca52f01a07c8fee318da79e9a3f339bfd6a102e98", InternalRequest.BodyEnum.RAW);
+            InternalResponse server = HttpClientUtil.invoke("server", postRequest);
+            log.info(">>> server:{}", server);
+        });
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+        }
+
+        return "true";
     }
 
 
@@ -129,8 +129,21 @@ public class TestV2 implements InitializingBean {
         }});
         log.info("test: param");
 //        testFeign.testId(map);
-        log.info("{}",(testFeign.getUserCard(map, new Request.Options(23, TimeUnit.MILLISECONDS, 101, TimeUnit.MILLISECONDS, true))));
+        log.info("{}", (testFeign.getUserCard(map, new Request.Options(23, TimeUnit.MILLISECONDS, 101, TimeUnit.MILLISECONDS, true))));
         return true;
     }
+
+
+    @Resource
+    private KafkaService kafkaService;
+
+    @GetMapping("/test-kafka/{topic}")
+    public boolean sendMsg(@PathVariable("topic") String topic) {
+        kafkaService.sendMsg(topic, "随机消息:" + UUID.randomUUID());
+        return true;
+    }
+
+
+
 }
 

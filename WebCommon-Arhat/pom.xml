@@ -63,11 +63,11 @@
         </dependency>
         <!-- http client end -->
 
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
         <!--autoconfigure-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

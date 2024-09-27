@@ -1,4 +1,4 @@
-package org.lkg.rpc.feign;
+package org.lkg.trace;
 
 import com.google.common.collect.Lists;
 import feign.Request;
@@ -34,7 +34,7 @@ public class FeignTraceInterceptor implements SelfFeignInterceptor {
                 log.debug("key:{} exist header", key);
             }
         }
-        headers.putIfAbsent(key, Lists.newArrayList(value));
+        headers.put(key, Lists.newArrayList(value));
     };
 
     @Override
