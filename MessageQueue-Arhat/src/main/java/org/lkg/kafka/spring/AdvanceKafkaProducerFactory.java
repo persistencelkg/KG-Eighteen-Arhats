@@ -24,10 +24,10 @@ public class AdvanceKafkaProducerFactory<K, V> extends DefaultKafkaProducerFacto
         this.traceHolder = traceHolder;
     }
 
-//    @Override
+//    @Override 父层也是调用createProducer(String txIdPrefixArg) 避免多次创建
 //    public Producer<K, V> createProducer() {
 //        return (Producer<K, V>) KafkaProducerMethodInterceptor.proxyFactoryBean(super.createProducer(), traceHolder);
-//    } 父层也是调用createProducer(String txIdPrefixArg)
+//    }
 
     @Override
     public Producer<K, V> createProducer(String txIdPrefixArg) {

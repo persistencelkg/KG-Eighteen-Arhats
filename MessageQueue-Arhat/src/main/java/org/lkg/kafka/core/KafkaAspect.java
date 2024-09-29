@@ -51,7 +51,7 @@ public class KafkaAspect {
         headers.remove(key);
         headers.add(key, val.getBytes(StandardCharsets.UTF_8));
     };
-    // 对于带有回调的拦截应该从创建client的地方入手，否则无法对回调逻辑里做注入操作
+    // 对于带有回调的拦截应该从创建client的地方入手，否则无法对回调逻辑里做trace注入操作, 这是kafka底层设计决定的，像redis多集群，因为不存在回调，所以拦截对应的操作就ok了
     @Pointcut("execution(* org.springframework.kafka.core.KafkaOperations.send*(..))")
     private void baseOnSendMethod() {
     }
@@ -76,7 +76,6 @@ public class KafkaAspect {
             return KafkaProducerMethodInterceptor.proxyFactoryBean(((Producer) proceed), traceHolder);
         }
         return proceed;
-
     }
 
     @Around("baseOnSingleClusterCreateConsumer()")

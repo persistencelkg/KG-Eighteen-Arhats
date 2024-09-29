@@ -1,18 +1,11 @@
 package org.lkg.kafka.spring;
 
-import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerInterceptor;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.header.Headers;
-import org.checkerframework.checker.units.qual.K;
-import org.lkg.core.FullLinkPropagation;
-import org.lkg.core.TraceClose;
 import org.lkg.core.TraceHolder;
 import org.lkg.kafka.core.KafkaAspect;
 import org.lkg.kafka.core.MoreKafkaConfig;
+import org.lkg.kafka.core.OnEnableMoreKafka;
 import org.lkg.spring.OnTraceEnable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,10 +20,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
 /**
  * Description:
  * 1. 定制化kafka集群能力
@@ -39,6 +28,7 @@ import java.util.Map;
  * Date: 2024/9/26 9:05 PM
  */
 @Configuration
+@OnEnableMoreKafka
 @ConditionalOnClass(value = {Producer.class, Consumer.class, MoreKafkaConfig.class})
 public class CustomKafkaAutoConfiguration {
 
