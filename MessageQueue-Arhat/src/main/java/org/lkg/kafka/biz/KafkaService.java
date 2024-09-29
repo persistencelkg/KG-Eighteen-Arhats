@@ -25,6 +25,13 @@ public class KafkaService {
     @Resource
     private Map<String, KafkaTemplate<String, String>> kafkaTemplateMap;
 
+    @Resource
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    private static final String PRIMARY_CLUSTER = "primary";
+
+    private static final String SECOND_CLUSTER = "second";
+
     public KafkaTemplate<String, String> kafkaTemplate(String key) {
         return kafkaTemplateMap.get(key);
     }
@@ -32,7 +39,10 @@ public class KafkaService {
 
     public void sendMsg(String topic, String msg) {
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, msg);
-        kafkaTemplate("primary").send(record).addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+        if (Objects.nonNull(kafkaTemplate(PRIMARY_CLUSTER))) {
+            kafkaTemplate = kafkaTemplate(PRIMARY_CLUSTER);
+        }
+        kafkaTemplate.send(record).addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
             @Override
             public void onFailure(Throwable ex) {
                 log.error("topic:{} send fail, reason:{}", topic, ex.getMessage(), ex);
@@ -45,8 +55,9 @@ public class KafkaService {
         });
     }
 
+//    @KafkaListener(containerFactory = "primaryKafkaListenerContainerFactory", topics = "test-topic", groupId = "test-topic-group-id")
 
-    @KafkaListener(containerFactory = "primaryKafkaListenerContainerFactory", topics = "test-topic", groupId = "test-topic-group-id")
+    @KafkaListener(topics = "test-topic", groupId = "test-topic-group-id")
     public void consume(ConsumerRecord<String, String> record) {
         if (Objects.isNull(record) || Objects.isNull(record.value())) {
             log.error("topic:[{}] get a null value","test-topic");

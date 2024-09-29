@@ -39,7 +39,7 @@
         <file>${defaultLogPath}/${defaultLogAppName}-biz-info.log</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${defaultLogPath}/${defaultLogAppName}-info-%d{yyyy-MM-dd-HH}.log</fileNamePattern>
+            <fileNamePattern>${defaultLogPath}/${defaultLogAppName}-biz-info-%d{yyyy-MM-dd-HH}.log</fileNamePattern>
             <maxHistory>5</maxHistory>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
@@ -71,7 +71,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>
-                ${defaultLogPath}/${defaultLogAppName}-error-%d{yyyy-MM-dd-HH}.log
+                ${defaultLogPath}/${defaultLogAppName}-biz-error-%d{yyyy-MM-dd-HH}.log
             </fileNamePattern>
             <maxHistory>5</maxHistory>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>

@@ -12,7 +12,12 @@ import java.util.Objects;
 public class TraceContext implements Closeable {
 
 
-    private final static ThreadLocal<Trace> inheritableThreadLocal = InheritableThreadLocal.withInitial(() -> new Trace());
+    private final static InheritableThreadLocal<Trace> inheritableThreadLocal = new InheritableThreadLocal() {
+        @Override
+        protected Trace initialValue() {
+            return new Trace();
+        }
+    };
 
 
     public static Trace getCurrentContext() {

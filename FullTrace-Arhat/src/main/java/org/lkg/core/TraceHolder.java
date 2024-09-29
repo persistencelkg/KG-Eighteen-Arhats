@@ -50,6 +50,20 @@ public class TraceHolder {
 
     };
 
+
+    /**
+     * 在回调里使用，或者无法从外界获取的场景
+     * @return
+     */
+    public TraceClose newTraceScope() {
+        return newTraceScope((FullLinkPropagation.Setter<Object>) null, null);
+    }
+
+    /**
+     * 在嵌套线程中传递
+     * @param runnable
+     * @return
+     */
     public TraceClose newTraceScope(Runnable runnable) {
         return newTraceScope(DEFAUT_SETTER, runnable);
     }
@@ -60,8 +74,11 @@ public class TraceHolder {
         if (Objects.isNull(trace)) {
             trace = entryInjector.populateExtra(new Trace());
         }
-        DefaultPropagation<Carrier> defaultPropagation = new DefaultPropagation<>(setter);
-        defaultPropagation.propagation(trace, carrier);
+        if (Objects.nonNull(setter) && Objects.nonNull(carrier)) {
+            DefaultPropagation<Carrier> defaultPropagation = new DefaultPropagation<>(setter);
+            defaultPropagation.propagation(trace, carrier);
+        }
+
         return newTraceScope(trace);
     }
 
@@ -75,11 +92,8 @@ public class TraceHolder {
         Trace previous = TraceContext.getCurrentContext();
         TraceContext.setContext(trace);
         TraceScope decorator = decorator(trace, () -> {
-            if (Objects.isNull(previous)) {
-                TraceContext.remove();
-            } else {
-                TraceContext.setContext(previous);
-            }
+            TraceContext.remove();
+            TraceContext.setContext(previous);
         });
         return new TraceClose(trace, decorator);
     }

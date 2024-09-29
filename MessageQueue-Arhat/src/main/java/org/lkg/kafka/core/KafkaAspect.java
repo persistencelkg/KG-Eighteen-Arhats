@@ -34,10 +34,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,38 +51,38 @@ public class KafkaAspect {
         headers.remove(key);
         headers.add(key, val.getBytes(StandardCharsets.UTF_8));
     };
-
+    // 对于带有回调的拦截应该从创建client的地方入手，否则无法对回调逻辑里做trace注入操作, 这是kafka底层设计决定的，像redis多集群，因为不存在回调，所以拦截对应的操作就ok了
     @Pointcut("execution(* org.springframework.kafka.core.KafkaOperations.send*(..))")
-    private void anyProducerFactory() {
+    private void baseOnSendMethod() {
+    }
+
+    // 适合单集群方式，基于原生Template
+    @Pointcut("execution(* org.springframework.kafka.core.ProducerFactory.createProducer(..))")
+    private void baseOnSingleClusterCreateProducer() {
+    }
+
+    @Pointcut("execution(* org.springframework.kafka.core.ConsumerFactory.createConsumer(..))")
+    private void baseOnSingleClusterCreateConsumer() {
     }
 
     @Pointcut("execution(* org.springframework.kafka.config.*.createListenerContainer(..))")
     private void anyCreateListenerContainer() {
     }
 
-    @Around("anyProducerFactory()")
+    @Around("baseOnSingleClusterCreateProducer()")
     public Object wrapTraceForCreateProducer(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        Object[] args = proceedingJoinPoint.getArgs();
-        if (ObjectUtil.isEmpty(args) || !(args[0] instanceof ProducerRecord)) {
-            return proceedingJoinPoint.proceed();
+        Object proceed = proceedingJoinPoint.proceed();
+        if (Objects.nonNull(proceed) && proceed instanceof Producer) {
+            return KafkaProducerMethodInterceptor.proxyFactoryBean(((Producer) proceed), traceHolder);
         }
-        ProducerRecord<?, ?> record = (ProducerRecord<?, ?>) args[0];
-        // 透传
-        try (TraceClose traceClose = traceHolder.newTraceScope(setter, record.headers())) {
-            Object proceed = proceedingJoinPoint.proceed();
-            if (Objects.nonNull(proceed) && proceed instanceof SettableListenableFuture) {
-                return KafkaProducerMethodInterceptor.proxyFactoryBean(((SettableListenableFuture) proceed), traceHolder);
-            }
-            return proceed;
-
-        }
+        return proceed;
     }
 
-//    @Around("anyConsumerFactory()")
-//    public Object wrapTraceForCreateConsumer(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-//        return KafkaConsumerMethodInterceptor.proxyFactoryBean((Consumer<?, ?>) proceedingJoinPoint.proceed(), traceHolder);
-//
-//    }
+    @Around("baseOnSingleClusterCreateConsumer()")
+    public Object wrapTraceForCreateConsumer(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        return KafkaConsumerMethodInterceptor.proxyFactoryBean((Consumer<?, ?>) proceedingJoinPoint.proceed(), traceHolder);
+
+    }
 
 
     @Around("anyCreateListenerContainer()")

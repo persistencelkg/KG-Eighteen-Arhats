@@ -5,6 +5,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.lkg.core.TraceHolder;
 import org.lkg.kafka.core.KafkaAspect;
 import org.lkg.kafka.core.MoreKafkaConfig;
+import org.lkg.kafka.core.OnEnableMoreKafka;
 import org.lkg.spring.OnTraceEnable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,22 +28,23 @@ import org.springframework.kafka.core.KafkaTemplate;
  * Date: 2024/9/26 9:05 PM
  */
 @Configuration
+@OnEnableMoreKafka
 @ConditionalOnClass(value = {Producer.class, Consumer.class, MoreKafkaConfig.class})
 public class CustomKafkaAutoConfiguration {
 
 
     /* default bean from spring#KafkaAutoConfiguration */
     @Bean
-    public KafkaTemplate<?, ?> primary(MoreKafkaConfig moreKafkaConfig) {
+    public KafkaTemplate<?, ?> primary(MoreKafkaConfig moreKafkaConfig, TraceHolder traceHolder) {
         KafkaProperties kafkaProperties = moreKafkaConfig.getKafka().get(MoreKafkaConfig.first);
-        DefaultKafkaProducerFactory<?, ?> defaultKafkaProducerFactory = new DefaultKafkaProducerFactory<>(kafkaProperties.buildProducerProperties());
+        DefaultKafkaProducerFactory<?, ?> defaultKafkaProducerFactory = new AdvanceKafkaProducerFactory<>(traceHolder, kafkaProperties.buildProducerProperties());
         return new KafkaTemplate<>(defaultKafkaProducerFactory);
     }
 
     @Bean
-    public KafkaTemplate<?, ?> second(MoreKafkaConfig moreKafkaConfig) {
+    public KafkaTemplate<?, ?> second(MoreKafkaConfig moreKafkaConfig, TraceHolder traceHolder) {
         KafkaProperties kafkaProperties = moreKafkaConfig.getKafka().get(MoreKafkaConfig.second);
-        DefaultKafkaProducerFactory<?, ?> defaultKafkaProducerFactory = new DefaultKafkaProducerFactory<>(kafkaProperties.buildProducerProperties());
+        DefaultKafkaProducerFactory<?, ?> defaultKafkaProducerFactory = new AdvanceKafkaProducerFactory<>(traceHolder, kafkaProperties.buildProducerProperties());
         return new KafkaTemplate<>(defaultKafkaProducerFactory);
     }
 
@@ -77,7 +79,6 @@ public class CustomKafkaAutoConfiguration {
     }
 
 
-
     @Configuration
     @OnTraceEnable
     static class TraceKafkaConfiguration {
@@ -87,5 +88,7 @@ public class CustomKafkaAutoConfiguration {
         public KafkaAspect kafkaAspect(TraceHolder traceHolder) {
             return new KafkaAspect(traceHolder);
         }
+
+//        ProducerInterceptor 仅仅适合不需要构造参数能扩展对象的请问，因为内部通过class名字反射创建
     }
 }
