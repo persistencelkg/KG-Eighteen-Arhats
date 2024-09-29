@@ -3,24 +3,20 @@ package org.lkg.kafka.spring;
 import lombok.AllArgsConstructor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.header.Header;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.header.Headers;
-import org.checkerframework.checker.units.qual.K;
-import org.lkg.core.*;
+import org.lkg.core.FullLinkPropagation;
+import org.lkg.core.Trace;
+import org.lkg.core.TraceClose;
+import org.lkg.core.TraceHolder;
 import org.springframework.aop.framework.ProxyFactoryBean;
-import org.springframework.kafka.core.KafkaOperations;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.util.concurrent.SettableListenableFuture;
 
-import java.lang.reflect.Method;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Description:
@@ -36,7 +32,9 @@ public class KafkaProducerMethodInterceptor<K, V> implements MethodInterceptor {
       headers.add(key, val.getBytes(StandardCharsets.UTF_8));
     };
 
-    private final static String method= "addCallback";
+
+//    private final static String method= "addCallback";
+    private final static String method= "send";
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -47,16 +45,28 @@ public class KafkaProducerMethodInterceptor<K, V> implements MethodInterceptor {
         if (args == null || args.length == 0) {
             return invocation.proceed();
         }
-        ListenableFutureCallback arg = (ListenableFutureCallback) args[0];
+        ProducerRecord<?, ?> arg = (ProducerRecord) args[0];
 
         // 透传
-        try (TraceClose traceClose = traceHolder.newTraceScope(TraceContext.getCurrentContext())) {
+        try (TraceClose traceClose = traceHolder.newTraceScope(setter, arg.headers())) {
+            if (args[1] instanceof Callback) {
+                args[1] = wrapCallBackWithTrace(((Callback) args[1]), traceHolder, traceClose);
+            }
             return invocation.proceed();
         }
     }
 
+    private Callback wrapCallBackWithTrace(Callback arg, TraceHolder traceHolder, TraceClose trace) {
+        return (metadata, exception) -> {
+            try (TraceClose traceClose = traceHolder.newTraceScope(trace.getTrace())) {
+                arg.onCompletion(metadata, exception);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
 
-    public static <K, V> Object proxyFactoryBean(SettableListenableFuture template, TraceHolder traceHolder) {
+    public static <K, V> Object proxyFactoryBean(Producer<K, V> template, TraceHolder traceHolder) {
         ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
         // 是否直接代理，默认代理接口
         proxyFactoryBean.setProxyTargetClass(true);
