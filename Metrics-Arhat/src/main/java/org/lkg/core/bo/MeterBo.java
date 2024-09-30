@@ -1,5 +1,6 @@
 package org.lkg.core.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micrometer.core.instrument.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -75,6 +76,8 @@ public class MeterBo {
         tagMap.put(tag.getKey(), tag.getValue());
     }
 
+
+    @JsonIgnore
     public Map<String, String> getNotInternalTag() {
         HashMap<String, String> map = new HashMap<>(tagMap);
         INTERNAL_TAG.forEach(map::remove);

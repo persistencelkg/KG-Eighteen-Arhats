@@ -1,9 +1,6 @@
 package org.lkg.kafka.spring;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
-import org.checkerframework.checker.units.qual.K;
 import org.lkg.core.TraceHolder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 
