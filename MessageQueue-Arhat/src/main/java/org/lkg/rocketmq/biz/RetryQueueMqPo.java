@@ -1,4 +1,4 @@
-package org.lkg.rocketmq;
+package org.lkg.rocketmq.biz;
 
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +20,6 @@ public class RetryQueueMqPo {
 
     private String env;
 
-    private String desc;
 
     private LocalDateTime createTime;
 

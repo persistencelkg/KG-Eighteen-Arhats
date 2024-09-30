@@ -1,4 +1,4 @@
-package org.lkg.rocketmq;
+package org.lkg.rocketmq.biz;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class MqRetryConfigValue {
 
-    @Value("${rocket-mq-retry-count:3}")
+    @Value("${rocket-mq-retry-count:2}")
     private Integer rocketMqRetryCount;
 
 

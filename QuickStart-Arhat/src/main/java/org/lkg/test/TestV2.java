@@ -16,6 +16,8 @@ import org.lkg.kafka.biz.KafkaService;
 import org.lkg.redis.crud.RedisService;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
+import org.lkg.rocketmq.biz.MqRetryConfigValue;
+import org.lkg.rocketmq.biz.MqRetrySendService;
 import org.lkg.utils.http.httpclient.HttpClientUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -140,6 +142,16 @@ public class TestV2 implements InitializingBean {
     @GetMapping("/test-kafka/{topic}")
     public boolean sendMsg(@PathVariable("topic") String topic) {
         kafkaService.sendMsg(topic, "随机消息:" + UUID.randomUUID());
+        return true;
+    }
+
+    @Resource
+    private MqRetrySendService mqRetrySendService;
+
+    @GetMapping("/test-rocket/{topic}")
+    public boolean sendRocketMsg(@PathVariable("topic") String topic) {
+        mqRetrySendService.sendWithRetry(topic, "随机rocket消息:" + UUID.randomUUID());
+        mqRetrySendService.asyncSendWithRetry(topic, "异步随机rocket消息:" + UUID.randomUUID());
         return true;
     }
 

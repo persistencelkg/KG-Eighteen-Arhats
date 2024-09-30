@@ -1,37 +1,49 @@
-package org.lkg.rocketmq;
+package org.lkg.rocketmq.biz;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.lkg.simple.ObjectUtil;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * RocketMQ 生产者
+ *
  */
 @Slf4j
-//@Component
+@Component
 public class MqSendService {
 
     @Resource
     private RocketMQTemplate rocketMQTemplate;
 
+    @Resource private Map<String, RocketMQTemplate> rocketMQTemplateMap;
+
+    public RocketMQTemplate rocketMQTemplate(String key) {
+        if (rocketMQTemplateMap.containsKey(key)) {
+            return rocketMQTemplateMap.get(key);
+        }
+        return rocketMQTemplate;
+    }
+
     /**
-     * 异步发送，不保证可靠交付
+     * 简单同步发送
      *
-     * @param topic   topic
+     * @param topic   topic tag发送格式 topic:TAG
      * @param message 消息体
      */
-    public void asyncSendUnsafely(String topic, Object message) {
+    public void syncSend(String topic, Object message) {
         try {
             this.rocketMQTemplate.convertAndSend(topic, message);
-            log.info("非可靠异步消息发送完成：topic:{}, message = {}", topic, message);
+            log.info("sync send message success：topic:{}, message = {}", topic, message);
         } catch (MessagingException e) {
             log.error(e.getMessage(), e);
         }
@@ -43,11 +55,11 @@ public class MqSendService {
      * @param topic   topic
      * @param message 消息体
      */
-    public boolean sendMessage(String topic, Object message, Long timeout, String desc) {
+    public boolean syncSendWithTimeOut(String topic, Object message, Long timeout) {
         try {
-            SendResult sendResult = this.rocketMQTemplate.syncSend(topic, message,
+            SendResult sendResult = rocketMQTemplate("primary").syncSend(topic, message,
                     Objects.nonNull(timeout) ? timeout : rocketMQTemplate.getProducer().getSendMsgTimeout());
-            log.info("[{}]同步发送消息完成：topic:{}, message:{}, sendResult status:{}", desc, topic, message, sendResult.getSendStatus().toString());
+            log.info("send with timeout:{} success：topic:{}, message:{}, sendResult status:{}",  timeout, topic, message, sendResult.getSendStatus().toString());
             return SendStatus.SEND_OK == sendResult.getSendStatus();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -64,22 +76,22 @@ public class MqSendService {
      * @param timeout        超时时间
      * @param delayLevelEnum 延时等级
      */
-    public boolean asyncSend(String topic, Object message, DelayLevelEnum delayLevelEnum, Long timeout, String desc) {
+    public boolean asyncSend(String topic, Object message, DelayLevelEnum delayLevelEnum, Long timeout) {
         final boolean[] result = {true};
         try {
             SendCallback sendCallback = new SendCallback() {
                 @Override
                 public void onSuccess(SendResult sendResult) {
-                    log.info("[{}]异步-发送延时消息成功，topic:{}, msgId:{}, message:{}", desc, topic, sendResult.getMsgId(), message);
+                    log.info("async send delay message success，topic:{}, msgId:{}, message:{}", topic, sendResult.getMsgId(), message);
                 }
 
                 @Override
                 public void onException(Throwable e) {
-                    log.warn("[{}]异步发送延时消息发生异常，exception{}", desc, e.getMessage(), e);
+                    log.warn("async send delay message error:{}", e.getMessage(), e);
                     result[0] = false;
                 }
             };
-            this.rocketMQTemplate.asyncSend(
+            rocketMQTemplate("primary").asyncSend(
                     topic,
                     MessageBuilder.withPayload(message).build(),
                     sendCallback,
@@ -98,14 +110,14 @@ public class MqSendService {
      *
      * @param topic topic
      */
-    public boolean syncSendOrderly(String topic, Object payload, String hashKey, String desc) {
+    public boolean syncSendOrderly(String topic, Object payload, String hashKey) {
         SendResult sendResult = null;
         try {
             sendResult = this.rocketMQTemplate.syncSendOrderly(
                     topic,
                     MessageBuilder.withPayload(payload).build(),
                     hashKey);
-            log.info("{desc}同步顺序发送消息完成：topic:{}, msgId:{} message:{}, sendResult:{}", topic, sendResult.getMsgId(), payload, sendResult.getSendStatus().toString());
+            log.info("send orderly msg success：topic:{}, msgId:{} message:{}, sendResult:{}", topic, sendResult.getMsgId(), payload, sendResult.getSendStatus().toString());
             return sendResult.getSendStatus() == SendStatus.SEND_OK;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -113,22 +125,7 @@ public class MqSendService {
         return false;
     }
 
-
-
-    public boolean syncSend(String topic, Object message, DelayLevelEnum level, Long timeout, String desc) {
-        return asyncSend(topic, message, level, timeout, desc);
+    public boolean asyncSendFast(String topic, Object message) {
+        return asyncSend(topic, message, DelayLevelEnum.FIRST_0S, null);
     }
-
-    public boolean asyncSend(String topic, Object message, DelayLevelEnum level, String desc) {
-        return syncSend(topic, message, level, null, desc);
-    }
-
-    public boolean asyncSend(String topic, Object message, String desc) {
-        return asyncSend(topic, message, DelayLevelEnum.FIRST_0S, null, desc);
-    }
-
-    public boolean sendMessage(String topic, Object message, String desc) {
-        return sendMessage(topic, message, null, desc);
-    }
-
 }

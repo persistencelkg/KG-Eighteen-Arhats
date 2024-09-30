@@ -1,4 +1,4 @@
-package org.lkg.rocketmq;
+package org.lkg.rocketmq.biz;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
