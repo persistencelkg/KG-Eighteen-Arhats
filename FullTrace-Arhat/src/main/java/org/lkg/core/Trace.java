@@ -67,7 +67,6 @@ public class Trace {
         if (ObjectUtil.isEmpty(key) || ObjectUtil.isEmpty(val)) {
             return null;
         }
-        ExtraEntryManager.addExtra(key, val);
         return extraMap.putIfAbsent(key, val);
     }
 

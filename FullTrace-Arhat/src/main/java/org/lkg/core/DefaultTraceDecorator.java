@@ -25,8 +25,14 @@ public class DefaultTraceDecorator implements TraceDecorator {
         // set trace
         if (Objects.nonNull(trace)) {
             MDC.put(LinkKeyConst.TRACE_ID, trace.getTraceId());
+            if (!trace.getExtraMap().isEmpty()) {
+                trace.getExtraMap().forEach(MDC::put);
+            }
         } else {
             MDC.remove(LinkKeyConst.TRACE_ID);
+            if (!trace.getExtraMap().isEmpty()) {
+                trace.getExtraMap().keySet().forEach(MDC::remove);
+            }
         }
         return () -> {
             // 这么做是考虑多个装饰器，会存在链式装饰
