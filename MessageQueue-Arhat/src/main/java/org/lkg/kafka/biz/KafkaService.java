@@ -25,7 +25,7 @@ public class KafkaService {
     @Resource
     private Map<String, KafkaTemplate<String, String>> kafkaTemplateMap;
 
-    @Resource
+//    @Resource
     private KafkaTemplate<String, String> kafkaTemplate;
 
     private static final String PRIMARY_CLUSTER = "primary";

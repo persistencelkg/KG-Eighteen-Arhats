@@ -12,6 +12,7 @@ import org.apache.rocketmq.spring.support.RocketMQMessageConverter;
 import org.apache.rocketmq.spring.support.RocketMQUtil;
 import org.lkg.core.TraceHolder;
 import org.lkg.rocketmq.core.MoreRocketMqConfig;
+import org.lkg.rocketmq.core.OnEnableMoreRocket;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
@@ -19,7 +20,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 
-//@OnEnableMoreRocket
+@OnEnableMoreRocket
 @Configuration
 public class MoreRocketAutoConfiguration {
 
