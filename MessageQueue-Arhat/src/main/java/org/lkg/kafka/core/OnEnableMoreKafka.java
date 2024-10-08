@@ -12,6 +12,6 @@ import java.lang.annotation.*;
 @Target(value = ElementType.TYPE)
 @Documented
 @Retention(value = RetentionPolicy.RUNTIME)
-@ConditionalOnProperty(prefix = "more", value = {"kafka"})
+@ConditionalOnProperty(name = "more.kafka.enable", havingValue = "1", matchIfMissing = true)
 public @interface OnEnableMoreKafka {
 }

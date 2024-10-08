@@ -1,5 +1,6 @@
 package org.lkg.rocketmq.core;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.lang.annotation.*;
@@ -12,6 +13,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@ConditionalOnProperty(prefix = "more", value = "rocketmq")
+@ConditionalOnClass(MoreRocketMqConfig.class)
+@ConditionalOnProperty(name = "more.rocketmq.enable", havingValue = "1", matchIfMissing = true)
 public @interface OnEnableMoreRocket {
 }
