@@ -13,6 +13,7 @@ import org.apache.rocketmq.spring.support.RocketMQUtil;
 import org.lkg.core.TraceHolder;
 import org.lkg.rocketmq.core.MoreRocketMqConfig;
 import org.lkg.rocketmq.core.OnEnableMoreRocket;
+import org.lkg.simple.RegxUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
@@ -26,23 +27,24 @@ public class MoreRocketAutoConfiguration {
 
     @Resource private TraceHolder traceHolder;
 
-    @Bean
-    public RocketMQTemplate primary(RocketMQMessageConverter rocketMQMessageConverter, MoreRocketMqConfig moreRocketMqConfig) throws MQClientException {
+    @Bean(name = MoreRocketMqConfig.primary)
+    public RocketMQTemplate primaryRocket(RocketMQMessageConverter rocketMQMessageConverter, MoreRocketMqConfig moreRocketMqConfig) throws MQClientException {
         RocketMQTemplate rocketMQTemplate = new RocketMQTemplate();
         rocketMQTemplate.setMessageConverter(rocketMQMessageConverter.getMessageConverter());
-        RocketMQProperties rocketMQProperties = moreRocketMqConfig.getConfig().get(MoreRocketMqConfig.primary);
-        rocketMQTemplate.setProducer(createProducerWithConfig(MoreRocketMqConfig.primary, rocketMQProperties));
-        rocketMQTemplate.setConsumer(createConsumerWithConfig(MoreRocketMqConfig.primary, rocketMQProperties));
+        RocketMQProperties rocketMQProperties = moreRocketMqConfig.getConfig().get(RegxUtil.camelToMinus(MoreRocketMqConfig.primary));
+        rocketMQTemplate.setProducer(createProducerWithConfig(RegxUtil.camelToMinus(MoreRocketMqConfig.primary), rocketMQProperties));
+        rocketMQTemplate.setConsumer(createConsumerWithConfig(RegxUtil.camelToMinus(MoreRocketMqConfig.primary), rocketMQProperties));
         return rocketMQTemplate;
     }
 
-    @Bean
-    public RocketMQTemplate second(RocketMQMessageConverter rocketMQMessageConverter, MoreRocketMqConfig moreRocketMqConfig) throws MQClientException {
+
+    @Bean(name = MoreRocketMqConfig.second)
+    public RocketMQTemplate secondRocket(RocketMQMessageConverter rocketMQMessageConverter, MoreRocketMqConfig moreRocketMqConfig) throws MQClientException {
         RocketMQTemplate rocketMQTemplate = new RocketMQTemplate();
         rocketMQTemplate.setMessageConverter(rocketMQMessageConverter.getMessageConverter());
-        RocketMQProperties rocketMQProperties = moreRocketMqConfig.getConfig().get(MoreRocketMqConfig.second);
-        rocketMQTemplate.setProducer(createProducerWithConfig(MoreRocketMqConfig.second, rocketMQProperties));
-        rocketMQTemplate.setConsumer(createConsumerWithConfig(MoreRocketMqConfig.primary, rocketMQProperties));
+        RocketMQProperties rocketMQProperties = moreRocketMqConfig.getConfig().get(RegxUtil.camelToMinus(MoreRocketMqConfig.second));
+        rocketMQTemplate.setProducer(createProducerWithConfig(RegxUtil.camelToMinus(MoreRocketMqConfig.second), rocketMQProperties));
+        rocketMQTemplate.setConsumer(createConsumerWithConfig(RegxUtil.camelToMinus(MoreRocketMqConfig.second), rocketMQProperties));
         return rocketMQTemplate;
     }
 
@@ -54,9 +56,9 @@ public class MoreRocketAutoConfiguration {
         String nameServer = rocketMQProperties.getNameServer();
         String groupName = consumerConfig.getGroup();
         String topicName = consumerConfig.getTopic();
-        Assert.hasText(nameServer, "cluster" + primary + " [rocketmq.name-server] must not be null");
-        Assert.hasText(groupName, "cluster" + primary + " [rocketmq.consumer.group] must not be null");
-        Assert.hasText(topicName, "cluster" + primary + " [rocketmq.consumer.topic] must not be null");
+        Assert.hasText(nameServer, "cluster " + primary + " [rocketmq.name-server] must not be null");
+        Assert.hasText(groupName, "cluster " + primary + " [rocketmq.consumer.group] must not be null");
+        Assert.hasText(topicName, "cluster " + primary + " [rocketmq.consumer.topic] must not be null");
 
         String accessChannel = rocketMQProperties.getAccessChannel();
         MessageModel messageModel = MessageModel.valueOf(consumerConfig.getMessageModel());

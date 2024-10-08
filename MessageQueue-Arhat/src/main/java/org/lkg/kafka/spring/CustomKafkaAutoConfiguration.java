@@ -6,12 +6,14 @@ import org.lkg.core.TraceHolder;
 import org.lkg.kafka.core.KafkaAspect;
 import org.lkg.kafka.core.MoreKafkaConfig;
 import org.lkg.kafka.core.OnEnableMoreKafka;
+import org.lkg.simple.RegxUtil;
 import org.lkg.spring.OnTraceEnable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.kafka.ConcurrentKafkaListenerContainerFactoryConfigurer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -34,16 +36,16 @@ public class CustomKafkaAutoConfiguration {
 
 
     /* default bean from spring#KafkaAutoConfiguration */
-    @Bean
+    @Bean(name = MoreKafkaConfig.first)
     public KafkaTemplate<?, ?> primary(MoreKafkaConfig moreKafkaConfig, TraceHolder traceHolder) {
-        KafkaProperties kafkaProperties = moreKafkaConfig.getKafka().get(MoreKafkaConfig.first);
+        KafkaProperties kafkaProperties = moreKafkaConfig.getKafka().get(RegxUtil.camelToMinus(MoreKafkaConfig.first));
         DefaultKafkaProducerFactory<?, ?> defaultKafkaProducerFactory = new AdvanceKafkaProducerFactory<>(traceHolder, kafkaProperties.buildProducerProperties());
         return new KafkaTemplate<>(defaultKafkaProducerFactory);
     }
 
-    @Bean
+    @Bean(name = MoreKafkaConfig.second)
     public KafkaTemplate<?, ?> second(MoreKafkaConfig moreKafkaConfig, TraceHolder traceHolder) {
-        KafkaProperties kafkaProperties = moreKafkaConfig.getKafka().get(MoreKafkaConfig.second);
+        KafkaProperties kafkaProperties = moreKafkaConfig.getKafka().get(RegxUtil.camelToMinus(MoreKafkaConfig.second));
         DefaultKafkaProducerFactory<?, ?> defaultKafkaProducerFactory = new AdvanceKafkaProducerFactory<>(traceHolder, kafkaProperties.buildProducerProperties());
         return new KafkaTemplate<>(defaultKafkaProducerFactory);
     }
@@ -58,7 +60,7 @@ public class CustomKafkaAutoConfiguration {
             ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory,
             MoreKafkaConfig moreKafkaConfig) {
         ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        KafkaProperties kafkaProperties = moreKafkaConfig.getKafka().get(MoreKafkaConfig.first);
+        KafkaProperties kafkaProperties =  moreKafkaConfig.getKafka().get(RegxUtil.camelToMinus(MoreKafkaConfig.first));
         configurer.configure(factory, kafkaConsumerFactory
                 .getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties())));
         return factory;
@@ -72,7 +74,7 @@ public class CustomKafkaAutoConfiguration {
             ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory,
             MoreKafkaConfig moreKafkaConfig) {
         ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        KafkaProperties kafkaProperties = moreKafkaConfig.getKafka().get(MoreKafkaConfig.second);
+        KafkaProperties kafkaProperties =  moreKafkaConfig.getKafka().get(RegxUtil.camelToMinus(MoreKafkaConfig.second));
         configurer.configure(factory, kafkaConsumerFactory
                 .getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties())));
         return factory;
