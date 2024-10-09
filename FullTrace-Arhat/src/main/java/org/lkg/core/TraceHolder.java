@@ -53,6 +53,7 @@ public class TraceHolder {
 
     /**
      * 在回调里使用，或者无法从外界获取的场景
+     *
      * @return
      */
     public TraceClose newTraceScope() {
@@ -61,6 +62,7 @@ public class TraceHolder {
 
     /**
      * 在嵌套线程中传递
+     *
      * @param runnable
      * @return
      */
@@ -72,7 +74,7 @@ public class TraceHolder {
     public <Carrier> TraceClose newTraceScope(FullLinkPropagation.Setter<Carrier> setter, Carrier carrier) {
         Trace trace = TraceContext.getCurrentContext();
         if (Objects.isNull(trace)) {
-            trace = entryInjector.populateExtra(new Trace());
+            trace = new Trace();
         }
         if (Objects.nonNull(setter) && Objects.nonNull(carrier)) {
             DefaultPropagation<Carrier> defaultPropagation = new DefaultPropagation<>(setter);
@@ -89,6 +91,8 @@ public class TraceHolder {
 
     // 自带传播特性
     public TraceClose newTraceScope(Trace trace) {
+        // 携带额外信息
+        trace = entryInjector.populateExtra(trace);
         Trace previous = TraceContext.getCurrentContext();
         TraceContext.setContext(trace);
         TraceScope decorator = decorator(trace, () -> {

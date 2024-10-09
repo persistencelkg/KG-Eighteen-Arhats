@@ -113,7 +113,7 @@ public class ObjectUtil {
     public static void main(String[] args) {
         int classz = 3;
         System.out.println(Stream.of(float.class, Number.class).anyMatch(Integer.class::isAssignableFrom));
-        System.out.println(camelToUnderline("OrderTale"));
+        System.out.println(camelToUnderline("OrderTTale"));
 
         ObjectNode jsonNodes = new ObjectNode(JsonNodeFactory.instance);
         jsonNodes.put("type", "lkg");

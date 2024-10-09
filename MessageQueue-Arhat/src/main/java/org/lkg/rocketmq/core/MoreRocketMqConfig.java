@@ -19,8 +19,8 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "more.rocketmq")
 public class MoreRocketMqConfig {
 
-    public static final String primary = "primary";
-    public static final String second = "second";
+    public static final String primary = "primaryRocket";
+    public static final String second = "secondRocket";
 
     private Map<String, RocketMQProperties> config;
 

@@ -1,6 +1,8 @@
 package org.lkg.elastic_search.crud.demo;
 
 import lombok.Data;
+import org.lkg.elastic_search.enums.EsFieldType;
+import org.lkg.elastic_search.enums.TextIndex;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -16,8 +18,8 @@ public class Orders implements Serializable {
 
     private long age;
 
-    private BigDecimal fee;
-
     private Date startTime;
 
+    @TextIndex(value = EsFieldType.KEYWORD)
+    private String text;
 }

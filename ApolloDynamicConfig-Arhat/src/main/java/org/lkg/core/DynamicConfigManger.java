@@ -127,9 +127,14 @@ public class DynamicConfigManger {
         return ObjectUtil.isEmpty(collection) ? new ArrayList<>() : new ArrayList<>(collection);
     }
 
-    public static Map<String, Object> toMap(String key) {
+    public static Map<String, String> toMap(String key) {
+        return toMap(key, String.class, String.class);
+    }
+
+    public static Map<String, Object> toMapObj(String key) {
         return toMap(key, String.class, Object.class);
     }
+
 
     public static <K, V> Map<K, V> toMap(String key, Class<K> keyClass, Class<V> valClass) {
         String configValue = getConfigValue(key);

@@ -1,10 +1,6 @@
 package org.lkg.elastic_search.crud;
 
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.common.settings.Settings;
 
 import java.util.Collection;
 import java.util.List;

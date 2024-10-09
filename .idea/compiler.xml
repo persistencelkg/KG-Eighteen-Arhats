@@ -37,7 +37,7 @@
       <module name="MessageQueue-Arhat" options="-parameters" />
       <module name="Metrics-Arhat" options="-parameters" />
       <module name="MetricsCollector-Arhat" options="-parameters" />
-      <module name="NoSql-Arhat" options="-parameters" />
+      <module name="NoSql-Arhat" options="-parameters -XDignore.symbol.file" />
       <module name="NonWebCommon-Arhat" options="-parameters" />
       <module name="QuickStart-Arhat" options="-parameters" />
       <module name="WebCommon-Arhat" options="-parameters" />

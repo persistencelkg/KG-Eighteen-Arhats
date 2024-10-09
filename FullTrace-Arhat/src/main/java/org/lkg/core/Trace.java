@@ -34,6 +34,7 @@ public class Trace {
     public Trace(String tid) {
         this.traceId = ObjectUtil.isEmpty(tid) ? newTraceId() : tid;
         this.extraMap = new ConcurrentHashMap<>();
+        // 决定是否在SETTER中透传信息
         this.fullLinkKeySet = DynamicConfigManger.initAndRegistChangeEvent("full.link.key", DynamicConfigManger::toSet, this::reSet);
 
     }
@@ -67,7 +68,6 @@ public class Trace {
         if (ObjectUtil.isEmpty(key) || ObjectUtil.isEmpty(val)) {
             return null;
         }
-        ExtraEntryManager.addExtra(key, val);
         return extraMap.putIfAbsent(key, val);
     }
 
