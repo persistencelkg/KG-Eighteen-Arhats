@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * Author: 李开广
  * Date: 2024/7/2 4:21 PM
  */
-@SpringBootTest
+@SpringBootTest(classes = QuickStartApplication.class)
 @RunWith(SpringRunner.class)
 public abstract class TestBase {
 }

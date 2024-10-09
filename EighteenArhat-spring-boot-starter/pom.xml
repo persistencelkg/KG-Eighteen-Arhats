@@ -16,6 +16,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--重写parent#spring-boot-dependencies # elasticsearch version 只能在父项目里定义好，不能在子目录-->
+        <elasticsearch.version>6.4.2</elasticsearch.version>
     </properties>
 
     <dependencies>

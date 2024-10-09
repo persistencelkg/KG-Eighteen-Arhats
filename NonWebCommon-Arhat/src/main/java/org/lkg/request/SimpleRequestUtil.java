@@ -1,6 +1,5 @@
 package org.lkg.request;
 
-import com.sun.deploy.util.URLUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.lkg.simple.IOStreamUtil;
@@ -16,8 +15,6 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.util.*;
-
-import static com.sun.deploy.net.HttpUtils.isRedirect;
 
 /**
  * Description:
@@ -121,7 +118,7 @@ public class SimpleRequestUtil {
                         var8 = new URL(var6, UrlUtil.encodeURLPath(new String(var7.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8), false, true));
                     }
 
-                    if (var6 != null && var8 != null && !URLUtil.sameURLs(var6, var8)) {
+                    if (var6 != null && var8 != null && !Objects.equals(var6, var8)) {
                         redirectUrlMap.add(var8.toString());
                     }
 
@@ -143,6 +140,11 @@ public class SimpleRequestUtil {
         } else {
             return new RedirectInfo(redirectUrlMap, (HttpURLConnection) var0);
         }
+    }
+
+
+    public static boolean isRedirect(int var0) {
+        return var0 >= 300 && var0 <= 305 && var0 != 304;
     }
 
     @Data
@@ -182,11 +184,16 @@ public class SimpleRequestUtil {
 
     public static void main(String[] args) {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("url", "{{test-sgcx-pay-data-sync-8088}}/sys/");
-        InternalResponse response = request(InternalRequest.createGetRequest("http://dev-inside-gray-admin.songguo7.com/gray-server-admin/health/ip", InternalRequest.BodyEnum.RAW, map));
-        System.out.println(response);
+//        map.put("url", "{{test-sgcx-pay-data-sync-8088}}/sys/");
+        InternalResponse response = request(InternalRequest.createGetRequest("https://tools.liumingye.cn/music/#/", InternalRequest.BodyEnum.HTML,null));
+
+        System.out.println(response.getResult());
+//        System.out.println(response);
         String s = UrlUtil.encodeUrl("http://dev-inside.com/ 1");
         System.out.println();
         System.out.println(UrlUtil.decodeUrl(s));
+
+
+
     }
 }

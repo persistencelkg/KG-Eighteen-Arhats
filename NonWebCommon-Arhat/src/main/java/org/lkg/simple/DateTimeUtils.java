@@ -113,6 +113,10 @@ public class DateTimeUtils {
         return TIME_CONVERT_TO_STR.apply(temporalAccessor, pattern);
     }
 
+    public static String getCurrentTime() {
+        return timeConvertToString(LocalDateTime.now());
+    }
+
     public static String timeConvertToString(TemporalAccessor temporalAccessor) {
         return timeConvertToString(temporalAccessor, YYYY_MM_DD_HH_MM_SS);
     }

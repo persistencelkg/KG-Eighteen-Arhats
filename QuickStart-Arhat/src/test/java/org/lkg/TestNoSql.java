@@ -53,7 +53,12 @@ public class TestNoSql extends TestBase {
 
     @Test
     public void testEsApi() {
-        esMetaApIService.createIndex(order, "order", Orders.class);
+//        System.out.println(esMetaApIService.createIndex(order, Orders.class));
+//        System.out.println(esMetaApIService.existIndex(order, Orders.class));
+//        System.out.println(esMetaApIService.addColumnForIndex(order, "_doc", Orders.class));
+        System.out.println("----- 上面测试都是通过的 ---------");
+
+        System.out.println(esMetaApIService.createOrUpdateIndexTemplate(order,"order_tmpl", "order_*", Orders.class));
     }
 
     @Test
@@ -62,7 +67,7 @@ public class TestNoSql extends TestBase {
         Orders orders = new Orders();
         orders.setAge(3);
         orders.setName(null);
-        orders.setFee(BigDecimal.TEN);
+//        orders.setFee(BigDecimal.TEN);
         orders.setStartTime(new Date(System.currentTimeMillis()));
 
         // test set

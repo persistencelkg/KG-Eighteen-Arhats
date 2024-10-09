@@ -25,12 +25,9 @@ import java.util.Collection;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-//@Component
 public class QueryContext {
 
-    private int size = 500;
-    private int retrySize = 3;
-    private int sleepMillSecond = 500;
+    private int size = 10;
     private String indexName;
     private String indexType;
     private String[] fetchColumns;

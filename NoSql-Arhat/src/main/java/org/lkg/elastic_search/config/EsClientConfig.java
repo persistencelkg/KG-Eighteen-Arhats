@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @ConfigurationProperties(prefix = "es-config")
 @ConditionalOnClass(RestHighLevelClient.class)
-@ConditionalOnProperty(value = "es-config.enable", havingValue = "1", matchIfMissing = false)
+@ConditionalOnProperty(value = "es-config.enable", havingValue = "1", matchIfMissing = true)
 @Slf4j
 public class EsClientConfig {
 
