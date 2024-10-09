@@ -4,7 +4,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Description: ES Index API、Update API、GET API、Update/Delete By Query API
@@ -13,10 +12,11 @@ import java.util.Map;
  */
 public interface EsApIService<T> {
 
-    boolean createDocumentIfAbsent(RestHighLevelClient client, T obj);
+    boolean saveOrUpdateDocument(RestHighLevelClient client, String index, String type, String id, T obj);
 
-    boolean updateDocument(RestHighLevelClient client, T obj);
-
+    default boolean saveOrUpdateDocument(RestHighLevelClient client, String index, String id, T obj) {
+        return saveOrUpdateDocument(client, index, EsMetaApIService.DEFAULT_TYPE, id, obj);
+    }
     boolean deleteDocument(RestHighLevelClient client, T obj);
 
     void batchUpdateDocument(RestHighLevelClient client, Collection<?> collection, boolean async);
@@ -25,6 +25,10 @@ public interface EsApIService<T> {
 
 
     T getDocument(RestHighLevelClient client, String index, String type, String id);
+
+    default T getDocument(RestHighLevelClient client, String index, String id){
+        return getDocument(client, index, EsMetaApIService.DEFAULT_TYPE, id);
+    }
 
     List<T> multiGetDocument(RestHighLevelClient client, String index, String type, Collection<String> ids);
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.request.InternalRequest;
@@ -24,7 +25,7 @@ public class JacksonUtil {
     static {
         // 美化输出
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        // 输出时将属性变成小写带下划线 输入时还原成javaBean格式
+        // 输出时将属性变成小写带下划线 输入时还原成javaBean格式 , 已过时要么通过spring全局配置，要么在java bean自动添加
 //        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SnakeCaseStrategy.SNAKE_CASE);
         // 映射未知属性不抛出异常
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
