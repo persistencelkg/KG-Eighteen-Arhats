@@ -9,16 +9,11 @@ import javafx.util.Callback;
  */
 public interface RetryAble {
 
-    default int retryCount() {
-        return 3;
-    }
+    String prefix();
 
-    default int retrySleepMills() {
-        return 0;
-    }
 
+    String get(String key);
 
     // 阶梯重试
-
 
 }

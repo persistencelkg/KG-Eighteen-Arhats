@@ -7,13 +7,10 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.lkg.enums.TrueFalseEnum;
-import org.lkg.retry.RetryAble;
+import org.lkg.retry.BulkAsyncRetryAble;
 import org.lkg.retry.RetryService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.io.IOException;
 
 /**
  * Description:
@@ -21,56 +18,17 @@ import java.util.Objects;
  * Date: 2024/5/15 3:01 PM
  */
 
-@Service
+//@Service
 @Slf4j
-public class EsBulkRetryService {
+public class EsBulkRetryService extends RetryService {
 
-    @Value("${stop.flag:1}")
-    private Integer flag;
-
-    private RetryService<RestHighLevelClient, BulkRequest> retryService;
-
-
-    public boolean isStop() {
-        return Objects.equals(flag, TrueFalseEnum.TRUE.getCode());
+    public EsBulkRetryService(BulkAsyncRetryAble retryAble) {
+        super(retryAble);
     }
 
-    public void retryBulkWithSync(RestHighLevelClient client, BulkRequest request) {
-        retryService = new RetryService<>(new RetryAble() {
-            @Override
-            public int retryCount() {
-                return RetryAble.super.retryCount();
-            }
-
-            @Override
-            public int retrySleepMills() {
-                return RetryAble.super.retrySleepMills();
-            }
-        }, client, request);
-
-
-        retryService.retry(this::retryWithSync, this::isStop);
-    }
-
-    public void retryBulkASync(RestHighLevelClient client, BulkRequest request) {
-        retryService = new RetryService<>(new RetryAble() {
-            @Override
-            public int retryCount() {
-                return RetryAble.super.retryCount();
-            }
-
-            @Override
-            public int retrySleepMills() {
-                return RetryAble.super.retrySleepMills();
-            }
-        }, client, request);
-        retryService.retry(this::retryASync, this::isStop);
-    }
-
-    private boolean retryASync(RestHighLevelClient client, BulkRequest bulkRequest) {
+    private void retryASync(RestHighLevelClient client, BulkRequest bulkRequest) {
         final boolean[] failure = {false};
         ActionListener<BulkResponse> listener = new ActionListener<BulkResponse>() {
-
             @Override
             public void onResponse(BulkResponse bulkItemResponses) {
                 // 处理失败信息 某个失败
@@ -89,25 +47,20 @@ public class EsBulkRetryService {
                 log.error("all es request fail: {} ready retry", e.getMessage());
                 failure[0] = true;
             }
-        };
 
-        client.bulkAsync(bulkRequest, RequestOptions.DEFAULT, listener);
-        return failure[0];
+        };
+        retryAsync((res) -> client.bulkAsync(bulkRequest, RequestOptions.DEFAULT, listener),  () -> failure[0]);
     }
 
-    private boolean retryWithSync(RestHighLevelClient client, BulkRequest bulkRequest) {
-        try {
-            BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
-            // 处理失败信息
-            if (bulkResponse.hasFailures()) {
-                logFailResponse(bulkResponse);
-                return true;
+    private void retry(RestHighLevelClient client, BulkRequest bulkRequest) {
+        retryResult(() -> {
+            try {
+                return client.bulk(bulkRequest, RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
             }
-            return false;
-        } catch (Exception e) {
-            log.error("all es request fail: {}", e.getMessage());
-            return true;
-        }
+            return null;
+        }, BulkResponse::hasFailures);
     }
 
 

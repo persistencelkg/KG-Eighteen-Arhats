@@ -6,11 +6,15 @@ import com.google.common.collect.Lists;
 import feign.Request;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.util.TimeUtils;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.Metric;
 import org.aspectj.weaver.ast.Test;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.lkg.bo.QcHolidayDict;
 import org.lkg.bo.User;
+import org.lkg.elastic_search.crud.EsMetaApIService;
+import org.lkg.elastic_search.crud.MapDataEsApIService;
 import org.lkg.feign.TestFeign;
 import org.lkg.kafka.biz.KafkaService;
 import org.lkg.redis.crud.RedisService;
@@ -157,5 +161,30 @@ public class TestV2 implements InitializingBean {
 
 
 
+    @Resource
+    private MapDataEsApIService mapDataEsApIService;
+
+    @Resource
+    private EsMetaApIService esMetaApIService;
+
+    @Resource
+    private RestHighLevelClient order;
+
+    @GetMapping("/test-es")
+    public Object testEs() {
+
+        System.out.println(esMetaApIService.createIndex(order, Tes.class));
+
+        Map<String, Object> orders1 = mapDataEsApIService.getDocument(order, "orders", "2");
+        System.out.println(orders1);
+        return orders1;
+    }
+
+    @Data
+    static class Tes {
+        private String a;
+
+        private String url;
+    }
 }
 

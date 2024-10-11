@@ -24,7 +24,7 @@ import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.*;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
-import org.lkg.elastic_search.config.EsClientConfig;
+import org.lkg.elastic_search.config.MoreEsClient;
 import org.lkg.elastic_search.enums.EsFieldType;
 import org.lkg.elastic_search.enums.TextIndex;
 import org.lkg.simple.DateTimeUtils;
@@ -38,7 +38,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class EsMetaApIServiceImpl<T> implements EsMetaApIService<T> {
+public class EsMetaApIServiceImpl implements EsMetaApIService {
 
 
     @Override
@@ -61,7 +61,7 @@ public class EsMetaApIServiceImpl<T> implements EsMetaApIService<T> {
     }
 
     @Override
-    public boolean existIndex(RestHighLevelClient client, Class<T> index) {
+    public boolean existIndex(RestHighLevelClient client, Class<?> index) {
         GetIndexRequest getIndexRequest = new GetIndexRequest();
         getIndexRequest.indices(ObjectUtil.camelToUnderline(index.getSimpleName()));
         try {
@@ -74,14 +74,13 @@ public class EsMetaApIServiceImpl<T> implements EsMetaApIService<T> {
 
     @SneakyThrows
     @Override
-    public boolean createIndex(RestHighLevelClient client, String type, Class<T> indexClass) {
+    public boolean createIndex(RestHighLevelClient client, String type, Class<?> indexClass) {
         CreateIndexRequest createIndexRequest = new CreateIndexRequest();
         // 不建议通过程序控制，最好在kibana创建索引的同时指定settings
         Settings build = Settings.builder()
                 .put(IndexMetaData.SETTING_NUMBER_OF_SHARDS, 2)
-                .put(IndexMetaData.SETTING_VERSION_CREATED, DateTimeUtils.getCurrentTime())
                 .put(IndexMetaData.SETTING_NUMBER_OF_REPLICAS, 1).build();
-
+//        createIndexRequest.timeout("5ms");
         createIndexRequest.settings(build);
         // 索引名的规则必须是小写，以及其他说明 参照 https://www.elastic.co/guide/en/elasticsearch/reference/6.4/indices-create-index.html
         createIndexRequest.index(ObjectUtil.camelToUnderline(indexClass.getSimpleName()));
@@ -91,18 +90,18 @@ public class EsMetaApIServiceImpl<T> implements EsMetaApIService<T> {
             createIndexRequest.mapping(type, mappingBuilder);
             log.info("self build es mapping:{} settings:{}", createIndexRequest.mappings(), createIndexRequest.settings());
             // 一般来说改方式创建都容易超时，为了不影响正在使用的业务，最好异步处理
-            client.indices().createAsync(createIndexRequest, RequestOptions.DEFAULT, new ActionListener<CreateIndexResponse>() {
-                @Override
-                public void onResponse(CreateIndexResponse createIndexResponse) {
-                    log.info("create index result:{}", createIndexResponse.isAcknowledged());
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    log.error(e.getMessage(), e);
-                }
-            });
-            return true;
+//            client.indices().createAsync(createIndexRequest, RequestOptions.DEFAULT, new ActionListener<CreateIndexResponse>() {
+//                @Override
+//                public void onResponse(CreateIndexResponse createIndexResponse) {
+//                    log.info("create index result:{}", createIndexResponse.isAcknowledged());
+//                }
+//
+//                @Override
+//                public void onFailure(Exception e) {
+//                    log.error(e.getMessage(), e);
+//                }
+//            });
+            return  client.indices().create(createIndexRequest, RequestOptions.DEFAULT).isAcknowledged();
         } catch (Exception e) {
             log.error("self create index fail: {}", e.getMessage(), e);
         }
@@ -173,7 +172,7 @@ public class EsMetaApIServiceImpl<T> implements EsMetaApIService<T> {
 
 
     @Override
-    public boolean addColumnForIndex(RestHighLevelClient client, String type, Class<T> indexClass) {
+    public boolean addColumnForIndex(RestHighLevelClient client, String type, Class<?> indexClass) {
         String index = ObjectUtil.camelToUnderline(indexClass.getSimpleName());
         // 查看现有的，是否有冲突
         Map<String, Object> mappingFieldList = getMappingFieldList(client, index, type);
@@ -209,13 +208,13 @@ public class EsMetaApIServiceImpl<T> implements EsMetaApIService<T> {
     }
 
     @Override
-    public boolean createOrUpdateIndexTemplate(RestHighLevelClient client, String templateName, String indexPrefix, String type, Class<T> indexClass) {
+    public boolean createOrUpdateIndexTemplate(RestHighLevelClient client, String templateName, String indexPrefix, String type, Class<?> indexClass) {
         PutIndexTemplateRequest putIndexTemplateRequest = new PutIndexTemplateRequest(templateName);
         // Settings with default
         // 不建议通过程序控制，最好在kibana创建索引的同时指定settings, 需要结合节点的时机数量去处理
         Settings build = Settings.builder()
-                .put(IndexMetaData.SETTING_NUMBER_OF_SHARDS, EsClientConfig.defaultEsIndexNumOfShards)
-                .put(IndexMetaData.SETTING_NUMBER_OF_REPLICAS, EsClientConfig.defaultEsIndexNumanReplica).build();
+                .put(IndexMetaData.SETTING_NUMBER_OF_SHARDS, MoreEsClient.defaultEsIndexNumOfShards)
+                .put(IndexMetaData.SETTING_NUMBER_OF_REPLICAS, MoreEsClient.defaultEsIndexNumanReplica).build();
 
         putIndexTemplateRequest.settings(build);
         putIndexTemplateRequest.patterns(Collections.singletonList(indexPrefix));

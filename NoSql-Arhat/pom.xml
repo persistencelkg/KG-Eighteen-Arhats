@@ -27,6 +27,11 @@
             <artifactId>NonWebCommon-Arhat</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>ApolloDynamicConfig-Arhat</artifactId>
+        </dependency>
+
         <!--ES-->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>

@@ -19,6 +19,7 @@ import org.lkg.request.CommonResp;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
 import org.lkg.simple.JacksonUtil;
+import org.lkg.simple.ObjectUtil;
 import org.lkg.utils.http.CustomWebClientConfig;
 import org.lkg.utils.http.CustomWebClientHolder;
 import org.springframework.util.Assert;
@@ -134,7 +135,7 @@ public class HttpClientUtil {
         // 2.兜底选择全局配置
         Map<String, CustomWebClientConfig.CommonHttpClientConfig> customConfig = config.getConfig();
         CustomWebClientConfig.CommonHttpClientConfig commonHttpClientConfig;
-        if (customConfig.containsKey(server)) {
+        if (ObjectUtil.isNotEmpty(customConfig) && customConfig.containsKey(server)) {
             commonHttpClientConfig = customConfig.get(server);
         } else {
             commonHttpClientConfig = config.getGlobal();
@@ -171,6 +172,7 @@ public class HttpClientUtil {
             if (executionCount > retryCount) {
                 return false;
             } else {
+                // 只有读超时才需要进行重试，实际上这个思路也比较粗糙
                 return exception instanceof ConnectTimeoutException || exception instanceof SocketTimeoutException;
             }
         };

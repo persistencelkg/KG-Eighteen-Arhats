@@ -16,12 +16,15 @@ import java.util.Map;
  * Date: 2024/9/27 3:24 PM
  */
 @ConditionalOnClass(KafkaProperties.class)
-@ConfigurationProperties(prefix = "more")
+@ConfigurationProperties(prefix = "more.kafka")
 @Component
 @Data
 public class MoreKafkaConfig {
     public static final String first = "primaryKafka";
     public static final String second = "secondKafka";
 
-    private Map<String, KafkaProperties> kafka;
+
+    private String enable;
+
+    private Map<String, KafkaProperties> config;
 }

@@ -25,7 +25,7 @@ import static org.lkg.redis.crud.RedisService.DYNAMIC_UPDATE_BY_LUA;
 public class TestNoSql extends TestBase {
 
     @Resource
-    private EsMetaApIService<Orders> esMetaApIService;
+    private EsMetaApIService esMetaApIService;
 
     @Resource
     private MapDataEsApIService mapDataEsApIService;
@@ -61,7 +61,7 @@ public class TestNoSql extends TestBase {
 //        orders.setFee(BigDecimal.TEN);
         orders.setStartTime(new Date(System.currentTimeMillis()));
 
-        System.out.println(mapDataEsApIService.saveOrUpdateDocument(order, "orders", "2", JacksonUtil.objToMap(orders)));
+//        System.out.println(mapDataEsApIService.saveOrUpdateDocument(order, "orders", "2", JacksonUtil.objToMap(orders)));
         Map<String, Object> orders1 = mapDataEsApIService.getDocument(order, "orders", "2");
         System.out.println(orders1);
     }

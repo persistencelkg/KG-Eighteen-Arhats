@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import org.lkg.elastic_search.enums.EsDoc;
 import org.lkg.elastic_search.enums.EsFieldType;
 import org.lkg.elastic_search.enums.TextIndex;
 import org.lkg.simple.DateTimeUtils;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 @Data
+@EsDoc(uniqueKey = "id")
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Orders implements Serializable {
     private static final long serialVersionUID = 1L;

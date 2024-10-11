@@ -22,6 +22,8 @@ public class MoreRocketMqConfig {
     public static final String primary = "primaryRocket";
     public static final String second = "secondRocket";
 
+    private String enable;
+
     private Map<String, RocketMQProperties> config;
 
 }

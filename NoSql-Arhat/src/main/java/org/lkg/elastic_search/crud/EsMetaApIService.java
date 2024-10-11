@@ -11,11 +11,11 @@ import java.util.Map;
  * Author: 李开广
  * Date: 2024/5/14 8:34 PM
  */
-public interface EsMetaApIService<T> {
+public interface EsMetaApIService {
 
     String DEFAULT_TYPE = "_doc";
 
-    boolean existIndex(RestHighLevelClient client, Class<T> index);
+    boolean existIndex(RestHighLevelClient client, Class<?> index);
 
     Map<String, Object> getMappingFieldList(RestHighLevelClient client, String index, String type);
 
@@ -31,10 +31,10 @@ public interface EsMetaApIService<T> {
      * @return
      */
     @Deprecated
-    boolean createIndex(RestHighLevelClient client, String type, Class<T> indexClass);
+    boolean createIndex(RestHighLevelClient client, String type, Class<?> indexClass);
 
 
-    boolean addColumnForIndex(RestHighLevelClient client, String type, Class<T> indexClass);
+    boolean addColumnForIndex(RestHighLevelClient client, String type, Class<?> indexClass);
 
     /**
      * 推荐使用的创建方式
@@ -43,7 +43,7 @@ public interface EsMetaApIService<T> {
      * @param indexClass
      * @return
      */
-    default boolean createIndex(RestHighLevelClient client, Class<T> indexClass) {
+    default boolean createIndex(RestHighLevelClient client, Class<?> indexClass) {
         return createIndex(client, "_doc", indexClass);
     }
 
@@ -58,7 +58,7 @@ public interface EsMetaApIService<T> {
      * @return 是否操作成功
      */
     @Deprecated
-    boolean createOrUpdateIndexTemplate(RestHighLevelClient client, String templateName, String indexPrefix, String type, Class<T> indexClass);
+    boolean createOrUpdateIndexTemplate(RestHighLevelClient client, String templateName, String indexPrefix, String type, Class<?> indexClass);
 
     /**
      * 推荐使用方式 按年月日分索引的方式
@@ -68,7 +68,7 @@ public interface EsMetaApIService<T> {
      * @param indexClass java DO、POJO
      * @return 是否操作成功
      */
-   default boolean createOrUpdateIndexTemplate(RestHighLevelClient client, String templateName, String indexPrefix, Class<T> indexClass) {
+   default boolean createOrUpdateIndexTemplate(RestHighLevelClient client, String templateName, String indexPrefix, Class<?> indexClass) {
         return createOrUpdateIndexTemplate(client, templateName, indexPrefix, "_doc", indexClass);
     }
     boolean dropIndex(RestHighLevelClient client, String index);
