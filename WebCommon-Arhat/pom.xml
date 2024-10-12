@@ -50,6 +50,13 @@
             <version>${github.caffeine.version}</version>
         </dependency>
 
+        <!--retry-->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+
+
         <!-- http client begin -->
         <dependency>
             <groupId>commons-httpclient</groupId>

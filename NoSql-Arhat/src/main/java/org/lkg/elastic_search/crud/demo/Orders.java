@@ -20,11 +20,11 @@ import java.util.TimeZone;
 public class Orders implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private Integer id;
 
     private String name;
 
-    private long age;
+    private Long age;
 
     @JsonFormat(pattern = DateTimeUtils.YYYY_MM_DD_HH_MM_SS_SSS, timezone = DateTimeUtils.TIME_ZONE)
     private Date startTime;

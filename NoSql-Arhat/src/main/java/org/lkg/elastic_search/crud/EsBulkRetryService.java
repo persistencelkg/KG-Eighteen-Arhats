@@ -26,7 +26,7 @@ public class EsBulkRetryService extends RetryService {
         super(retryAble);
     }
 
-    private void retryASync(RestHighLevelClient client, BulkRequest bulkRequest) {
+    private void retryASync(RestHighLevelClient client, BulkRequest bulkRequest) throws Throwable {
         final boolean[] failure = {false};
         ActionListener<BulkResponse> listener = new ActionListener<BulkResponse>() {
             @Override
@@ -52,7 +52,7 @@ public class EsBulkRetryService extends RetryService {
         retryAsync((res) -> client.bulkAsync(bulkRequest, RequestOptions.DEFAULT, listener),  () -> failure[0]);
     }
 
-    private void retry(RestHighLevelClient client, BulkRequest bulkRequest) {
+    private void retry(RestHighLevelClient client, BulkRequest bulkRequest) throws Throwable {
         retryResult(() -> {
             try {
                 return client.bulk(bulkRequest, RequestOptions.DEFAULT);
@@ -60,7 +60,7 @@ public class EsBulkRetryService extends RetryService {
                 log.error(e.getMessage(), e);
             }
             return null;
-        }, BulkResponse::hasFailures);
+        }, true);
     }
 
 

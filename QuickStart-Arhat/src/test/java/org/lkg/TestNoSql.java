@@ -1,10 +1,12 @@
 package org.lkg;
 
+import lombok.Data;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.Test;
 import org.lkg.elastic_search.crud.EsMetaApIService;
 import org.lkg.elastic_search.crud.MapDataEsApIService;
 import org.lkg.elastic_search.crud.demo.Orders;
+import org.lkg.elastic_search.enums.EsDoc;
 import org.lkg.redis.crud.RedisService;
 import org.lkg.redis.crud.TestInterFace;
 import org.lkg.simple.JacksonUtil;
@@ -28,7 +30,7 @@ public class TestNoSql extends TestBase {
     private EsMetaApIService esMetaApIService;
 
     @Resource
-    private MapDataEsApIService mapDataEsApIService;
+    private MapDataEsApIService<Orders> mapDataEsApIService;
 
     @Resource
     private RestHighLevelClient order;
@@ -48,6 +50,11 @@ public class TestNoSql extends TestBase {
     @Resource
     private TestInterFace testTwo;
 
+    @EsDoc(type = "orders", uniqueKey = "id")
+    @Data
+    private static class TestMap {
+        private Map<String, Object> map;
+    }
 
     @Test
     public void testEsApi() {
@@ -62,8 +69,10 @@ public class TestNoSql extends TestBase {
         orders.setStartTime(new Date(System.currentTimeMillis()));
 
 //        System.out.println(mapDataEsApIService.saveOrUpdateDocument(order, "orders", "2", JacksonUtil.objToMap(orders)));
-        Map<String, Object> orders1 = mapDataEsApIService.getDocument(order, "orders", "2");
+        Orders orders1 = mapDataEsApIService.getDocument(order, Orders.class, "2");
         System.out.println(orders1);
+        Map<String, Object> map = mapDataEsApIService.getDocumentMap(order, Orders.class, "2");
+        System.out.println(map);
     }
 
 

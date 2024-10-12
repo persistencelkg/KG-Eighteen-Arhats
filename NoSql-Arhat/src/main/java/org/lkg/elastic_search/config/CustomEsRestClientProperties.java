@@ -34,5 +34,5 @@ public class CustomEsRestClientProperties extends ElasticsearchRestClientPropert
     /**
      * 默认1s 容易漏判，导致过了好几秒才被检测到一次，极端情况是到了 maxRetryMill 才被检测
      */
-    private int checkTimoutInterval = 100;
+    private int checkTimoutInterval = 50;
 }
