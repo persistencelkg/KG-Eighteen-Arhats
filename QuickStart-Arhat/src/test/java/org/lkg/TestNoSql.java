@@ -1,23 +1,20 @@
 package org.lkg;
 
-import org.aspectj.weaver.ast.Or;
+import lombok.Data;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.Test;
 import org.lkg.elastic_search.crud.EsMetaApIService;
-import org.lkg.elastic_search.crud.EsMetaApIServiceImpl;
 import org.lkg.elastic_search.crud.MapDataEsApIService;
 import org.lkg.elastic_search.crud.demo.Orders;
-import org.lkg.redis.config.RedisTemplateHolder;
+import org.lkg.elastic_search.enums.EsDoc;
 import org.lkg.redis.crud.RedisService;
 import org.lkg.redis.crud.TestInterFace;
 import org.lkg.simple.JacksonUtil;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.lkg.redis.crud.RedisService.DYNAMIC_UPDATE_BY_LUA;
@@ -30,7 +27,10 @@ import static org.lkg.redis.crud.RedisService.DYNAMIC_UPDATE_BY_LUA;
 public class TestNoSql extends TestBase {
 
     @Resource
-    private EsMetaApIService<Orders> esMetaApIService;
+    private EsMetaApIService esMetaApIService;
+
+    @Resource
+    private MapDataEsApIService<Orders> mapDataEsApIService;
 
     @Resource
     private RestHighLevelClient order;
@@ -50,16 +50,31 @@ public class TestNoSql extends TestBase {
     @Resource
     private TestInterFace testTwo;
 
+    @EsDoc(type = "orders", uniqueKey = "id")
+    @Data
+    private static class TestMap {
+        private Map<String, Object> map;
+    }
 
     @Test
     public void testEsApi() {
 //        System.out.println(esMetaApIService.createIndex(order, Orders.class));
 //        System.out.println(esMetaApIService.existIndex(order, Orders.class));
 //        System.out.println(esMetaApIService.addColumnForIndex(order, "_doc", Orders.class));
-        System.out.println("----- 上面测试都是通过的 ---------");
+//        System.out.println(esMetaApIService.createOrUpdateIndexTemplate(order,"order_tmpl", "order_*", Orders.class));
+        Orders orders = new Orders();
+        orders.setAge(13);
+        orders.setName("lkg");
+//        orders.setFee(BigDecimal.TEN);
+        orders.setStartTime(new Date(System.currentTimeMillis()));
 
-        System.out.println(esMetaApIService.createOrUpdateIndexTemplate(order,"order_tmpl", "order_*", Orders.class));
+//        System.out.println(mapDataEsApIService.saveOrUpdateDocument(order, "orders", "2", JacksonUtil.objToMap(orders)));
+        Orders orders1 = mapDataEsApIService.getDocument(order, Orders.class, "2");
+        System.out.println(orders1);
+        Map<String, Object> map = mapDataEsApIService.getDocumentMap(order, Orders.class, "2");
+        System.out.println(map);
     }
+
 
     @Test
     public void testRedis() {

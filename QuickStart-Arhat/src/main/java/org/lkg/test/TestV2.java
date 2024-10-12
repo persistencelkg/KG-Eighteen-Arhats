@@ -6,11 +6,17 @@ import com.google.common.collect.Lists;
 import feign.Request;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.util.TimeUtils;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.Metric;
 import org.aspectj.weaver.ast.Test;
+import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.lkg.bo.QcHolidayDict;
 import org.lkg.bo.User;
+import org.lkg.elastic_search.crud.EsMetaApIService;
+import org.lkg.elastic_search.crud.MapDataEsApIService;
+import org.lkg.elastic_search.crud.demo.Orders;
 import org.lkg.feign.TestFeign;
 import org.lkg.kafka.biz.KafkaService;
 import org.lkg.redis.crud.RedisService;
@@ -21,6 +27,7 @@ import org.lkg.rocketmq.biz.MqRetrySendService;
 import org.lkg.utils.http.httpclient.HttpClientUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -157,5 +164,46 @@ public class TestV2 implements InitializingBean {
 
 
 
+    @Resource
+    private MapDataEsApIService<Orders> mapDataEsApIService;
+
+    @Resource
+    private EsMetaApIService esMetaApIService;
+
+    @Resource
+    private RestHighLevelClient order;
+
+    @GetMapping("/test-es")
+    public Object testEs() {
+
+//        System.out.println(esMetaApIService.createIndex(order, Tes.class));
+
+        ArrayList<Orders> list = new ArrayList<>();
+        Orders orders = new Orders();
+        orders.setId(2);
+        orders.setName("lkg");
+        orders.setText("wkx");
+        list.add(orders);
+
+        Orders o2 = new Orders();
+        o2.setId(3);
+        o2.setText("测试");
+        list.add(o2);
+        mapDataEsApIService.batchUpdateDocument(order,list, false, DocWriteRequest.OpType.UPDATE);
+
+        List<Orders> orders2 = mapDataEsApIService.multiGetDocument(order, Orders.class, Lists.newArrayList("2", "3"));
+        System.out.println(orders2);
+        Orders orders1 = mapDataEsApIService.getDocument(order, Orders.class, "2");
+        System.out.println(orders1);
+//        Map<String, Object> map = mapDataEsApIService.getDocumentMap(order, Orders.class, "2");
+        return orders1;
+    }
+
+    @Data
+    static class Tes {
+        private String a;
+
+        private String url;
+    }
 }
 

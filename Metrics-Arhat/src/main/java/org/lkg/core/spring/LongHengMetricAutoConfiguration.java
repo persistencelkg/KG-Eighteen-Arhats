@@ -10,9 +10,12 @@ import org.lkg.core.service.NamespaceFilter;
 import org.lkg.core.service.impl.KafkaMetricExporter;
 import org.lkg.core.service.impl.SyncMetricExporter;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Description:
@@ -31,6 +34,7 @@ public class LongHengMetricAutoConfiguration {
 
 
     @Bean
+    @ConditionalOnBean(value = KafkaMetricExporter.class)
     public KafkaProducerClient kafkaProducerClient() {
         return KafkaProducerClient.getInstance();
     }
@@ -40,7 +44,7 @@ public class LongHengMetricAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(MetricExporter.class)
     public MetricExporter metricExporter() {
-        return new KafkaMetricExporter();
+        return new SyncMetricExporter();
     }
 
 

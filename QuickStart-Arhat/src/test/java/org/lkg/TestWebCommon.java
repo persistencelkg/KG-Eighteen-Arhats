@@ -28,6 +28,10 @@ public class TestWebCommon extends TestBase{
         System.out.println(server);
     }
 
+    public static void main(String[] args) {
+        InternalRequest postRequest = InternalRequest.createPostRequest("https://oapi.dingtalk.com/robot/send?access_token=37c083e9fffc155f5a5014cca52f01a07c8fee318da79e9a3f339bfd6a102e98", InternalRequest.BodyEnum.RAW);
+        InternalResponse server = HttpClientUtil.invoke("server", postRequest);
+    }
 
     @Resource
     private DownloadService downloadService;

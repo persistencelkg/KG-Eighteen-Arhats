@@ -33,7 +33,7 @@ public class KafkaConsumeService {
     private MeterQueueService meterQueueService;
 
 
-    @KafkaListener(topics = METRIC_TOPIC, groupId = "longheng-group-id")
+//    @KafkaListener(topics = METRIC_TOPIC, groupId = "longheng-group-id")
     public void consume(ConsumerRecord<String, String> record) {
         if (Objects.isNull(record) || Objects.isNull(record.value()) || !record.value().contains("long-heng")) {
             log.error("topic:[{}] get a null value", METRIC_TOPIC);

@@ -9,4 +9,5 @@ package org.lkg.function;
 public interface StopAbleConsumer {
 
     boolean stop();
+
 }

@@ -69,7 +69,7 @@ public class CustomWebClientConfig {
         /**
          * 默认重试次数
          */
-        private int retryTimes = 3;
+        private int retryTimes = 2;
 
         /**
          * 是否使用连接池

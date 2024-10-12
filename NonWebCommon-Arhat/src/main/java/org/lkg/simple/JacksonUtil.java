@@ -5,12 +5,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.request.InternalRequest;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -24,7 +31,7 @@ public class JacksonUtil {
     static {
         // 美化输出
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        // 输出时将属性变成小写带下划线 输入时还原成javaBean格式
+        // 输出时将属性变成小写带下划线 输入时还原成javaBean格式 , 已过时要么通过spring全局配置，要么在java bean自动添加
 //        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SnakeCaseStrategy.SNAKE_CASE);
         // 映射未知属性不抛出异常
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
@@ -32,6 +39,21 @@ public class JacksonUtil {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         // 不序列化 值为null的数据
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        String pattern = DateTimeUtils.YYYY_MM_DD_HH_MM_SS_SSS;
+
+//        JavaTimeModule javaTimeModule = new JavaTimeModule(); 不同的场景序列化要求不同按需配置
+//        javaTimeModule
+//                .addSerializer(
+//                        LocalDateTime.class,
+//                        new LocalDateTimeSerializer(
+//                                DateTimeFormatter.ofPattern(pattern)))
+//                .addDeserializer(
+//                        LocalDateTime.class,
+//                        new LocalDateTimeDeserializer(
+//                                DateTimeFormatter.ofPattern(pattern)));
+//
+//        mapper.registerModule(javaTimeModule);
+//        mapper.setDateFormat(new SimpleDateFormat(pattern));
     }
 
     public static ObjectMapper getMapper() {

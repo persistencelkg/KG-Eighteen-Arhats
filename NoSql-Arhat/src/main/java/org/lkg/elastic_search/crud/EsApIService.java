@@ -1,5 +1,6 @@
 package org.lkg.elastic_search.crud;
 
+import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.client.RestHighLevelClient;
 
 import java.util.Collection;
@@ -13,20 +14,27 @@ import java.util.Map;
  */
 public interface EsApIService<T> {
 
-    boolean createDocumentIfAbsent(RestHighLevelClient client, T obj);
 
-    boolean updateDocument(RestHighLevelClient client, T obj);
+    boolean saveOrUpdateDocument(RestHighLevelClient client, String id, T obj);
 
     boolean deleteDocument(RestHighLevelClient client, T obj);
 
-    void batchUpdateDocument(RestHighLevelClient client, Collection<?> collection, boolean async);
+    default void batchSaveOrUpdateDocument(RestHighLevelClient client, Collection<T> collection, boolean async) {
+        batchUpdateDocument(client, collection, async, DocWriteRequest.OpType.INDEX);
+    }
 
-    void batchDeleteDocument(RestHighLevelClient client, Collection<?> collection, boolean async);
+    default void bachDeleteDocument(RestHighLevelClient client, Collection<T> collection, boolean async) {
+        batchUpdateDocument(client, collection, async, DocWriteRequest.OpType.DELETE);
+    }
+
+    void batchUpdateDocument(RestHighLevelClient client, Collection<T> collection, boolean async, DocWriteRequest.OpType opType);
 
 
-    T getDocument(RestHighLevelClient client, String index, String type, String id);
+    T getDocument(RestHighLevelClient client, Class<T> tClass, String id);
 
-    List<T> multiGetDocument(RestHighLevelClient client, String index, String type, Collection<String> ids);
+    Map<String, Object> getDocumentMap(RestHighLevelClient client, Class<T> tClass, String id);
+
+    List<T> multiGetDocument(RestHighLevelClient client, Class<T> tClass, Collection<String> ids);
 
     List<T> listDocumentWithCondition(RestHighLevelClient client, QueryContext queryContext);
 

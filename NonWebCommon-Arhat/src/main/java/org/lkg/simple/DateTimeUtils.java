@@ -44,8 +44,7 @@ public class DateTimeUtils {
 
     public static final String MM_DD = "MM月dd日";
 
-    public static final String CST = "UTC+8";
-
+    public static final String TIME_ZONE = "Asia/Shanghai";
 
     private static final BiFunction<TemporalAccessor, String, String> TIME_CONVERT_TO_STR = (TemporalAccessor time, String pattern) -> DateTimeFormatter.ofPattern(pattern).format(time);
     private static final ZoneOffset CHINA_TIMEZONE = ZoneOffset.ofHours(8);

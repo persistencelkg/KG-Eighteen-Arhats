@@ -13,9 +13,9 @@ import java.nio.charset.StandardCharsets;
  * Author: 李开广
  * Date: 2024/9/29 9:37 PM
  */
-@Service
+//@Service
 @Slf4j
-@RocketMQMessageListener(consumerGroup = "test_producer", topic = "test-rocket-topic")
+//@RocketMQMessageListener(consumerGroup = "test_producer", topic = "test-rocket-topic")
 public class MqConsumeService implements RocketMQListener<MessageExt> {
 
     @Override
