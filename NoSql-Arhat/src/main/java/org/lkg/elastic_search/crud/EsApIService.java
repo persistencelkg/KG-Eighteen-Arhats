@@ -36,7 +36,7 @@ public interface EsApIService<T> {
 
     List<T> multiGetDocument(RestHighLevelClient client, Class<T> tClass, Collection<String> ids);
 
-    List<T> listDocumentWithCondition(RestHighLevelClient client, QueryContext queryContext);
+    List<T> listDocumentWithCondition(RestHighLevelClient client, Class<T> tClass, QueryContext queryContext);
 
 
 }

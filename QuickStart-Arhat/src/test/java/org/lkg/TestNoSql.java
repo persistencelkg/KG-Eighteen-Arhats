@@ -63,7 +63,7 @@ public class TestNoSql extends TestBase {
 //        System.out.println(esMetaApIService.addColumnForIndex(order, "_doc", Orders.class));
 //        System.out.println(esMetaApIService.createOrUpdateIndexTemplate(order,"order_tmpl", "order_*", Orders.class));
         Orders orders = new Orders();
-        orders.setAge(13);
+        orders.setAge(13L);
         orders.setName("lkg");
 //        orders.setFee(BigDecimal.TEN);
         orders.setStartTime(new Date(System.currentTimeMillis()));
@@ -80,7 +80,7 @@ public class TestNoSql extends TestBase {
     public void testRedis() {
         System.out.println("testOne" + testOne + " =>" + testTwo);
         Orders orders = new Orders();
-        orders.setAge(3);
+        orders.setAge(3L);
         orders.setName(null);
 //        orders.setFee(BigDecimal.TEN);
         orders.setStartTime(new Date(System.currentTimeMillis()));
