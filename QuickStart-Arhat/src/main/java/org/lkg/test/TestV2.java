@@ -12,16 +12,22 @@ import org.apache.kafka.common.Metric;
 import org.aspectj.weaver.ast.Test;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.lkg.bo.QcHolidayDict;
 import org.lkg.bo.User;
 import org.lkg.elastic_search.crud.EsMetaApIService;
 import org.lkg.elastic_search.crud.MapDataEsApIService;
+import org.lkg.elastic_search.crud.QueryContext;
 import org.lkg.elastic_search.crud.demo.Orders;
 import org.lkg.feign.TestFeign;
 import org.lkg.kafka.biz.KafkaService;
 import org.lkg.redis.crud.RedisService;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
+import org.lkg.request.PageRequest;
 import org.lkg.rocketmq.biz.MqRetryConfigValue;
 import org.lkg.rocketmq.biz.MqRetrySendService;
 import org.lkg.utils.http.httpclient.HttpClientUtil;
@@ -173,8 +179,8 @@ public class TestV2 implements InitializingBean {
     @Resource
     private RestHighLevelClient order;
 
-    @GetMapping("/test-es")
-    public Object testEs() {
+    @GetMapping("/test-es/{index}/{size}")
+    public Object testEs(@PathVariable Integer index, @PathVariable Integer size) {
 
 //        System.out.println(esMetaApIService.createIndex(order, Tes.class));
 
@@ -189,7 +195,14 @@ public class TestV2 implements InitializingBean {
         o2.setId(3);
         o2.setText("测试");
         list.add(o2);
-        mapDataEsApIService.batchUpdateDocument(order,list, false, DocWriteRequest.OpType.UPDATE);
+//        mapDataEsApIService.batchUpdateDocument(order,list, false, DocWriteRequest.OpType.UPDATE);
+
+        QueryContext build = testCommonReq();
+        System.out.println(mapDataEsApIService.listDocumentWithCondition(order, Orders.class, build));
+        System.out.println("分页查询");
+        QueryContext build2 = testPageReq(new PageRequest(size, index));
+        System.out.println(mapDataEsApIService.listDocumentWithCondition(order, Orders.class, build2));
+
 
         List<Orders> orders2 = mapDataEsApIService.multiGetDocument(order, Orders.class, Lists.newArrayList("2", "3"));
         System.out.println(orders2);
@@ -197,6 +210,27 @@ public class TestV2 implements InitializingBean {
         System.out.println(orders1);
 //        Map<String, Object> map = mapDataEsApIService.getDocumentMap(order, Orders.class, "2");
         return orders1;
+    }
+
+    private QueryContext testPageReq(PageRequest pageRequest) {
+        BoolQueryBuilder filter = QueryBuilders.boolQuery();
+        filter.filter().addAll(Lists.newArrayList(
+                QueryBuilders.rangeQuery("age").gt(0).lt(100)
+        ));
+        return QueryContext.newBuilder(Orders.class, filter)
+                .sortContext(new QueryContext.SortContext("age", SortOrder.DESC, pageRequest))
+                .build();
+    }
+
+    private static QueryContext testCommonReq() {
+        BoolQueryBuilder filter = QueryBuilders.boolQuery();
+        filter.filter().addAll(Lists.newArrayList(
+                QueryBuilders.matchQuery("name", "wkx"),
+                QueryBuilders.termQuery("age", 24)
+                ));
+
+        QueryContext build = QueryContext.newBuilder(Orders.class, filter).build();
+        return build;
     }
 
     @Data

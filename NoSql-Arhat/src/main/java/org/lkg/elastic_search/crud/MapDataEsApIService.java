@@ -13,11 +13,16 @@ import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.*;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.IndicesOptions;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.search.SearchHit;
 import org.lkg.elastic_search.enums.EsDoc;
 import org.lkg.retry.BulkAsyncRetryAble;
 import org.lkg.simple.JacksonUtil;
@@ -204,6 +209,7 @@ public class MapDataEsApIService<T> extends EsBulkRetryService implements EsApIS
         MultiGetRequest items = new MultiGetRequest();
         ids.forEach( ref -> items.add(esContext.getIndex(), esContext.getType(), ref));
         try {
+            log.info("multi get search es req:{}", items);
             MultiGetResponse mget = client.mget(items, RequestOptions.DEFAULT);
             MultiGetItemResponse[] responses = mget.getResponses();
             if (ObjectUtil.isEmpty(responses)) {
@@ -218,8 +224,22 @@ public class MapDataEsApIService<T> extends EsBulkRetryService implements EsApIS
     }
 
     @Override
-    public List<T> listDocumentWithCondition(RestHighLevelClient client, QueryContext queryContext) {
-        return null;
+    public List<T> listDocumentWithCondition(RestHighLevelClient client, Class<T> tClass, QueryContext queryContext) {
+        Assert.isTrue(Objects.nonNull(queryContext), "query context not empty");
+        SearchRequest searchRequest = QueryContext.buildSearchRequest(queryContext);
+        log.info("base query condition search es req:{}", searchRequest.source());
+        SearchResponse searchResponse = retryResult(() -> {
+            try {
+                return client.search(searchRequest, RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                return null;
+            }
+        }, true);
+        if (Objects.isNull(searchResponse)) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(searchResponse.getHits().getHits()).map(ref -> JacksonUtil.readValue(ref.getSourceAsString(), tClass)).collect(Collectors.toList());
     }
 
 
