@@ -7,16 +7,13 @@ import org.lkg.exception.BizException;
 import org.lkg.exception.enums.BizExceptionEnum;
 import org.lkg.exception.enums.ParamValidExceptionEnum;
 import org.lkg.request.CommonIntResp;
-import org.lkg.request.CommonReq;
-import org.lkg.request.CommonResp;
 import org.lkg.request.DefaultResp;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.InterruptedIOException;
@@ -29,8 +26,7 @@ import java.util.List;
  * Author: 李开广
  * Date: 2024/10/14 8:32 PM
  */
-@RestController
-@ControllerAdvice
+@RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 

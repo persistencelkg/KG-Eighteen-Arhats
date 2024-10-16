@@ -29,8 +29,8 @@ public class MetricFeignRequestInterceptor implements SelfFeignInterceptor {
             log.debug("{} match {}", url, FeignMetaDataContext.getFeignMetaContext(url));
         }
         RequestTemplate requestTemplate = feignChain.request().requestTemplate();
-        // TODO 测试
-        requestTemplate.header(requestTemplate.feignTarget().name(), "test-lkg");
+        // 为请求携带日志
+//        requestTemplate.header(requestTemplate.feignTarget().name(), "test-lkg");
         try {
             return response = feignChain.process();
         } finally {

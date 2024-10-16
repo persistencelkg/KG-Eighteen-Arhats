@@ -1,19 +1,25 @@
 package org.lkg.kafka.spring;
 
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.Timer;
 import lombok.AllArgsConstructor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
+import org.checkerframework.checker.units.qual.K;
 import org.lkg.core.FullLinkPropagation;
 import org.lkg.core.TraceClose;
 import org.lkg.core.TraceHolder;
+import org.lkg.core.init.LongHengMeterRegistry;
+import org.lkg.core.service.MetricCoreExecutor;
 import org.lkg.simple.ObjectUtil;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.kafka.listener.MessageListener;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Objects;
 
 /**
@@ -54,9 +60,28 @@ public class KafkaMessageListenerContainerInterceptor implements MethodIntercept
         if (ObjectUtil.isEmpty(arguments) || !(arguments[0] instanceof ConsumerRecord)) {
             return invocation.proceed();
         }
+
+        long startTime = System.nanoTime();
+        boolean res = true;
         ConsumerRecord<?, ?> argument = (ConsumerRecord<?, ?>) arguments[0];
         try (TraceClose traceClose = traceHolder.newTraceScope(GETTER, argument.headers())) {
             return invocation.proceed();
+        } catch (Throwable e) {
+            res = false;
+            throw e;
+        } finally {
+            final boolean finalRes = res;
+            MetricCoreExecutor.execute(() -> {
+                monitorProducer(finalRes, argument.topic(), startTime);
+            });
         }
+    }
+
+    private void monitorProducer(boolean res, String topic, long startTime) {
+        String namespace = "kafka.consume." + (res ? "suc" : "fail");
+        Timer.builder(namespace)
+                .tags(Tags.of("topic", topic))
+                .register(LongHengMeterRegistry.getInstance())
+                .record(Duration.ofNanos(System.nanoTime() - startTime));
     }
 }

@@ -1,5 +1,6 @@
 package org.lkg.rocketmq.core;
 
+import io.micrometer.core.instrument.Timer;
 import lombok.AllArgsConstructor;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
@@ -13,10 +14,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.lkg.core.FullLinkPropagation;
 import org.lkg.core.TraceClose;
 import org.lkg.core.TraceHolder;
+import org.lkg.core.init.LongHengMeterRegistry;
+import org.lkg.core.service.MetricCoreExecutor;
 import org.lkg.rocketmq.core.consume.ConsumeMessageProcessJoinPointInterceptor;
 import org.lkg.simple.ObjectUtil;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -56,7 +60,8 @@ public class RocketMqAspect {
             return proceedingJoinPoint.proceed();
         }
         Object first = args[0];
-        try (TraceClose traceClose = traceHolder.newTraceScope(SETTER, ((Message) first))) {
+        Message message = (Message) first;
+        try (TraceClose traceClose = traceHolder.newTraceScope(SETTER, message)) {
             for (int i = 0; i < args.length; i++) {
                 // SendCallback是否是args[1] 接口、父接口类型
                 if (SendCallback.class.isAssignableFrom(args[i].getClass())) {
@@ -65,8 +70,27 @@ public class RocketMqAspect {
                 }
             }
         }
+        long startTime = System.nanoTime();
+        boolean res = true;
+        try {
+            return proceedingJoinPoint.proceed();
+        } catch (Throwable e) {
+            res = false;
+            throw e;
+        } finally {
+            monitorProducer(message.getTopic(), res, startTime);
+        }
 
-        return proceedingJoinPoint.proceed(args);
+    }
+
+    static void monitorProducer(String topic, boolean res, long startTime) {
+        String namespace = "rocket.send." + (res ? "suc" : "fail");
+        MetricCoreExecutor.execute(() -> {
+            Timer.builder(namespace)
+                    .tags("topic", topic)
+                    .register(LongHengMeterRegistry.getInstance())
+                    .record(Duration.ofNanos(System.nanoTime() - startTime));
+        });
     }
 
 
@@ -80,7 +104,7 @@ public class RocketMqAspect {
     }
 
 
-    public static Object wrapMessage(SendCallback object, TraceHolder traceHolder, TraceClose traceClose) {
+    static Object wrapMessage(SendCallback object, TraceHolder traceHolder, TraceClose traceClose) {
         return new SendCallback() {
             @Override
             public void onSuccess(SendResult sendResult) {

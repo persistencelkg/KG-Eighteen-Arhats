@@ -79,7 +79,17 @@ public class UrlUtil {
         return uri.substring(uri.lastIndexOf(File.separator) + 1);
     }
 
+    public static String parseUri(String url) {
+        if (ObjectUtil.isEmpty(url) || (!url.startsWith("http://") && !url.startsWith("https://"))) {
+            return url;
+        }
+
+        return url.substring(url.indexOf(File.separator) + 1);
+    }
+
+
     public static void main(String[] args) {
+        System.out.println(parseUri("http://atm-coupon/atm-coupon/user-coupon/validCard/byClient"));
         System.out.println(parseName("\\Desk\\user\\aa.txt"));
         System.out.println(parseName("https://www.baidu.com/a.png"));
         // https://d.jjxswshuku.com/d/file/p/txt/2024/%E3%80%8A%E6%88%91%E7%9A%84%E7%8B%AC%E7%AB%8B%E6%97%A5%E3%80%8B%E4%BD%9C%E8%80%85%EF%BC%9A%E5%AE%B9%E5%85%89.txt

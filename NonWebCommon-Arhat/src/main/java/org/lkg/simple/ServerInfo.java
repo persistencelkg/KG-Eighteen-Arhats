@@ -44,6 +44,10 @@ public class ServerInfo {
     }
 
     public static String detail() {
-        return String.format("[%s@%s:%d]", serverName, innerIp(), port);
+        return String.format("[%s@%s]", serverName, ipPort());
+    }
+
+    public static String ipPort() {
+        return String.format("%s:%s", innerIp, port);
     }
 }
