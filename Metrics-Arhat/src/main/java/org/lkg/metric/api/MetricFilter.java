@@ -8,6 +8,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.Duration;
 
@@ -21,6 +22,8 @@ public class MetricFilter implements CommonFilter {
     public void filter(SelfChain selfChain) {
         long start = System.currentTimeMillis();
         boolean suc = true;
+        HttpServletRequest request = selfChain.request();
+        System.out.println("参数" + request.getParameterMap());
         try {
             selfChain.proceed();
         } catch (ServletException | IOException e) {
