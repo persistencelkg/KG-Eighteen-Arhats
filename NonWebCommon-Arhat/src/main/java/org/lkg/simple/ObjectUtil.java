@@ -22,7 +22,6 @@ public class ObjectUtil {
         return concatMore(false, chars);
     }
 
-
     public static char[] concatMore(boolean isRandom, char[]... chars) {
         char[] firstArr = new char[chars[0].length];
         // 先拷贝的临时数组中

@@ -2,10 +2,7 @@ package org.lkg.core.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micrometer.core.instrument.Tag;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.config.LongHongConst;
 import org.lkg.core.config.LongHongAlarmConfig;
@@ -14,6 +11,7 @@ import org.lkg.simple.ObjectUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.lkg.core.config.LongHongConst.TagConst.INTERNAL_TAG;
@@ -23,11 +21,13 @@ import static org.lkg.core.config.LongHongConst.TagConst.INTERNAL_TAG;
  * Author: 李开广
  * Date: 2024/8/9 2:03 PM
  */
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MeterBo {
+public class MeterBo{
 
     private String flag = "longheng";
 
@@ -82,5 +82,19 @@ public class MeterBo {
         HashMap<String, String> map = new HashMap<>(tagMap);
         INTERNAL_TAG.forEach(map::remove);
         return map;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof MeterBo)) {
+            return false;
+        }
+        MeterBo target = (MeterBo) obj;
+        return Objects.equals(this.getNamespace(), target.getNamespace());
     }
 }

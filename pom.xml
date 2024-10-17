@@ -39,10 +39,16 @@
         <module>MetricsCollector-Arhat</module>
         <module>FullTrace-Arhat</module>
         <module>EighteenArhat-spring-boot-starter</module>
+        <module>TTL-Arhat</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.github.persistencelkg</groupId>
+                <artifactId>TTL-Arhat</artifactId>
+                <version>${eighteem-arhat.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.github.persistencelkg</groupId>
                 <artifactId>FullTrace-Arhat</artifactId>
@@ -119,6 +125,14 @@
     </dependencyManagement>
 
     <dependencies>
+
+        <!-- open fegin -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
 
         <!--lombok start-->
         <dependency>

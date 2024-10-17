@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Description:
@@ -28,6 +29,7 @@ public class DynamicConfigManger {
     private static final List<Function<String, String>> FILTERS = new ArrayList<>();
     // 未来如果要支持其他配置中心的动态key change, 例如nacos，但是需要注意nacos需要单独一个模块切记不能将 可以通过下面方式，目前apollo挺好的
     private static final Set<KeyConfigService> KEY_CONFIG_SERVICE_SET = new HashSet<>(4);
+
     public static void registerConfigService(KeyConfigService configService) {
         KEY_CONFIG_SERVICE_SET.add(configService);
     }
@@ -76,7 +78,8 @@ public class DynamicConfigManger {
                 }
                 break;
             }
-        };
+        }
+        ;
 
         return Optional.ofNullable(strValue).orElse(def);
     }
@@ -146,8 +149,21 @@ public class DynamicConfigManger {
         if (ObjectUtil.isEmpty(configValue)) {
             return null;
         }
+        if (Objects.equals(configValue.substring(0, 1), StringEnum.LEFT_SQ_BRACKET)) {
+            configValue = configValue.substring(1);
+        }
+        if (Objects.equals(configValue.substring(configValue.length() - 1), StringEnum.RIGHT_SQ_BRACKET)) {
+            configValue = configValue.substring(0, configValue.length() - 1);
+        }
         StringJoiner stringJoiner = new StringJoiner(StringEnum.EMPTY, StringEnum.LEFT_SQ_BRACKET, StringEnum.RIGHT_SQ_BRACKET);
-        stringJoiner.add(configValue);
+        if (String.class.isAssignableFrom(clz)) {
+            String[] split = configValue.split(StringEnum.COMMA);
+            String collect = Arrays.stream(split).map(ref -> String.format("\"%s\"", ref)).collect(Collectors.joining(StringEnum.COMMA));
+            stringJoiner.add(collect);
+        } else {
+            stringJoiner.add(configValue);
+        }
+
         return JacksonUtil.readCollection(stringJoiner.toString(), clz);
     }
 
@@ -184,5 +200,8 @@ public class DynamicConfigManger {
         StringJoiner stringJoiner = new StringJoiner(StringEnum.EMPTY, StringEnum.LEFT_SQ_BRACKET, StringEnum.RIGHT_SQ_BRACKET);
         stringJoiner.add("23,34");
         System.out.println(Duration.parse("PT10S"));
+        System.out.println(toCollection("[third, ss]", String.class));
     }
+
+
 }

@@ -1,5 +1,6 @@
 package org.lkg.core;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
 import lombok.Data;
 import org.lkg.constant.LinkKeyConst;
@@ -7,6 +8,8 @@ import org.lkg.simple.ObjectUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Description:
@@ -30,13 +33,16 @@ public class Trace {
     // 意味着可以全链路透传的key信息
     private Set<String> fullLinkKeySet;
 
+    // for ttl timeout control
+    private AtomicReference<Stopwatch> googleStopWatch;
+
 
     public Trace(String tid) {
         this.traceId = ObjectUtil.isEmpty(tid) ? newTraceId() : tid;
         this.extraMap = new ConcurrentHashMap<>();
         // 决定是否在SETTER中透传信息
         this.fullLinkKeySet = DynamicConfigManger.initAndRegistChangeEvent("full.link.key", DynamicConfigManger::toSet, this::reSet);
-
+        googleStopWatch = new AtomicReference<>(Stopwatch.createStarted());
     }
 
     public Trace() {
@@ -51,6 +57,17 @@ public class Trace {
         }
         fullLinkKeySet.addAll(COMMON_FULL_LINK);
         fullLinkKeySet.addAll(newKeyList);
+    }
+
+    public long escapeMills() {
+        Stopwatch stop = googleStopWatch.get().stop();
+        return stop.elapsed(TimeUnit.MILLISECONDS);
+    }
+
+    public void resetAndStart() {
+        Stopwatch stopwatch = getGoogleStopWatch().get();
+        stopwatch.reset();
+        stopwatch.start();
     }
 
     /**
@@ -68,7 +85,10 @@ public class Trace {
         if (ObjectUtil.isEmpty(key) || ObjectUtil.isEmpty(val)) {
             return null;
         }
-        return extraMap.putIfAbsent(key, val);
+        return extraMap.put(key, val);
     }
 
+    public String getExtra(String key) {
+        return extraMap.get(key);
+    }
 }
