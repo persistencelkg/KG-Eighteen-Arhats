@@ -14,6 +14,7 @@
         <module name="QuickStart-Arhat" />
         <module name="ApolloDynamicConfig-Arhat" />
         <module name="FullTrace-Arhat" />
+        <module name="TTL-Arhat" />
         <module name="MessageNotice-Arhat" />
         <module name="WebCommon-Arhat" />
         <module name="MessageQueue-Arhat" />
@@ -40,6 +41,7 @@
       <module name="NoSql-Arhat" options="-parameters -XDignore.symbol.file" />
       <module name="NonWebCommon-Arhat" options="-parameters" />
       <module name="QuickStart-Arhat" options="-parameters" />
+      <module name="TTL-Arhat" options="-parameters" />
       <module name="WebCommon-Arhat" options="-parameters" />
     </option>
   </component>

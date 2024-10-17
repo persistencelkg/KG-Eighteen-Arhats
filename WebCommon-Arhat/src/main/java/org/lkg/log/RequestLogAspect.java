@@ -117,13 +117,14 @@ public class RequestLogAspect {
             threadLocal.set(logTarget);
             Object proceed = proceedingJoinPoint.proceed();
             logTarget.setResult(proceed);
-            logTarget.setCost(Duration.ofNanos(System.nanoTime() - l).toMillis());
             return proceed;
         } catch (Throwable e) {
             suc = false;
             throw e;
         } finally {
             LogTarget logTarget = threadLocal.get();
+            // 异常经过的时间也记录下
+            logTarget.setCost(Duration.ofNanos(System.nanoTime() - l).toMillis());
             logTarget.setPrefix(logTarget.getPrefix() +(suc ? "success" : "fail"));
             log.info(LogTarget.buildMsg(logTarget));
             // 异常由GlobalExceptionHandler负责统一处理, 通过trace_id 锁定即可无需过多打印

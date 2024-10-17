@@ -61,7 +61,7 @@ public class FeignMetaDataContext {
 
     @Data
     @AllArgsConstructor
-    static class FeignMetaData {
+    public  static class FeignMetaData {
         private String server;
         private String method;
     }

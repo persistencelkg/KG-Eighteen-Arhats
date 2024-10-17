@@ -15,7 +15,7 @@
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
     <!--时间|日志进别|现成|traceId|cid|rid|user-id|压测标识|-->
-    <property name="printPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] [%thread][tid:%X{tid}][cid:%X{cid}][uid:%X{uid}][stress-flag:%X{x-flow-stress}]:%logger [%M:%L] %msg%n"/>
+    <property name="printPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] [%thread][tid:%X{tid}][cid:%X{cid}][uid:%X{uid}][stress-flag:%X{x-flow-stress}]:[%logger{0}#%M:%L] %msg%n"/>
     <!-- <appender> begin -->
 
     <!-- 着色输出到控制台，非json格式，方便debug -->
