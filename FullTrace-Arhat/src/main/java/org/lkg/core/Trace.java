@@ -60,8 +60,11 @@ public class Trace {
     }
 
     public long escapeMills() {
-        Stopwatch stop = googleStopWatch.get().stop();
-        return stop.elapsed(TimeUnit.MILLISECONDS);
+        Stopwatch stopwatch = googleStopWatch.get();
+        if (stopwatch.isRunning()) {
+            stopwatch.stop();
+        }
+        return stopwatch.elapsed(TimeUnit.MILLISECONDS);
     }
 
     public void resetAndStart() {

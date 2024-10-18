@@ -8,6 +8,8 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConnection;
 
+import java.util.List;
+
 /**
  * Description:
  * Author: 李开广
@@ -16,13 +18,15 @@ import org.springframework.data.redis.connection.RedisSentinelConnection;
 public class RedisMetricConnectionFactory implements InitializingBean, DisposableBean, RedisConnectionFactory {
 
     private final RedisConnectionFactory delegate;
+    private final List<RedisInterceptor> list;
 
-    public RedisMetricConnectionFactory(RedisConnectionFactory redisConnectionFactory) {
+    public RedisMetricConnectionFactory(RedisConnectionFactory redisConnectionFactory, List<RedisInterceptor> list) {
         if (redisConnectionFactory instanceof  RedisMetricConnectionFactory) {
             this.delegate = ((RedisMetricConnectionFactory) redisConnectionFactory).delegate;
         } else {
             this.delegate = redisConnectionFactory;
         }
+        this.list = list;
 
     }
 
@@ -43,12 +47,12 @@ public class RedisMetricConnectionFactory implements InitializingBean, Disposabl
 
     @Override
     public RedisConnection getConnection() {
-        return new RedisConnectionProxy(delegate.getConnection()).get();
+        return new RedisConnectionProxy(delegate.getConnection(), list).get();
     }
 
     @Override
     public RedisClusterConnection getClusterConnection() {
-        return new RedisClusterConnectionProxy(delegate.getClusterConnection()).get();
+        return new RedisClusterConnectionProxy(delegate.getClusterConnection(), list).get();
     }
 
     @Override

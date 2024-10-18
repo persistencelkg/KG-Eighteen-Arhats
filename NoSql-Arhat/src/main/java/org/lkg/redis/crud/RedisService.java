@@ -64,6 +64,10 @@ public class RedisService {
         executeConsumer((template, baseKey) -> template.opsForValue().set(baseKey, val, num, timeUnit), key, "delKey");
     }
 
+    public String getKey(String key) {
+        return getKey(key, String.class);
+    }
+
     public <T> T getKey(String key, Class<T> tClass) {
         return executeFunction((template, baseKey) -> {
             Object o = template.opsForValue().get(baseKey);
