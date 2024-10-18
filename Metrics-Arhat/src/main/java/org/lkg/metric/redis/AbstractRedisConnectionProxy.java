@@ -14,12 +14,12 @@ import org.springframework.data.redis.connection.RedisCommands;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
+ * 支持全局维度统计
  * Description: 基于Spring代理
  * Author: 李开广
  * Date: 2024/9/4 7:17 PM
@@ -28,9 +28,11 @@ public abstract class AbstractRedisConnectionProxy<T> implements MethodIntercept
 
     private final T delegate;
     private final Set<String> redisCommandSet;
+    private final List<RedisInterceptor> list;
 
-    public AbstractRedisConnectionProxy(T delegate) {
+    public AbstractRedisConnectionProxy(T delegate, List<RedisInterceptor> list) {
         this.delegate = Objects.requireNonNull(delegate, "delegate redis connection not null");
+        this.list = list;
         this.redisCommandSet = Arrays.stream(RedisCommands.class.getMethods()).map(Method::getName).collect(Collectors.toSet());
     }
 
@@ -42,7 +44,13 @@ public abstract class AbstractRedisConnectionProxy<T> implements MethodIntercept
         boolean suc = true;
         long startTime = System.nanoTime();
         try {
-            return invocation.proceed();
+            return new Default(invocation.getMethod().getName(), () -> {
+                try {
+                    return invocation.proceed();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            }).process();
         } catch (Throwable e) {
             suc = false;
             throw e;
@@ -50,6 +58,16 @@ public abstract class AbstractRedisConnectionProxy<T> implements MethodIntercept
             monitorRedisCommand(suc, invocation.getMethod().getName(), startTime);
         }
     }
+
+
+    public static void monitorRedisCommand(boolean suc, String name, long start) {
+        String namespace = "redis." + (suc ? "suc" : "fail");
+        Timer.builder(namespace)
+                .tags(Tags.of("cmd", name))
+                .register(LongHengMeterRegistry.getInstance())
+                .record(Duration.ofNanos(System.nanoTime() - start));
+    }
+
 
     //   @Override for jdk  InvocationHandler
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -72,13 +90,6 @@ public abstract class AbstractRedisConnectionProxy<T> implements MethodIntercept
         }
     }
 
-    public static void monitorRedisCommand(boolean suc, String name, long start) {
-        String namespace = "redis." + (suc ? "suc" : "fail");
-        Timer.builder(namespace)
-                .tags(Tags.of("cmd", name))
-                .register(LongHengMeterRegistry.getInstance())
-                .record(Duration.ofNanos(System.nanoTime() - start));
-    }
 
     protected T getForJdk() {
 //        return (T) Proxy.newProxyInstance(delegate.getClass().getClassLoader(), fetchClass(), this);
@@ -96,12 +107,38 @@ public abstract class AbstractRedisConnectionProxy<T> implements MethodIntercept
     }
 
 
-    public T get(){
+    public T get() {
         ProxyFactoryBean factory = new ProxyFactoryBean();
         // 强制代理目标类
         factory.setProxyTargetClass(true);
         factory.setTarget(delegate);
         factory.addAdvice(this);
         return (T) factory.getObject();
+    }
+
+    // ------------ Default Interceptor
+
+    private class Default implements RedisInterceptor.Chain {
+
+        private final String cmd;
+        private final Iterator<RedisInterceptor> iterator;
+        private final Supplier<Object> supplier;
+
+        public Default(String cmd, Supplier<Object> supplier) {
+            this.cmd = cmd;
+            this.iterator = list.iterator();
+            this.supplier = supplier;
+        }
+
+
+        @Override
+        public String cmd() {
+            return cmd;
+        }
+
+        @Override
+        public Object process() throws Throwable {
+            return iterator.hasNext() ? iterator.next().intercept(this) : this.supplier.get();
+        }
     }
 }

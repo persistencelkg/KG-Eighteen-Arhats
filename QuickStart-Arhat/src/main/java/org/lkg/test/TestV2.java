@@ -143,8 +143,10 @@ public class TestV2 implements InitializingBean {
             put("user_id", 1L);
         }});
         log.info("test: param");
+        System.out.println(redisService.getKey("lkg"));
+        testDao.listData(3000);
 //        testFeign.testId(map);
-        log.info("{}", (testFeign.getUserCard(map, new Request.Options(23, TimeUnit.MILLISECONDS, 101, TimeUnit.MILLISECONDS, true))));
+        log.info("{}", (testFeign.getUserCard(map, new Request.Options(800, TimeUnit.MILLISECONDS, 1005, TimeUnit.MILLISECONDS, true))));
         return true;
     }
 

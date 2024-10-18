@@ -2,6 +2,8 @@ package org.lkg.metric.redis;
 
 import org.springframework.data.redis.connection.RedisConnection;
 
+import java.util.List;
+
 /**
  * Description:
  * Author: 李开广
@@ -9,7 +11,7 @@ import org.springframework.data.redis.connection.RedisConnection;
  */
 public class RedisConnectionProxy extends AbstractRedisConnectionProxy<RedisConnection> {
 
-    public RedisConnectionProxy(RedisConnection delegate) {
-        super(delegate);
+    public RedisConnectionProxy(RedisConnection delegate, List<RedisInterceptor> list) {
+        super(delegate, list);
     }
 }

@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 /**
+ *
  * Description:
  * Author: 李开广
  * Date: 2024/9/4 9:55 PM
  */
-@Component
 @Aspect
 public class RedisOperationAspectj {
 

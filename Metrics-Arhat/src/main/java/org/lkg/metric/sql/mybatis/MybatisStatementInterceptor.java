@@ -2,6 +2,7 @@ package org.lkg.metric.sql.mybatis;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.JSQLParserException;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -13,11 +14,18 @@ import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.session.ResultHandler;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.enums.TrueFalseEnum;
+import org.lkg.metric.sql.CustomMybatisInterceptor;
+import org.lkg.metric.sql.FuzzySqlUtil;
 import org.lkg.metric.sql.SqlEventTracker;
 
+import javax.validation.groups.Default;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Statement;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Description:
@@ -45,6 +53,12 @@ import java.sql.Statement;
 })
 @Slf4j
 public class MybatisStatementInterceptor implements Interceptor {
+
+    private final List<CustomMybatisInterceptor> list;
+
+    public MybatisStatementInterceptor(List<CustomMybatisInterceptor> list) {
+        this.list = list;
+    }
 
 
     @Override
@@ -84,12 +98,52 @@ public class MybatisStatementInterceptor implements Interceptor {
                     log.info("monit full sql:{}, args:{}", finalSql, finalObj);
                 }
             });
-            return invocation.proceed();
-        } catch (InvocationTargetException | IllegalAccessException e) {
+            try {
+                sql = FuzzySqlUtil.cleanStatement(sql);
+            } catch (JSQLParserException e2) {
+                log.error("sql:{} parse error", sql);
+            }
+            return new DefaultChain(() -> {
+                try {
+                    return invocation.proceed();
+                } catch (InvocationTargetException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }, sql).process();
+        } catch (Exception e) {
             suc = false;
-            throw new Exception(e);
+            throw e;
         } finally {
             SqlEventTracker.monitorSql(sql, suc, start);
+
+        }
+    }
+
+    private class DefaultChain implements CustomMybatisInterceptor.Chain {
+
+        private final Iterator<CustomMybatisInterceptor> iterator;
+        private final Supplier<Object> supplier;
+
+        private final String sql;
+
+        public DefaultChain(Supplier<Object> supplier, String sql) {
+            this.iterator = list.iterator();
+            this.supplier = supplier;
+            this.sql = sql;
+        }
+
+
+        @Override
+        public String sql() {
+            return sql;
+        }
+
+        @Override
+        public Object process() throws Exception {
+            if (iterator.hasNext()) {
+                return iterator.next().interceptor(this);
+            }
+            return this.supplier.get();
         }
     }
 }

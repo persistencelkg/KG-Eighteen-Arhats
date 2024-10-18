@@ -2,7 +2,8 @@ package org.lkg.core.limit;
 
 import feign.Request;
 import io.micrometer.core.instrument.Tag;
-import org.lkg.core.service.TimerSnapshot;
+import lombok.extern.java.Log;
+import org.lkg.core.config.TraceLogEnum;
 import org.lkg.metric.rpc.feign.FeignMetaDataContext;
 import org.lkg.metric.rpc.feign.SelfFeignInterceptor;
 
@@ -31,7 +32,8 @@ public class FeignTraceTimeoutInterceptor implements SelfFeignInterceptor {
         String key = feignMetaContext.getServer() + url;
         Request.Options options = feignChain.options();
         String namespace = "third.success";
-        long newTimeout = URLTraceMap.computeIfAbsent(key, ref -> new TraceTimeoutLimiter(namespace, Tag.of("url",  url))).tryCheckAndNextTimeout(options.readTimeoutMillis());
+        int current = options.readTimeoutMillis();
+        long newTimeout = URLTraceMap.computeIfAbsent(key, ref -> new TraceTimeoutLimiter(namespace, Tag.of("url", url))).tryCheckAndNextTimeout(current, TraceLogEnum.Feign);
         return feignChain.process(request, new Request.Options(options.connectTimeoutMillis(), TimeUnit.MILLISECONDS, newTimeout, TimeUnit.MILLISECONDS, options.isFollowRedirects()));
     }
 

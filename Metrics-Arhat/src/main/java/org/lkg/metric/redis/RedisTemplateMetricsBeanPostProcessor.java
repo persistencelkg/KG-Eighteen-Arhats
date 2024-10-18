@@ -2,10 +2,13 @@ package org.lkg.metric.redis;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.data.redis.connection.RedisClusterConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+
+import java.util.stream.Collectors;
 
 /**
  * Description: AOP是在spring 启动的时候进行加载的，因此在做切面时 需要保证被切面对象已经被spring 实例化了
@@ -15,13 +18,18 @@ import org.springframework.data.redis.core.RedisTemplate;
  * Date: 2024/9/4 7:08 PM
  */
 public class RedisTemplateMetricsBeanPostProcessor implements BeanPostProcessor {
+    private ObjectProvider<RedisInterceptor> redisInterceptorObjectProvider;
+
+    public RedisTemplateMetricsBeanPostProcessor(ObjectProvider<RedisInterceptor> redisInterceptorObjectProvider) {
+        this.redisInterceptorObjectProvider = redisInterceptorObjectProvider;
+    }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof RedisTemplate) {
             RedisTemplate<?, ?> template = (RedisTemplate<?, ?>) bean;
             RedisConnectionFactory proceed = template.getRequiredConnectionFactory();
-            template.setConnectionFactory(new RedisMetricConnectionFactory(proceed));
+            template.setConnectionFactory(new RedisMetricConnectionFactory(proceed, redisInterceptorObjectProvider.stream().collect(Collectors.toList())));
         }
         return bean;
     }
