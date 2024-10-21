@@ -1,19 +1,11 @@
 package org.lkg.test;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import feign.Request;
-import io.micrometer.core.instrument.Metrics;
-import io.micrometer.core.instrument.util.TimeUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.Metric;
-import org.aspectj.weaver.ast.Test;
-import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.lkg.bo.QcHolidayDict;
@@ -25,15 +17,11 @@ import org.lkg.elastic_search.crud.demo.Orders;
 import org.lkg.feign.TestFeign;
 import org.lkg.kafka.biz.KafkaService;
 import org.lkg.redis.crud.RedisService;
-import org.lkg.request.InternalRequest;
-import org.lkg.request.InternalResponse;
-import org.lkg.request.PageRequest;
-import org.lkg.rocketmq.biz.MqRetryConfigValue;
+import org.lkg.request.*;
 import org.lkg.rocketmq.biz.MqRetrySendService;
 import org.lkg.utils.http.httpclient.HttpClientUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,8 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static org.lkg.redis.crud.RedisService.DYNAMIC_UPDATE_BY_LUA;
@@ -171,7 +157,6 @@ public class TestV2 implements InitializingBean {
     }
 
 
-
     @Resource
     private MapDataEsApIService<Orders> mapDataEsApIService;
 
@@ -202,8 +187,8 @@ public class TestV2 implements InitializingBean {
         QueryContext build = testCommonReq();
         System.out.println(mapDataEsApIService.listDocumentWithCondition(order, Orders.class, build));
         System.out.println("分页查询");
-        QueryContext build2 = testPageReq(new PageRequest(size, index));
-        System.out.println(mapDataEsApIService.listDocumentWithCondition(order, Orders.class, build2));
+        QueryContext build2 = testPageReq(new PageRequest(size, index, new SortOrderContext[]{new SortOrderContext("age", SortOrderEnum.ASC)}));
+        System.out.println(mapDataEsApIService.listDocumentWithPage(order, Orders.class, build2));
 
 
         List<Orders> orders2 = mapDataEsApIService.multiGetDocument(order, Orders.class, Lists.newArrayList("2", "3"));
@@ -220,7 +205,7 @@ public class TestV2 implements InitializingBean {
                 QueryBuilders.rangeQuery("age").gt(0).lt(100)
         ));
         return QueryContext.newBuilder(Orders.class, filter)
-                .sortContext(new QueryContext.SortContext("age", SortOrder.DESC, pageRequest))
+                .pageRequest(pageRequest)
                 .build();
     }
 
@@ -229,10 +214,9 @@ public class TestV2 implements InitializingBean {
         filter.filter().addAll(Lists.newArrayList(
                 QueryBuilders.matchQuery("name", "wkx"),
                 QueryBuilders.termQuery("age", 24)
-                ));
+        ));
 
-        QueryContext build = QueryContext.newBuilder(Orders.class, filter).build();
-        return build;
+        return QueryContext.newBuilder(Orders.class, filter).build();
     }
 
     @Data

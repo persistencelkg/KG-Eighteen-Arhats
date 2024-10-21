@@ -29,11 +29,12 @@ public class FeignTraceTimeoutInterceptor implements SelfFeignInterceptor {
         if (Objects.isNull(feignMetaContext)) {
             return feignChain.process();
         }
-        String key = feignMetaContext.getServer() + url;
+//        String key = feignMetaContext.getServer() + url;
         Request.Options options = feignChain.options();
-        String namespace = "third.success";
+        String namespace = "third.success.tc-tt";
         int current = options.readTimeoutMillis();
-        long newTimeout = URLTraceMap.computeIfAbsent(key, ref -> new TraceTimeoutLimiter(namespace, Tag.of("url", url))).tryCheckAndNextTimeout(current, TraceLogEnum.Feign);
+//        long newTimeout = URLTraceMap.computeIfAbsent(key, ref -> new TraceTimeoutLimiter(namespace, Tag.of("url", url))).tryCheckAndNextTimeout(current, TraceLogEnum.Feign);
+        long newTimeout = TraceTimeoutLimiter.getAndCheck(current, TraceLogEnum.Feign);
         return feignChain.process(request, new Request.Options(options.connectTimeoutMillis(), TimeUnit.MILLISECONDS, newTimeout, TimeUnit.MILLISECONDS, options.isFollowRedirects()));
     }
 

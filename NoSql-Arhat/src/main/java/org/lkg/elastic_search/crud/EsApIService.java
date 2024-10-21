@@ -1,11 +1,13 @@
 package org.lkg.elastic_search.crud;
 
 import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.lkg.request.PageResponse;
+import org.lkg.simple.JacksonUtil;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Description: ES Index API、Update API、GET API、Update/Delete By Query API
@@ -36,7 +38,23 @@ public interface EsApIService<T> {
 
     List<T> multiGetDocument(RestHighLevelClient client, Class<T> tClass, Collection<String> ids);
 
-    List<T> listDocumentWithCondition(RestHighLevelClient client, Class<T> tClass, QueryContext queryContext);
+    SearchResponse listOriginDocumentWithCondition(RestHighLevelClient client, Class<T> tClass, QueryContext queryContext);
 
+    default List<T> listDocumentWithCondition(RestHighLevelClient client, Class<T> tClass, QueryContext queryContext) {
+        SearchResponse searchResponse = listOriginDocumentWithCondition(client, tClass, queryContext);
+        if (Objects.isNull(searchResponse)) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(searchResponse.getHits().getHits()).map(ref -> JacksonUtil.readValue(ref.getSourceAsString(), tClass)).collect(Collectors.toList());
 
+    }
+
+    default PageResponse<T> listDocumentWithPage(RestHighLevelClient client, Class<T> tClass, QueryContext queryContext) {
+        SearchResponse searchResponse = listOriginDocumentWithCondition(client, tClass, queryContext);
+        if (Objects.isNull(searchResponse)) {
+            return PageResponse.emptyPage(queryContext.getPageRequest());
+        }
+        List<T> collect = Arrays.stream(searchResponse.getHits().getHits()).map(ref -> JacksonUtil.readValue(ref.getSourceAsString(), tClass)).collect(Collectors.toList());
+        return PageResponse.safePage(collect, Math.toIntExact(searchResponse.getHits().getTotalHits()), queryContext.getPageRequest());
+    }
 }

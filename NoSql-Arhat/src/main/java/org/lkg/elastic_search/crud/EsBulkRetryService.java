@@ -7,7 +7,11 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.lkg.core.config.TraceLogEnum;
+import org.lkg.core.limit.TraceTimeoutLimiter;
 import org.lkg.retry.BulkAsyncRetryAble;
+import org.lkg.retry.RetryAble;
+import org.lkg.retry.RetryInterceptor;
 import org.lkg.retry.RetryService;
 
 import java.io.IOException;
@@ -23,7 +27,7 @@ import java.io.IOException;
 public class EsBulkRetryService extends RetryService {
 
     public EsBulkRetryService(BulkAsyncRetryAble retryAble) {
-        super(retryAble);
+        super(retryAble, (ref) -> TraceTimeoutLimiter.getAndCheck(TraceLogEnum.ElasticSearch));
     }
 
     private void retryASync(RestHighLevelClient client, BulkRequest bulkRequest) throws Throwable {

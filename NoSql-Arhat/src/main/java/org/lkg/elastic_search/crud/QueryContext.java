@@ -1,14 +1,10 @@
 package org.lkg.elastic_search.crud;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.support.IndicesOptions;
 import org.elasticsearch.client.Requests;
-import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -17,14 +13,10 @@ import org.lkg.elastic_search.crud.demo.Orders;
 import org.lkg.elastic_search.enums.EsDoc;
 import org.lkg.request.PageRequest;
 import org.lkg.simple.ObjectUtil;
-import org.springframework.data.domain.Page;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Description:
@@ -47,7 +39,7 @@ public class QueryContext {
     /**
      * 合理的排序字段，建议是有序的id或者时间
      */
-    private SortContext[] sortContexts;
+    private PageRequest pageRequest;
 
     private boolean paging;
 
@@ -62,7 +54,7 @@ public class QueryContext {
         private String[] fetchColumn;
         private int size = 10;
         private QueryBuilder queryBuilder;
-        private SortContext[] sortContexts;
+        private PageRequest pageRequest;
 
         private <T> Builder(Class<T> tClass) {
             Assert.isTrue(Objects.nonNull(tClass) && tClass.isAnnotationPresent(EsDoc.class), "QueryContext only for es doc obj to build");
@@ -102,13 +94,13 @@ public class QueryContext {
             return this;
         }
 
-        public Builder sortContext(SortContext... sortContexts) {
-            this.sortContexts = sortContexts;
+        public Builder pageRequest(PageRequest pageRequest) {
+            this.pageRequest = pageRequest;
             return this;
         }
 
         public QueryContext build() {
-            return new QueryContext(size, indexName, type, fetchColumn, queryBuilder, sortContexts, false);
+            return new QueryContext(size, indexName, type, fetchColumn, queryBuilder, pageRequest, false);
         }
     }
 
@@ -124,18 +116,16 @@ public class QueryContext {
         SearchSourceBuilder sourceBuilder = SearchSourceBuilder.searchSource()
                 .query(context.getQueryBuilder())
                 .size(context.getSize());
-        SortContext[] sortContexts = context.getSortContexts();
-        if (!ObjectUtil.isEmpty(sortContexts)) {
-            Arrays.stream(sortContexts).forEach(ref -> {
-                Optional.ofNullable(ref.getPageRequest()).ifPresent(r ->
-                {
-                    int pageSize = ref.getPageRequest().getPageSize();
-                    sourceBuilder.from((ref.getPageRequest().getPageIndex() - 1) * pageSize);
-                    sourceBuilder.size(pageSize);
-                    context.setPaging(true);
+        PageRequest pageRequest = context.getPageRequest();
+        if (!ObjectUtil.isEmpty(pageRequest)) {
+            sourceBuilder.from((pageRequest.getPageIndex() - 1) * pageRequest.getPageSize());
+            sourceBuilder.size(pageRequest.getPageSize());
+            context.setPaging(true);
+            if (ObjectUtil.isNotEmpty(pageRequest.getSortOrderContext())) {
+                Arrays.stream(pageRequest.getSortOrderContext()).forEach(ref -> {
+                    sourceBuilder.sort(ref.getField(), SortOrder.fromString(ref.getSortOrderEnum().getOrder()));
                 });
-                sourceBuilder.sort(ref.getField(), ref.getSortOrder());
-            });
+            }
         }
         if (!ObjectUtil.isEmpty(context.getFetchColumns())) {
             sourceBuilder.fetchSource(context.getFetchColumns(), null);
@@ -162,22 +152,11 @@ public class QueryContext {
             this.field = field;
             this.sortOrder = orders;
             if (Objects.nonNull(pageRequest)) {
-                Assert.isTrue(pageRequest.getPageIndex() > 0, "pageIndex must be gt 0");
-                Assert.isTrue(pageRequest.getPageSize() > 0 && pageRequest.getPageSize() <= 1000, "pageSize must be in range (0, 1000]");
+                Assert.isTrue(pageRequest.getPageIndex() > 0, "pageIndex invalid");
+                Assert.isTrue(pageRequest.getPageSize() > 0 && pageRequest.getPageSize() <= PageRequest.MAX_PAGE_SIZE, "pageSize invalid");
                 this.pageRequest = pageRequest;
             }
         }
-    }
-
-    public static void main(String[] args) {
-//        QueryContext queryContext = new QueryContext("11", "22", QueryBuilders.boolQuery());
-        QueryContext build = QueryContext
-                .newBuilder(Orders.class, QueryBuilders.boolQuery())
-                .size(100)
-                .sortContext(new SortContext("id", SortOrder.ASC))
-                .fetchColumn("sn", "user_id")
-                .build();
-        System.out.println(build);
     }
 
 
