@@ -11,7 +11,7 @@ import org.lkg.metric.redis.RedisInterceptor;
 public class RedisTraceTimeoutInterceptor implements RedisInterceptor {
     @Override
     public Object intercept(Chain chain) throws Throwable {
-        TraceTimeoutLimiter.getAndCheck(chain.cmd(), TraceLogEnum.Redis);
+        TraceTimeoutLimiter.getAndCheck(TraceLogEnum.Redis);
         return chain.process();
     }
 }

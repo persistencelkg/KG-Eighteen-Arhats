@@ -1,6 +1,10 @@
 package org.lkg.elastic_search.spring;
 
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.Timer;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -11,12 +15,17 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.lkg.core.DynamicConfigManger;
+import org.lkg.core.config.TraceLogEnum;
+import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.elastic_search.config.CustomEsRestClientProperties;
 import org.lkg.elastic_search.config.MoreEsClient;
 import org.lkg.elastic_search.config.OnEnableMoreEs;
+import org.lkg.elastic_search.interceptor.EsInterceptor;
 import org.lkg.enums.StringEnum;
+import org.lkg.exception.ExceptionSystemConst;
 import org.lkg.retry.BulkAsyncRetryAble;
 import org.lkg.simple.ObjectUtil;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientProperties;
@@ -29,6 +38,7 @@ import org.springframework.util.StringUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.Objects;
 
 /**
  * Description:
@@ -41,13 +51,13 @@ public class MoreEsClientAutoConfiguration {
 
 
     @Bean(MoreEsClient.PRIMARY)
-    public RestHighLevelClient primaryRestHighLevelClient(MoreEsClient moreEsClient) {
-        return getRestHighLevelClient(moreEsClient, MoreEsClient.PRIMARY);
+    public RestHighLevelClient primaryRestHighLevelClient(MoreEsClient moreEsClient, ObjectProvider<EsInterceptor> esInterceptorObjectProvider) {
+        return getRestHighLevelClient(moreEsClient, MoreEsClient.PRIMARY, esInterceptorObjectProvider);
     }
 
     @Bean(MoreEsClient.SECOND)
-    public RestHighLevelClient secondRestHighLevelClient(MoreEsClient moreEsClient) {
-        return getRestHighLevelClient(moreEsClient, MoreEsClient.SECOND);
+    public RestHighLevelClient secondRestHighLevelClient(MoreEsClient moreEsClient, ObjectProvider<EsInterceptor> esInterceptorObjectProvider) {
+        return getRestHighLevelClient(moreEsClient, MoreEsClient.SECOND, esInterceptorObjectProvider);
     }
 
     @Bean
@@ -69,13 +79,14 @@ public class MoreEsClientAutoConfiguration {
 
 
     /** 参考ElasticsearchRestClientConfigurations */
-    private RestHighLevelClient getRestHighLevelClient(MoreEsClient moreEsClient, String key) {
+    private RestHighLevelClient getRestHighLevelClient(MoreEsClient moreEsClient, String key, ObjectProvider<EsInterceptor> esInterceptorObjectProvider) {
         Assert.isTrue(ObjectUtil.isNotEmpty(moreEsClient) && ObjectUtil.isNotEmpty(moreEsClient.getMeta()),"more es config meta not null");
         CustomEsRestClientProperties properties = moreEsClient.getMeta().get(key);
         BasicCredentialsProvider bcp = buildCredential(properties);
         // 这一步是rest low level client
         HttpHost[] hosts = properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
         RestClientBuilder builder = RestClient.builder(hosts);
+
         PropertyMapper map = PropertyMapper.get();
         // http client 配置
         builder.setRequestConfigCallback((requestConfigBuilder) -> {
@@ -87,7 +98,7 @@ public class MoreEsClientAutoConfiguration {
         });
 //        builder.setMaxRetryTimeoutMillis(2); 控制客户端等待线程的响应时间 而非服务端的响应时间，默认30s
         // 构建rest high level client
-        return new RestHighLevelClient(builder.setHttpClientConfigCallback(
+        RestClientBuilder restClientBuilder = builder.setHttpClientConfigCallback(
                 (HttpAsyncClientBuilder httpAsyncClientBuilder) -> {
                     httpAsyncClientBuilder.setDefaultCredentialsProvider(bcp);
                     map.from(properties::getMaxConnectionPerRoute).whenNonNull().when(ref -> ref > 0).to(httpAsyncClientBuilder::setMaxConnPerRoute);
@@ -97,9 +108,26 @@ public class MoreEsClientAutoConfiguration {
                     // setSoTimeout 是网络层的配置，而上面requestConfig的readTimeout是Http应用层配置，控制单个http请求读取超时
                     IOReactorConfig build = IOReactorConfig.custom().setSelectInterval(properties.getCheckTimoutInterval()).build();
                     httpAsyncClientBuilder.setDefaultIOReactorConfig(build);
-                    return httpAsyncClientBuilder;
-                }));
+                    String esNamespace = "es.req.";
+                    // 拦截器
+                    httpAsyncClientBuilder.addInterceptorLast((HttpRequestInterceptor) (request, context) -> {
+                        context.setAttribute(esNamespace, System.currentTimeMillis());
+                    });
+                    httpAsyncClientBuilder.addInterceptorFirst((HttpResponseInterceptor) (response, context) -> {
+                        Long start = (Long) context.getAttribute(esNamespace);
+                        int code = Objects.nonNull(response.getStatusLine()) ? response.getStatusLine().getStatusCode() : ExceptionSystemConst.TIMEOUT_MAYBE_ERR_CODE;
+                        String namespace = TraceLogEnum.ElasticSearch.getNameSpace(code >= 200 && code < 400);
+                        Timer.builder(namespace)
+                                .tags(Tags.of("code", String.valueOf(code)))
+                                .register(LongHengMeterRegistry.getInstance())
+                                .record(Duration.ofMillis(System.currentTimeMillis() - start));
+                    });
 
+                    return httpAsyncClientBuilder;
+                });
+
+
+        return new RestHighLevelClient(restClientBuilder);
     }
 
 

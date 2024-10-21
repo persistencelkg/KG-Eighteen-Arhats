@@ -19,9 +19,15 @@ import java.util.function.Supplier;
  */
 @Slf4j
 @AllArgsConstructor
-public abstract class RetryService {
+public abstract class RetryService{
 
     private BulkAsyncRetryAble retryAble;
+
+    private RetryInterceptor retryInterceptor;
+
+    public RetryService(RetryInterceptor retryInterceptor) {
+        this.retryInterceptor = retryInterceptor;
+    }
 
     /**
      * @param throwableFunction
@@ -59,6 +65,9 @@ public abstract class RetryService {
      */
     private <T> T doRetry(Supplier<T> throwableFunction, int count, Function<T, Boolean> res) {
         T t = null;
+        if (Objects.nonNull(retryInterceptor)) {
+            retryInterceptor.preHand(retryAble);
+        }
         if (count >= retryAble.count()) {
             log.error("[retry service] retry count has surpass the limit {} times, reject execute", retryAble.count());
             return t;
@@ -77,7 +86,8 @@ public abstract class RetryService {
             }
         } catch (Throwable e) {
             Class<? extends Throwable>[] include = retryAble.include();
-            if (ObjectUtil.isEmpty(include) || Arrays.stream(include).noneMatch(ref -> ref.isAssignableFrom(e.getCause().getClass()))) {
+            if (ObjectUtil.isEmpty(include) || Objects.isNull(e.getCause()) ||
+                    Arrays.stream(include).noneMatch(ref -> ref.isAssignableFrom(e.getCause().getClass()))) {
                 throw e;
             }
             log(count, e.getMessage(), e);
@@ -97,6 +107,4 @@ public abstract class RetryService {
     private static void log(int count, String msg, Throwable e) {
         log.warn("[retry service]: current retry count:{}, happen err:{} ready for retry", count + 1, msg, e);
     }
-
-
 }

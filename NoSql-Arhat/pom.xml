@@ -29,6 +29,16 @@
 
         <dependency>
             <groupId>io.github.persistencelkg</groupId>
+            <artifactId>Metrics-Arhat</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>TTL-Arhat</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
             <artifactId>ApolloDynamicConfig-Arhat</artifactId>
         </dependency>
 
