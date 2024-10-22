@@ -13,6 +13,7 @@ import org.lkg.retry.BulkAsyncRetryAble;
 import org.lkg.retry.RetryAble;
 import org.lkg.retry.RetryInterceptor;
 import org.lkg.retry.RetryService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
@@ -24,11 +25,7 @@ import java.io.IOException;
 
 //@Service
 @Slf4j
-public class EsBulkRetryService extends RetryService {
-
-    public EsBulkRetryService(BulkAsyncRetryAble retryAble) {
-        super(retryAble, (ref) -> TraceTimeoutLimiter.getAndCheck(TraceLogEnum.ElasticSearch));
-    }
+public abstract class EsBulkRetryService extends RetryService {
 
     private void retryASync(RestHighLevelClient client, BulkRequest bulkRequest) throws Throwable {
         final boolean[] failure = {false};

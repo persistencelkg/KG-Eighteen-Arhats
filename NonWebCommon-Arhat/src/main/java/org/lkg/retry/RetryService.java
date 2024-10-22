@@ -3,6 +3,7 @@ package org.lkg.retry;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.simple.ObjectUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
@@ -18,16 +19,13 @@ import java.util.function.Supplier;
  * Date: 2024/5/15 2:17 PM
  */
 @Slf4j
-@AllArgsConstructor
 public abstract class RetryService{
 
+    @Autowired(required = false)
     private BulkAsyncRetryAble retryAble;
 
+    @Autowired(required = false)
     private RetryInterceptor retryInterceptor;
-
-    public RetryService(RetryInterceptor retryInterceptor) {
-        this.retryInterceptor = retryInterceptor;
-    }
 
     /**
      * @param throwableFunction
@@ -65,9 +63,9 @@ public abstract class RetryService{
      */
     private <T> T doRetry(Supplier<T> throwableFunction, int count, Function<T, Boolean> res) {
         T t = null;
-        if (Objects.nonNull(retryInterceptor)) {
-            retryInterceptor.preHand(retryAble);
-        }
+//        if (Objects.nonNull(retryInterceptor)) {
+//            retryInterceptor.preHand();
+//        }
         if (count >= retryAble.count()) {
             log.error("[retry service] retry count has surpass the limit {} times, reject execute", retryAble.count());
             return t;

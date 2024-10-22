@@ -41,10 +41,6 @@ import java.util.stream.Collectors;
 @Service
 public class MapDataEsApIService<T> extends EsBulkRetryService implements EsApIService<T> {
 
-    public MapDataEsApIService(BulkAsyncRetryAble esRetryAble) {
-        super(esRetryAble);
-    }
-
     @Override
     public boolean saveOrUpdateDocument(RestHighLevelClient client, String id, T obj) {
         EsContext esContext = returnIfValid(obj);

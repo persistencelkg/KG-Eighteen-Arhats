@@ -23,7 +23,7 @@ public enum TraceLogEnum {
     private final String namespacePrefix;
 
     public String getNameSpace(boolean res) {
-        return namespacePrefix + (res ? "suc": "fail");
+        return namespacePrefix + (res ? ".suc": ".fail");
     }
 
     public String getTraceTimeOutKey() {
