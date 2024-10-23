@@ -128,6 +128,9 @@ public class JacksonUtil {
         return null;
     }
 
+    public static TypeReference<Map<String, Object>> getMapReference() {
+        return new TypeReference<Map<String, Object>>() {};
+    }
 
     public static Map<String, Object> objToMap(Object obj) {
         String s = writeValue(obj);

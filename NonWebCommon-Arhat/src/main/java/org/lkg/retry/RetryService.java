@@ -30,7 +30,7 @@ public abstract class RetryService{
     /**
      * @param throwableFunction
      * @param whetherExceptionContinue 有啥用户不不希望操作产生的异常持续抛出而中断他们的业务逻辑，所以有的时候会进行捕获，然后强制让返回结果为null，
-     *                                 最后自己通过对null的判断去做业务判断，这个时候就需要告诉重试框架，
+     *                                 最后自己通过对null的判断去做业务判断，这个时候就需要明确告诉重试框架是否继续重试
      *                                 true：代表用户手动了捕获了仍需要重试，否则结果的null也是
      * @param <T>
      * @return
@@ -66,14 +66,15 @@ public abstract class RetryService{
 //        if (Objects.nonNull(retryInterceptor)) {
 //            retryInterceptor.preHand();
 //        }
-        if (count >= retryAble.count()) {
-            log.error("[retry service] retry count has surpass the limit {} times, reject execute", retryAble.count());
-            return t;
-        }
         if (!retryAble.enable()) {
             log(count, "retry stop by hand", null);
             return t;
         }
+        if (count >= retryAble.count()) {
+            log.error("[retry service] retry count has surpass the limit {} times, reject execute", retryAble.count());
+            return t;
+        }
+
         try {
             t = throwableFunction.get();
 

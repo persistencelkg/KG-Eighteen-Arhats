@@ -7,6 +7,7 @@ import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.Objects;
 
 /**
  * Description:
@@ -30,6 +31,10 @@ public class CustomWebClientHolder {
     }
 
     public static CustomWebClientConfig getCustomWebClientConfig() {
+        if (Objects.isNull(INSTANCE)) {
+            INSTANCE = new CustomWebClientConfig();
+            INSTANCE.setGlobal(new CustomWebClientConfig.CommonHttpClientConfig());
+        }
         return INSTANCE;
     }
 }

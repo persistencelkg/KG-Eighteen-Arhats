@@ -21,7 +21,13 @@ public enum BizExceptionEnum implements IResponseEnum {
      * 无法被感知的异常，需要额外关注，例如oom，StackOverflowError
      */
     UNKNOWN_ERROR("S00004", "系统繁忙，请联系客服" ),
-    SHARDING_ROUTE_ERROR("S00002", "数据分片异常")
+    SHARDING_ROUTE_ERROR("S00002", "数据分片异常"),
+
+    /**
+     *
+     */
+    SERVICE_INVOKE_PARAM_ERROR("S00005", "服务调用参数缺失"),
+    SERVICE_INVOKE_ERROR("S00005", "服务调用异常")
     ;
 
 
