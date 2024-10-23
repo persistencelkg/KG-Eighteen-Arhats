@@ -17,9 +17,16 @@
         <commons.httplicent.version>3.1</commons.httplicent.version>
         <apache.poi.version>4.1.2</apache.poi.version>
         <github.caffeine.version>2.6.2</github.caffeine.version>
+        <okhttp.version>4.9.0</okhttp.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>DesignPatternApply-Arhat</artifactId>
+        </dependency>
+
         <!--非web-->
         <dependency>
             <groupId>io.github.persistencelkg</groupId>
@@ -58,6 +65,14 @@
             <optional>true</optional>
         </dependency>
 
+
+        <!--ok http-->
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
+        </dependency>
 
         <!-- http client begin -->
         <dependency>

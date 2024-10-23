@@ -7,5 +7,5 @@ package org.lkg.retry;
  */
 public interface RetryInterceptor {
 
-    void preHand(RetryAble retryAble);
+    void preHand();
 }

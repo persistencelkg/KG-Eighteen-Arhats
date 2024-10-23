@@ -1,17 +1,24 @@
 package org.lkg.utils.http.httpclient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HttpProcessor;
+import org.apache.http.protocol.HttpProcessorBuilder;
+import org.apache.http.protocol.RequestTargetHost;
 import org.apache.http.util.EntityUtils;
 import org.lkg.enums.TrueFalseEnum;
 import org.lkg.metric.rpc.http.MetricHttpProcessor;
@@ -108,19 +115,26 @@ public class HttpClientUtil {
         return result;
     }
 
-    private static CloseableHttpClient getHttpClientWithPool(String url, CustomWebClientConfig.CommonHttpClientConfig commonHttpClientConfig) {
+    public static CloseableHttpClient getHttpClientWithPool(String url, CustomWebClientConfig.CommonHttpClientConfig commonHttpClientConfig) {
         RequestConfig requestConfig = getRequestConfig(url, commonHttpClientConfig);
         log.info("init http client config:{}", requestConfig);
         int retryTimes = TrueFalseEnum.isTrue(commonHttpClientConfig.getRetryFlag()) ? commonHttpClientConfig.getRetryTimes() : 0;
         HttpRequestRetryHandler retryHandler = getHttpRequestRetryHandler(retryTimes);
         HttpClientBuilder builder = HttpClients.custom()
+                .setDefaultHeaders(Lists.newArrayList(
+                        new BasicHeader("Content-Type", InternalRequest.BodyEnum.RAW.getContentTypeValue()),
+                        new BasicHeader("Content-Length", "84"),
+                        new BasicHeader("User-Agent", "Apache-Httpclient/4.5.14")
+                        )
+
+                )
                 .setDefaultRequestConfig(requestConfig)
                 .setRetryHandler(retryHandler)
                 .setHttpProcessor(MetricHttpProcessor.getInstance())
                 // http client 底层默认开启了连接池复用机制，同时也有默认的保活策略：来着服务端配置的keep_alive，解析响应的timeout即可
                 // 因此如果不加以定制，而依靠服务端的设置，一般来说服务端都是2小时，对于客户端来说无法及时识别到 使用了已经失效的链接，进而出现 Connection reset by peer错误
                 // 设置建议根据服务活跃程度适度增大或缩小
-                .setKeepAliveStrategy(((response, context) -> TimeUnit.MINUTES.toMillis(1)));
+                .setKeepAliveStrategy(getCustomConnectionKeepAliveStrategy());
 
         if (TrueFalseEnum.isTrue(commonHttpClientConfig.getUsePool())) {
             builder.setConnectionManager(connManager);
@@ -162,6 +176,7 @@ public class HttpClientUtil {
                         .setSocketTimeout(specialUrlConfig.getSocketTimeOut())
                         .setConnectionRequestTimeout(specialUrlConfig.getRequestConnectionTimeOut())
                         .build();
+                break;
             }
         }
         return serverConfig;
@@ -176,5 +191,11 @@ public class HttpClientUtil {
                 return exception instanceof ConnectTimeoutException || exception instanceof SocketTimeoutException;
             }
         };
+    }
+
+
+    private static ConnectionKeepAliveStrategy getCustomConnectionKeepAliveStrategy() {
+        // 为啥减5s， 就是为了防止服务端到了时间自动断开，给客户端一个提前反应的时间，避免客户端又继续请求服务端单向断开的请求。
+        return ((response, context) -> Math.max(DefaultConnectionKeepAliveStrategy.INSTANCE.getKeepAliveDuration(response, context) - TimeUnit.SECONDS.toSeconds(5), TimeUnit.MINUTES.toMillis(1)));
     }
 }

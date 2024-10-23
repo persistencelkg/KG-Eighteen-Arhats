@@ -3,6 +3,7 @@ package org.lkg.retry;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.simple.ObjectUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
@@ -18,21 +19,18 @@ import java.util.function.Supplier;
  * Date: 2024/5/15 2:17 PM
  */
 @Slf4j
-@AllArgsConstructor
 public abstract class RetryService{
 
+    @Autowired(required = false)
     private BulkAsyncRetryAble retryAble;
 
+    @Autowired(required = false)
     private RetryInterceptor retryInterceptor;
-
-    public RetryService(RetryInterceptor retryInterceptor) {
-        this.retryInterceptor = retryInterceptor;
-    }
 
     /**
      * @param throwableFunction
      * @param whetherExceptionContinue 有啥用户不不希望操作产生的异常持续抛出而中断他们的业务逻辑，所以有的时候会进行捕获，然后强制让返回结果为null，
-     *                                 最后自己通过对null的判断去做业务判断，这个时候就需要告诉重试框架，
+     *                                 最后自己通过对null的判断去做业务判断，这个时候就需要明确告诉重试框架是否继续重试
      *                                 true：代表用户手动了捕获了仍需要重试，否则结果的null也是
      * @param <T>
      * @return
@@ -65,17 +63,18 @@ public abstract class RetryService{
      */
     private <T> T doRetry(Supplier<T> throwableFunction, int count, Function<T, Boolean> res) {
         T t = null;
-        if (Objects.nonNull(retryInterceptor)) {
-            retryInterceptor.preHand(retryAble);
+//        if (Objects.nonNull(retryInterceptor)) {
+//            retryInterceptor.preHand();
+//        }
+        if (!retryAble.enable()) {
+            log(count, "retry stop by hand", null);
+            return t;
         }
         if (count >= retryAble.count()) {
             log.error("[retry service] retry count has surpass the limit {} times, reject execute", retryAble.count());
             return t;
         }
-        if (!retryAble.enable()) {
-            log(count, "retry stop by hand", null);
-            return t;
-        }
+
         try {
             t = throwableFunction.get();
 

@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ApolloDynamicConfig-Arhat.iml" filepath="$PROJECT_DIR$/ApolloDynamicConfig-Arhat.iml" />
-      <module fileurl="file://$PROJECT_DIR$/DesignPatternApply-Arhat/DesignPatternApply-Arhat.iml" filepath="$PROJECT_DIR$/DesignPatternApply-Arhat/DesignPatternApply-Arhat.iml" />
       <module fileurl="file://$PROJECT_DIR$/FullTrace-Arhat.iml" filepath="$PROJECT_DIR$/FullTrace-Arhat.iml" />
       <module fileurl="file://$PROJECT_DIR$/MetricsCollector-Arhat.iml" filepath="$PROJECT_DIR$/MetricsCollector-Arhat.iml" />
       <module fileurl="file://$PROJECT_DIR$/NoSql-Arhat.iml" filepath="$PROJECT_DIR$/NoSql-Arhat.iml" />

@@ -19,6 +19,9 @@ import org.lkg.kafka.biz.KafkaService;
 import org.lkg.redis.crud.RedisService;
 import org.lkg.request.*;
 import org.lkg.rocketmq.biz.MqRetrySendService;
+import org.lkg.rpc.lb.LoadBalanceService;
+import org.lkg.rpc.lb.ThirdServiceInvokeEnum;
+import org.lkg.rpc.lb.demo.AtmCouponProxy;
 import org.lkg.utils.http.httpclient.HttpClientUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -122,16 +125,25 @@ public class TestV2 implements InitializingBean {
     @Resource
     private TestFeign testFeign;
 
+    @Resource
+    private LoadBalanceService loadBalanceService;
+
+    @Resource
+    private AtmCouponProxy atmCouponProxy;
+
     @GetMapping("/test-feign")
     public boolean testFeign() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("params", new HashMap<String, Object>() {{
             put("user_id", 1L);
+            put("client_type", 5);
+            put("card_type", 1);
         }});
         log.info("test: param");
         System.out.println(redisService.getKey("lkg"));
         testDao.listData(3000);
 //        testFeign.testId(map);
+        System.out.println("new load balance res:" + atmCouponProxy.callResp(null, ThirdServiceInvokeEnum.COUPON_SELECT_COUPON));
         log.info("{}", (testFeign.getUserCard(map, new Request.Options(800, TimeUnit.MILLISECONDS, 1005, TimeUnit.MILLISECONDS, true))));
         return true;
     }

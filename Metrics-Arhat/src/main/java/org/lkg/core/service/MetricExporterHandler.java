@@ -55,6 +55,9 @@ public class MetricExporterHandler {
     private HashMap<Meter.Id, MeterBo> convertToMeterBo(List<Meter> list) {
         HashMap<Meter.Id, MeterBo> idMeterBoHashMap = new HashMap<>(list.size());
         list.forEach(val -> {
+            if (val.getId().getName().contains("unknown")) {
+                return;
+            }
             MeterBo meterBo = populateDefault(val);
             // 浮动计数
             if (val instanceof Gauge) {

@@ -4,16 +4,20 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpRequestWrapper;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
+import org.apache.http.protocol.*;
+import org.apache.http.util.VersionInfo;
 import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.exception.ExceptionSystemConst;
+import org.lkg.request.InternalRequest;
 import org.lkg.simple.ObjectUtil;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -36,13 +40,38 @@ public class MetricHttpProcessor implements HttpProcessor {
         return processor;
     }
 
+    private final List<HttpRequestInterceptor> MIN_LIMIT_REQUEST = new ArrayList<>();
+
     private MetricHttpProcessor() {
+        // 必需
+        MIN_LIMIT_REQUEST.add(new RequestTargetHost());
+        // 必需
+        MIN_LIMIT_REQUEST.add(new RequestContent());
+        MIN_LIMIT_REQUEST.add((request, context) -> {
+            request.setHeader(HTTP.CONTENT_TYPE, InternalRequest.BodyEnum.RAW.getContentTypeValue());
+
+        });
+
+        // 非必须，调用三方建议一定加上，内网可省
+        MIN_LIMIT_REQUEST.add(new RequestUserAgent(getUserAgent()));
+    }
+
+    private String getUserAgent() {
+        String userAgentCopy = System.getProperty("http.agent");
+        if (userAgentCopy == null) {
+            userAgentCopy = VersionInfo.getUserAgent("Apache-HttpClient",
+                    "org.apache.http.client", getClass());
+        }
+        return userAgentCopy;
     }
 
     @Override
     public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
         context.setAttribute(HTTP_NAME_SPACE, System.currentTimeMillis());
         context.setAttribute(HTTP_URL, getUrl(request));
+        for (HttpRequestInterceptor httpRequestInterceptor : MIN_LIMIT_REQUEST) {
+            httpRequestInterceptor.process(request, context);
+        }
     }
 
     @Override
@@ -72,7 +101,9 @@ public class MetricHttpProcessor implements HttpProcessor {
 
     private String getUrl(HttpRequest request) {
         if (request instanceof HttpRequestWrapper) {
-            return ((HttpRequestWrapper) request).getOriginal().getRequestLine().getUri();
+            // 记录真实的url全路径 https://xxx/a/b/c
+            // return ((HttpRequestWrapper) request).getOriginal().getRequestLine().getUri();
+            return request.getRequestLine().getUri();
         }
         return request.getRequestLine().getUri();
     }
