@@ -15,12 +15,10 @@ import org.lkg.simple.JacksonUtil;
 @Getter
 public enum ThirdServiceInvokeEnum {
 
-    COUPON_SELECT_COUPON("atm-coupon","/atm-coupon/user-coupon/validCard/byClient","卡校验", JacksonUtil.getMapReference()),
+    COUPON_SELECT_COUPON("atm-coupon", "/atm-coupon/user-coupon/validCard/byClient", "卡校验", JacksonUtil.getMapReference()),
 
 
-    ORDER_DETAIL("save-order","/order/detail","订单详情", JacksonUtil.getMapReference());
-
-    ;
+    ORDER_DETAIL("save-order", "/order/detail", "订单详情", JacksonUtil.getMapReference());;
 
     private final String serviceName;
     private final String url;
@@ -30,7 +28,12 @@ public enum ThirdServiceInvokeEnum {
 
     public String getFallBackKey() {
         // atm-coupon.fallback.enable
+        return String.join(StringEnum.DOT, serviceName, this.name().toLowerCase(), "fallback", "enable");
+    }
+
+    public String getServiceFallBackKey() {
         return String.join(StringEnum.DOT, serviceName, "fallback", "enable");
+
     }
 
     public static void main(String[] args) {

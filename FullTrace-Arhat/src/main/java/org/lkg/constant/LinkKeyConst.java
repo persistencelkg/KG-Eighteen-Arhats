@@ -7,7 +7,7 @@ package org.lkg.constant;
  */
 public interface LinkKeyConst {
 
-    String TRACE_ID = "tid";
+    String TRACE_ID = "traceId";
 
     String USER_ID = "uid";
 

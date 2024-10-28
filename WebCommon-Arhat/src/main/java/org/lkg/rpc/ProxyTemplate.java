@@ -53,6 +53,12 @@ public abstract class ProxyTemplate<REQ, RESP> {
     }
 
     protected boolean enableFallBack(ThirdServiceInvokeEnum thirdServiceInvokeEnum) {
+        // 服务整体降级
+        Boolean serviceFallBack = DynamicConfigManger.getBoolean(thirdServiceInvokeEnum.getServiceFallBackKey());
+        if (Boolean.TRUE.equals(serviceFallBack)) {
+            return Boolean.TRUE;
+        }
+        // 单接口降级
         return DynamicConfigManger.getBoolean(thirdServiceInvokeEnum.getFallBackKey(), false);
     }
 

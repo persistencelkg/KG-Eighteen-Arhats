@@ -15,14 +15,29 @@ import java.util.stream.Collectors;
  * Author: 李开广
  * Date: 2024/9/23 9:43 PM
  */
-public class TraceHolder {
+public final class TraceHolder {
 
-    private final List<TraceDecorator> traceDecoratorIterator;
+    private List<TraceDecorator> traceDecoratorIterator;
 
     // 多用于链路发起时
-    private final ExtraEntryInjector entryInjector;
+    private ExtraEntryInjector entryInjector;
 
-    public TraceHolder(ObjectProvider<TraceDecorator> traceDecoratorObjectProvider, ExtraEntryInjector entryInjector) {
+    private static TraceHolder INSTANCE;
+
+    public static synchronized TraceHolder getInstance(ObjectProvider<TraceDecorator> traceDecoratorObjectProvider, ExtraEntryInjector entryInjector) {
+        if (Objects.isNull(INSTANCE)) {
+            INSTANCE = new TraceHolder(traceDecoratorObjectProvider, entryInjector);
+        }
+        return INSTANCE;
+    }
+
+    public static TraceHolder getInstance() {
+        return INSTANCE;
+    }
+
+    private TraceHolder() {}
+
+    private TraceHolder(ObjectProvider<TraceDecorator> traceDecoratorObjectProvider, ExtraEntryInjector entryInjector) {
         this.traceDecoratorIterator = traceDecoratorObjectProvider.orderedStream().collect(Collectors.toList());
         this.entryInjector = entryInjector;
     }

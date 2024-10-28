@@ -21,7 +21,7 @@ public class FullTraceAutoConfiguration {
 
     @Bean
     public TraceHolder traceHolder(ObjectProvider<TraceDecorator> traceDecorator, ExtraEntryInjector extraEntryInjector) {
-        return new TraceHolder(traceDecorator, extraEntryInjector);
+        return TraceHolder.getInstance(traceDecorator, extraEntryInjector);
     }
 
     @Bean
