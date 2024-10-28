@@ -2,9 +2,11 @@ package org.lkg.utils.http.httpclient;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
 import org.lkg.request.InternalRequest;
 import org.lkg.simple.ObjectUtil;
 import org.springframework.http.HttpMethod;
@@ -34,6 +36,14 @@ public class CustomHttpRequest extends HttpEntityEnclosingRequestBase {
         if (Objects.equals(request.getMethod(), HttpMethod.POST.name()) && !ObjectUtil.isEmpty(request.bodyAsString())) {
             StringEntity stringEntity = new StringEntity(request.bodyAsString(), StandardCharsets.UTF_8);
             setEntity(stringEntity);
+        }
+    }
+
+    @Override
+    public void setHeaders(Header[] headers) {
+        super.setHeaders(headers);
+        if (Objects.nonNull(internalRequest.getHeaders())) {
+            internalRequest.getHeaders().forEach(super::addHeader);
         }
     }
 

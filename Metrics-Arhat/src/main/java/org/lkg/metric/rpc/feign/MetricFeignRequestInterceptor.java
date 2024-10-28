@@ -3,13 +3,18 @@ package org.lkg.metric.rpc.feign;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.Timer;
 import lombok.extern.slf4j.Slf4j;
-import org.lkg.metric.rpc.http.MetricHttpProcessor;
+import org.lkg.core.init.LongHengMeterRegistry;
+import org.lkg.metric.rpc.http.MetricHttp;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Objects;
 
 import static org.lkg.exception.ExceptionSystemConst.TIMEOUT_MAYBE_ERR_CODE;
+import static org.lkg.metric.rpc.RpcTagConstant.HTTP_NAME_SPACE;
 
 /**
  * Description:
@@ -40,8 +45,9 @@ public class MetricFeignRequestInterceptor implements SelfFeignInterceptor {
 
     private void recordTime(String url, Response response, long start) {
         int code = Objects.nonNull(response) ? response.status() : TIMEOUT_MAYBE_ERR_CODE;
-        MetricHttpProcessor.httpMetricRecord(code, url, start);
+        MetricHttp.httpMetricRecord(code, url, start);
     }
+
 
     @Override
     public int getOrder() {

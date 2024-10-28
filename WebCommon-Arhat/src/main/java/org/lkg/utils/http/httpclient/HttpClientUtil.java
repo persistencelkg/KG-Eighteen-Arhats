@@ -3,7 +3,6 @@ package org.lkg.utils.http.httpclient;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
@@ -16,12 +15,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HttpProcessor;
-import org.apache.http.protocol.HttpProcessorBuilder;
-import org.apache.http.protocol.RequestTargetHost;
 import org.apache.http.util.EntityUtils;
 import org.lkg.enums.TrueFalseEnum;
-import org.lkg.metric.rpc.http.MetricHttpProcessor;
 import org.lkg.request.CommonResp;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
@@ -56,8 +51,7 @@ public class HttpClientUtil {
         stop.start(serverName);
 //        long start = System.currentTimeMillis();
         CustomHttpRequest customHttpRequest = new CustomHttpRequest(request, serverName);
-        // head 准备
-        customHttpRequest.getInternalRequest().getHeaders().forEach(customHttpRequest::addHeader);
+
         InternalResponse internalResponse = executeHttpRequest(customHttpRequest, customWebClientConfig);
         stop.stop();
         // 日志记录
@@ -121,13 +115,6 @@ public class HttpClientUtil {
         int retryTimes = TrueFalseEnum.isTrue(commonHttpClientConfig.getRetryFlag()) ? commonHttpClientConfig.getRetryTimes() : 0;
         HttpRequestRetryHandler retryHandler = getHttpRequestRetryHandler(retryTimes);
         HttpClientBuilder builder = HttpClients.custom()
-                .setDefaultHeaders(Lists.newArrayList(
-                        new BasicHeader("Content-Type", InternalRequest.BodyEnum.RAW.getContentTypeValue()),
-                        new BasicHeader("Content-Length", "84"),
-                        new BasicHeader("User-Agent", "Apache-Httpclient/4.5.14")
-                        )
-
-                )
                 .setDefaultRequestConfig(requestConfig)
                 .setRetryHandler(retryHandler)
                 .setHttpProcessor(MetricHttpProcessor.getInstance())
