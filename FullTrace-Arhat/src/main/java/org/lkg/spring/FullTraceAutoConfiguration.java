@@ -33,7 +33,7 @@ public class FullTraceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ExtraEntryInjector extraEntryInjector() {
-        return new ExtraEntryInjector.DefaultInjector();
+        return ExtraEntryInjector.DEFAULT;
     }
 
 

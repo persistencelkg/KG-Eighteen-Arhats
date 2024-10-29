@@ -94,4 +94,8 @@ public class Trace {
     public String getExtra(String key) {
         return extraMap.get(key);
     }
+
+    public void removeExtra(String key) {
+        extraMap.remove(key);
+    }
 }

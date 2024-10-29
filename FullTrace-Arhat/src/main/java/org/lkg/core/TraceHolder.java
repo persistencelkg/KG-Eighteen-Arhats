@@ -1,5 +1,6 @@
 package org.lkg.core;
 
+import lombok.Getter;
 import org.lkg.constant.LinkKeyConst;
 import org.lkg.simple.ObjectUtil;
 import org.slf4j.MDC;
@@ -20,6 +21,7 @@ public final class TraceHolder {
     private List<TraceDecorator> traceDecoratorIterator;
 
     // 多用于链路发起时
+    @Getter
     private ExtraEntryInjector entryInjector;
 
     private static TraceHolder INSTANCE;
@@ -42,8 +44,8 @@ public final class TraceHolder {
         this.entryInjector = entryInjector;
     }
 
-    public static boolean existCurrentContext() {
-        return Objects.nonNull(TraceContext.getCurrentContext());
+    public static Trace getCurrent() {
+        return TraceContext.getCurrentContext();
     }
 
 

@@ -15,6 +15,6 @@ public interface StageSceneProducerFactory extends InitializingBean {
 
     @Override
     default void afterPropertiesSet() throws Exception{
-
+        PriceStage.registry(getEnum(), this);
     }
 }

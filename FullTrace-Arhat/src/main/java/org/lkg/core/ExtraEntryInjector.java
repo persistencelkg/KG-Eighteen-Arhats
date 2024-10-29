@@ -14,6 +14,9 @@ import java.util.Objects;
  */
 public interface ExtraEntryInjector {
 
+
+    static ExtraEntryInjector DEFAULT = new DefaultInjector();
+
     void remove(String key);
 
     Trace populateExtra(Trace trace);
@@ -22,7 +25,7 @@ public interface ExtraEntryInjector {
 
         private Map<String, String> dynamicExtraEntry;
 
-        public DefaultInjector() {
+        private DefaultInjector() {
             dynamicExtraEntry = DynamicConfigManger.initAndRegistChangeEvent("full-link-entry", DynamicConfigManger::toMap, this::refresh);
         }
 
