@@ -6,4 +6,12 @@ package org.lkg.factory;
  * Date: 2024/10/23 5:03 PM
  */
 public class StageContext {
+
+    // order
+
+    // pay
+
+    // dto
+
+    // vo
 }

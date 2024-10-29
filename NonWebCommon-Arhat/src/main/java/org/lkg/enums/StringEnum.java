@@ -20,6 +20,7 @@ public interface StringEnum {
     String DASH = "-";
     String DOLLAR = "$";
     String DOT = ".";
+
     String DOTDOT = "..";
 
     String SPACE = " ";
@@ -42,5 +43,18 @@ public interface StringEnum {
     String HTTP_PREFIX = "http://";
 
     String HTTPS_PREFIX = "https://";
+
+
+    static String getEscape(String ch) {
+        return BACK_SLASH + ch;
+    }
+
+    static String getEscapeDot() {
+        return getEscape(DOT);
+    }
+
+    static String getEscapeComma() {
+        return getEscape(COMMA);
+    }
 
 }
