@@ -13,6 +13,7 @@
         <module name="NoSql-Arhat" />
         <module name="QuickStart-Arhat" />
         <module name="ApolloDynamicConfig-Arhat" />
+        <module name="LongPoll-Arhat" />
         <module name="FullTrace-Arhat" />
         <module name="TTL-Arhat" />
         <module name="MessageNotice-Arhat" />
@@ -34,6 +35,7 @@
       <module name="DynamicSharding-Arhat" options="-parameters" />
       <module name="EighteenArhat-spring-boot-starter" options="-parameters" />
       <module name="FullTrace-Arhat" options="-parameters" />
+      <module name="LongPoll-Arhat" options="-parameters" />
       <module name="MessageNotice-Arhat" options="-parameters" />
       <module name="MessageQueue-Arhat" options="-parameters" />
       <module name="Metrics-Arhat" options="-parameters" />

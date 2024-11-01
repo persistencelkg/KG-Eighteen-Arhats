@@ -3,9 +3,7 @@ package org.lkg.metric.threadpool;
 import org.lkg.core.DynamicConfigManger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 import static org.lkg.security.KernelUtil.CPU_CORE_NUM;
 
@@ -33,6 +31,21 @@ public class TrackableThreadPoolUtil {
         // 可追踪，如果这里需要注释，就需要打开：ThreadPoolMetricBeanPostProcessor的注入 保证可追溯
         ExecutorEventTracker.monit(executorService.getThreadPoolExecutor(), prefixName);
         return executorService.getThreadPoolExecutor();
+    }
+
+    public static ScheduledExecutorService newTrackScheduledExecutorWithDaemon(String prefixName, int poolSize) {
+        return newTrackScheduledExecutor(prefixName, poolSize, true);
+    }
+
+    public static ScheduledExecutorService newTrackScheduledExecutor(String prefixName, int pooSize, boolean daemon) {
+        ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(pooSize);
+        scheduledThreadPoolExecutor.setThreadFactory(r ->{
+            Thread thread = new Thread(r, prefixName);
+            thread.setDaemon(daemon);
+            return thread;
+        });
+        ExecutorEventTracker.monit(scheduledThreadPoolExecutor, prefixName);
+        return scheduledThreadPoolExecutor;
     }
 
     public static ExecutorService newTrackableExecutor(String prefixName) {
