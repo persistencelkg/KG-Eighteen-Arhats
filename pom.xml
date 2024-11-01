@@ -40,6 +40,7 @@
         <module>FullTrace-Arhat</module>
         <module>EighteenArhat-spring-boot-starter</module>
         <module>TTL-Arhat</module>
+        <module>LongPoll-Arhat</module>
     </modules>
 
     <dependencyManagement>
