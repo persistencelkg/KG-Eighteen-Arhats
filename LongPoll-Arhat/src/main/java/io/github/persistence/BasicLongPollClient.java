@@ -5,9 +5,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.metric.threadpool.TrackableThreadPoolUtil;
-import org.lkg.request.InternalRequest;
-import org.lkg.request.InternalResponse;
-import org.lkg.request.SimpleRequestUtil;
 import org.springframework.util.Assert;
 
 import java.util.Objects;
@@ -15,7 +12,6 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.LockSupport;
 
 /**
  * 提供长轮训通用client
@@ -71,9 +67,7 @@ public abstract class BasicLongPollClient {
         this.isLongLinkRunning = true;
         while (enableLongPoll && !Thread.currentThread().isInterrupted()) {
             try {
-                // build request
-//                InternalRequest.createPostRequest(longPoolConfig.getPollUrl(), InternalRequest.BodyEnum.RAW,  )
-                dealWithLongLink(longPoolConfig);
+                 dealWithLongLink(longPoolConfig);
             } catch (Exception ignored) {
                 try {
                     TimeUnit.SECONDS.sleep(DynamicConfigManger.getLong("long-poll-fail-retry-interval", 5L));
@@ -90,7 +84,13 @@ public abstract class BasicLongPollClient {
 
     private void startPollData() {
         poolDataScheduledFuture = remainLongLinkScheduledExecutorService.schedule(this::startPollData, this.longPollInterval, TimeUnit.SECONDS);
-        loadData(longPoolConfig);
+        try {
+            loadData(longPoolConfig);
+        } catch (Exception e) {
+            log.warn("long poll data fail:{}", e.getMessage(), e);
+//            DingDingUtil.sendMessage(DingDingMsg.createText());
+        }
+
     }
 
     public void refreshInterval(int intervalSecond) {
@@ -109,8 +109,6 @@ public abstract class BasicLongPollClient {
     protected abstract void loadData(LongPoolConfig longPoolConfig);
 
     protected abstract void dealWithLongLink(LongPoolConfig longPoolConfig);
-
-    protected abstract InternalResponse buildRequest(LongPoolConfig longPoolConfig);
 
 
     protected boolean isSuc(int code) {
@@ -132,11 +130,6 @@ public abstract class BasicLongPollClient {
             @Override
             protected void dealWithLongLink(LongPoolConfig longPoolConfig) {
 //                System.out.println(222);
-            }
-
-            @Override
-            protected InternalResponse buildRequest(LongPoolConfig longPoolConfig) {
-                return null;
             }
         };
 
