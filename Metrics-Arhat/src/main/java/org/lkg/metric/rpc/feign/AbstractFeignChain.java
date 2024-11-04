@@ -2,10 +2,13 @@ package org.lkg.metric.rpc.feign;
 
 import feign.Request;
 import feign.Response;
+import org.lkg.simple.ObjectUtil;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Description:
@@ -36,12 +39,34 @@ public abstract class AbstractFeignChain implements SelfFeignInterceptor.FeignCh
 
     @Override
     public Response process(Request request, Request.Options options) throws IOException {
-        // 为啥这里用迭代器，目的就是只设置1次
-        if (iterator.hasNext()) {
-            iterator.next().interceptor(this);
-        }
+        List<SelfFeignInterceptor> handleResultInteceptorList = new ArrayList<>();
         this.start = System.currentTimeMillis();
+        // only enhance
+        iterator.forEachRemaining((val) -> {
+            if (val.interceptResult()) {
+                handleResultInteceptorList.add(val);
+                return;
+            }
+            try {
+                iterator.next().interceptor(this);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        // change result
+        Response interceptor = null;
+        if (ObjectUtil.isNotEmpty(handleResultInteceptorList)) {
+            for (SelfFeignInterceptor selfFeignInterceptor : handleResultInteceptorList) {
+                interceptor = selfFeignInterceptor.interceptor(this);
+                if (!selfFeignInterceptor.isInterceptResultContinue()) {
+                    return interceptor;
+                }
+            }
+            return interceptor;
+        }
+        // the bottom line result
         return doProcess(request, options);
+
     }
 
     protected abstract Response doProcess(Request request, Request.Options options) throws IOException;

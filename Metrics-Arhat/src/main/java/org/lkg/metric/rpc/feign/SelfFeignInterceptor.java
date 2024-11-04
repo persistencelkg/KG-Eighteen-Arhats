@@ -19,10 +19,22 @@ public interface SelfFeignInterceptor extends Ordered {
 
     Response interceptor(FeignChain feignChain) throws IOException;
 
-    public static void main(String[] args) {
-        Map<String, Object> params = new HashMap<>(new AntPathMatcher().extractUriTemplateVariables("http://aaa.w.com/test-2", "http://aaa.w.com/test-2/atm-coupon?a=2&b=3"));
-        System.out.println(params);
+    /**
+     * 是否拦截返回结果，默认false 如果是就会先将 interceptResult = false 对应的interceptor实现
+     * 最后在单独处理，并拦截结果
+     */
+    default boolean interceptResult() {
+        return false;
     }
+
+    /**
+     * 是否拦截多次结果
+     * @return 默认只拦截1次
+     */
+   default boolean isInterceptResultContinue() {
+        return false;
+   }
+
 
     interface FeignChain {
 
