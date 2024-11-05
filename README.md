@@ -16,6 +16,8 @@
 * 数据缓存应用解决方案，提供redis、spring Caffeine等应用思路，支持全局统一清理本地缓存
 * 常见NoSql应用框架使用：MongoTemplate、HighLevelRestClient、RedisTemplate等
 * 自定义重试框架，基于方法的重试能力 支持各大中间件的重试能力
+* 提供基于TTL全链路超时熔断机制，避免无效重试，保护下游
+* 提供长轮训通用配置模版，简化推拉结合的场景开发
 ---------
 
 

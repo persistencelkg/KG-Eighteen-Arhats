@@ -102,7 +102,7 @@ public final class TraceHolder {
     }
 
     public <Carrier> TraceClose newTraceScope(FullLinkPropagation.Getter<Carrier, String> getter, Carrier carrier) {
-        String tid = getter.get(carrier, LinkKeyConst.TRACE_ID);
+        String tid = getter.get(carrier, LinkKeyConst.getTraceIdKey());
         return newTraceScope(new Trace(tid));
     }
 
