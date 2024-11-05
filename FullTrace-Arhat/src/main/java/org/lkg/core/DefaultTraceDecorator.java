@@ -24,12 +24,12 @@ public class DefaultTraceDecorator implements TraceDecorator {
         Map<String, String> previousMdc = ObjectUtil.isEmpty(copyOfContextMap) ? Collections.EMPTY_MAP : copyOfContextMap;
         // set trace
         if (Objects.nonNull(trace)) {
-            MDC.put(LinkKeyConst.TRACE_ID, trace.getTraceId());
+            MDC.put(LinkKeyConst.getTraceIdKey(), trace.getTraceId());
             if (!trace.getExtraMap().isEmpty()) {
                 trace.getExtraMap().forEach(MDC::put);
             }
         } else {
-            MDC.remove(LinkKeyConst.TRACE_ID);
+            MDC.remove(LinkKeyConst.getTraceIdKey());
             if (!trace.getExtraMap().isEmpty()) {
                 trace.getExtraMap().keySet().forEach(MDC::remove);
             }

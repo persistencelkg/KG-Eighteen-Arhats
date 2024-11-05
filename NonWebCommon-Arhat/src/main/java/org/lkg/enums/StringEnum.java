@@ -11,7 +11,7 @@ public interface StringEnum {
     String STAR = "*";
 
     String PIPE = "|";
-
+    String QUESTION = "?";
     String PLUS = "+";
 
     String BACK_SLASH = "\\";

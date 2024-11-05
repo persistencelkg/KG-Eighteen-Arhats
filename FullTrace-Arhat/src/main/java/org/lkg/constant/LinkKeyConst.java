@@ -1,5 +1,7 @@
 package org.lkg.constant;
 
+import org.lkg.core.DynamicConfigManger;
+
 /**
  * Description:
  * Author: 李开广
@@ -22,4 +24,12 @@ public interface LinkKeyConst {
 
 
     String TRACE_BEAN_ENABLE_KEY = "full-link.enable";
+
+    /**
+     * to support build traceId from exist trace ecology system
+     * @return assign trace key
+     */
+    static String getTraceIdKey() {
+        return DynamicConfigManger.getConfigValue("full.trace.key", LinkKeyConst.TRACE_ID);
+    }
 }

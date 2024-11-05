@@ -22,7 +22,7 @@ public class DefaultPropagation<Carrier> implements FullLinkPropagation<Carrier>
     @Override
     public void propagation(Trace trace, Carrier carrier) {
         Set<String> fullLinkKeySet = trace.getFullLinkKeySet();
-        this.setter.set(carrier, LinkKeyConst.TRACE_ID, trace.getTraceId());
+        this.setter.set(carrier, LinkKeyConst.getTraceIdKey(), trace.getTraceId());
         if (ObjectUtil.isNotEmpty(fullLinkKeySet)) {
             // 当前上下文
             Map<String, String> copyOfContextMap = MDC.getCopyOfContextMap();
