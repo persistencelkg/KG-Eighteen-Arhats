@@ -31,8 +31,13 @@ public abstract class BasicLongPollClient {
     private boolean isLongLinkRunning;
 
     // 参数
+    @Getter
+    @Setter
     private int longPollInterval;
+    @Getter
+    @Setter
     private boolean enableLongPoll;
+
     @Getter
     @Setter
     private LongPoolConfig longPoolConfig;

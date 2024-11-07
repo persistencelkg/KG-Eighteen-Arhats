@@ -29,10 +29,11 @@ public class FeignMetaDataContext {
     public static void addFeignUrl(String logicFullUrl, MethodMetadata metadata) {
         String substring = logicFullUrl.substring(logicFullUrl.indexOf(File.separator) + 2);
         String server = substring.substring(0, substring.indexOf(File.separator));
-        String patternUrl = File.separator + "**".concat(substring.substring(substring.indexOf(File.separator)));
+        String uri = substring.substring(substring.indexOf(File.separator));
+        String patternUrl = File.separator + "**".concat(uri);
         RequestTemplate template = metadata.template();
         // 对url做检查
-        SERVER_URL_CONTEXT.put(patternUrl, new FeignMetaData(server, template.method()));
+        SERVER_URL_CONTEXT.put(patternUrl, new FeignMetaData(server, template.method(), uri));
     }
 
     public static FeignMetaData getFeignMetaContext(String logicFullUrl) {
@@ -64,5 +65,7 @@ public class FeignMetaDataContext {
     public  static class FeignMetaData {
         private String server;
         private String method;
+        // only without domain
+        private String uri;
     }
 }

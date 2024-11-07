@@ -7,6 +7,7 @@ import org.lkg.exception.BizException;
 import org.lkg.exception.enums.BizExceptionEnum;
 import org.lkg.exception.enums.ParamValidExceptionEnum;
 import org.lkg.request.CommonIntResp;
+import org.lkg.request.CommonResp;
 import org.lkg.request.DefaultResp;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -96,11 +97,11 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(value = {Throwable.class})
-    public CommonIntResp<Object> dealWithBottomException(Throwable e) {
+    public DefaultResp dealWithBottomException(Throwable e) {
         // 开发者需要关注
         Metrics.counter("unknown").increment();
         log.error(e.getMessage(), e);
-        return CommonIntResp.fail(BizExceptionEnum.UNKNOWN_ERROR);
+        return CommonResp.fail(BizExceptionEnum.UNKNOWN_ERROR);
     }
 
 
