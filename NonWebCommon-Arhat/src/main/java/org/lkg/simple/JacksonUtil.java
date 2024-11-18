@@ -2,22 +2,16 @@ package org.lkg.simple;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.databind.*;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.lkg.enums.ResponseBodyEnum;
+import org.lkg.request.GenericCommonResp;
 import org.lkg.request.InternalRequest;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -59,6 +53,50 @@ public class JacksonUtil {
     public static ObjectMapper getMapper() {
         return mapper;
     }
+
+
+    public static GenericCommonResp deserialize(String json, ResponseBodyEnum responseBodyEnum) {
+        try {
+            JsonNode jsonNode = mapper.readTree(json);
+
+            Object code = parseNode(jsonNode.path(responseBodyEnum.getCode()));
+            boolean isCodeStr = jsonNode.isInt() || jsonNode.isShort() || jsonNode.isLong();
+            Object data;
+            JsonNode path = jsonNode.path(responseBodyEnum.getData());
+            boolean isArr = path.isArray();
+            if (isArr) {
+                data = mapper.readValue(path.toString(), mapper.getTypeFactory().constructCollectionType(List.class, Object.class));
+            } else {
+                data = path.toString();
+            }
+
+
+            String msg = jsonNode.path(responseBodyEnum.getMessage()).asText();
+            return new GenericCommonResp(code, data, msg, isArr, isCodeStr);
+
+        } catch (JsonProcessingException e) {
+            log.error("deserialize json exception, {}", e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    private static Object parseNode(JsonNode jsonNode) {
+        if (jsonNode.isInt() || jsonNode.isShort()) {
+            return jsonNode.asInt();
+        } else if (jsonNode.isBoolean()) {
+            return jsonNode.asBoolean();
+        } else if (jsonNode.isTextual()) {
+            return jsonNode.asText();
+        } else if (jsonNode.isDouble() || jsonNode.isFloat()) {
+            return jsonNode.asDouble();
+        } else if (jsonNode.isLong() || jsonNode.isBigInteger()) {
+            return jsonNode.asLong();
+        }
+        return null;
+    }
+
 
     public static String writeValue(Object any) {
         try {
@@ -102,7 +140,7 @@ public class JacksonUtil {
         return readMap(json, String.class, Object.class);
     }
 
-    public static <K,V> Map<K, V> readMap(String json, Class<K> keyClass, Class<V> valueClass) {
+    public static <K, V> Map<K, V> readMap(String json, Class<K> keyClass, Class<V> valueClass) {
         if (ObjectUtil.isEmpty(json)) {
             return null;
         }
@@ -114,7 +152,7 @@ public class JacksonUtil {
         return null;
     }
 
-    public static <K,V> Map<K, V> readMap(String json, Class<K> keyClass, TypeReference<V> valueClass) {
+    public static <K, V> Map<K, V> readMap(String json, Class<K> keyClass, TypeReference<V> valueClass) {
         if (ObjectUtil.isEmpty(json)) {
             return null;
         }
@@ -129,7 +167,8 @@ public class JacksonUtil {
     }
 
     public static TypeReference<Map<String, Object>> getMapReference() {
-        return new TypeReference<Map<String, Object>>() {};
+        return new TypeReference<Map<String, Object>>() {
+        };
     }
 
     public static Map<String, Object> objToMap(Object obj) {
@@ -155,8 +194,35 @@ public class JacksonUtil {
         return null;
     }
 
+    @Data
+    private static class TestObj {
+        private String name;
+        private String aName; // list 没有这个问题
+        private String aaName; // list 没有这个问题
+
+        private String oldAge;
+        // 以为代码是生成的setAName方法【lombok按照我们理解的方式】，
+        // 但是ide生成的是【setaName有点不友好，但确实对的】所以jackson 在读取set方法时会将连续首字母大写转为小写
+        // 因此实际调用setaname，因此要求属性是aname 而不是aName
+
+        // 正常情况下以为是 setAaName ，jackson世纪调用的是 setaaName，因此解析aaName即可，最好的解决方案是@jsonProperty强制指定，要求上游这么传递不太现实
+
+    }
+
 
     public static void main(String[] args) {
+        String jsonString1 = "{\"data\":[{\"name\":\"example\",\"aName\":\"xxx\",\"oldAge\":101}],\"code\":200,\"message\":\"Success\"}";
+        String jsonString2 = "{\"result\":{\"aname\":\"example\",\"aaName\":\"example2\", \"oldAge\": 3},\"code\":200,\"msg\":\"Success\"}";
+
+        GenericCommonResp deserialize = JacksonUtil.deserialize(jsonString1, ResponseBodyEnum.DATA_CODE_MESSAGE);
+        List<TestObj> testObjs = deserialize.unSafeGetList(TestObj.class);
+        System.out.println(testObjs);
+        System.out.println(deserialize);
+
+        GenericCommonResp deserialize2 = JacksonUtil.deserialize(jsonString2, ResponseBodyEnum.RESULT_CODE_MSG);
+        TestObj testObj = deserialize2.unSafeGet(TestObj.class);
+        System.out.println(testObj);
+
         List<InternalRequest> list = new ArrayList<>();
         Collection<String> strings = readCollection("[23,34]", String.class);
         System.out.println(strings);
@@ -173,8 +239,9 @@ public class JacksonUtil {
         String s = writeValue(map);
 
 //        Map<Integer, String> integerInternalRequestMap = readMap(s, Integer.class, String.class);
-        Map<Integer, List<InternalRequest>> map2= readMap(s, Integer.class, new TypeReference<List<InternalRequest>>() {});
-        Map<String, Object> map3= readMap(s);
+        Map<Integer, List<InternalRequest>> map2 = readMap(s, Integer.class, new TypeReference<List<InternalRequest>>() {
+        });
+        Map<String, Object> map3 = readMap(s);
 //        System.out.println(integerInternalRequestMap.values());
         System.out.println(map2.values());
         System.out.println(map3);
