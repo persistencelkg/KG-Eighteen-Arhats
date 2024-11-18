@@ -56,6 +56,9 @@ public class JacksonUtil {
 
 
     public static GenericCommonResp deserialize(String json, ResponseBodyEnum responseBodyEnum) {
+        if (ObjectUtil.isEmpty(json)) {
+            return null;
+        }
         try {
             JsonNode jsonNode = mapper.readTree(json);
 

@@ -28,11 +28,11 @@ public class GenericCommonResp {
 
     private final boolean codeIsStr;
 
-    public <T> List<T> safeList(GenericCommonResp resp, Class<T> resultClass) {
+    public static  <T> List<T> safeList(GenericCommonResp resp, Class<T> resultClass) {
         return Optional.ofNullable(resp).map(ref -> ref.unSafeGetList(resultClass)).orElse(null);
     }
 
-    public <T> T safeGet(GenericCommonResp resp, Class<T> resultClass) {
+    public static <T> T safeGet(GenericCommonResp resp, Class<T> resultClass) {
         return Optional.ofNullable(resp).map(ref -> ref.unSafeGet(resultClass)).orElse(null);
     }
 
