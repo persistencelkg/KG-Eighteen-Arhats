@@ -11,9 +11,9 @@
         <module name="MetricsCollector-Arhat" />
         <module name="EighteenArhat-spring-boot-starter" />
         <module name="NoSql-Arhat" />
-        <module name="QuickStart-Arhat" />
         <module name="ApolloDynamicConfig-Arhat" />
         <module name="LongPoll-Arhat" />
+        <module name="QuickStart-Arhat" />
         <module name="FullTrace-Arhat" />
         <module name="TTL-Arhat" />
         <module name="MessageNotice-Arhat" />

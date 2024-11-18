@@ -1,5 +1,6 @@
 package org.lkg.request;
 
+import lombok.NoArgsConstructor;
 import org.lkg.exception.IResponseEnum;
 
 /**
@@ -7,21 +8,14 @@ import org.lkg.exception.IResponseEnum;
  * Author: 李开广
  * Date: 2024/10/14 9:05 PM
  */
-public class DefaultResp extends CommonIntResp<Object>{
+@NoArgsConstructor
+public class DefaultResp extends CommonResp<Object, String> {
 
-    public DefaultResp(Object o, String code, String message) {
-        super(o, code, message);
+    public DefaultResp(Object data, String code, String message) {
+        super(data, code, message);
     }
 
-    public DefaultResp(Object o, String code) {
-        super(o, code);
-    }
-
-    public static DefaultResp fail(String c, String message) {
-        return new DefaultResp(null, c, message);
-    }
-
-    public static DefaultResp fail(IResponseEnum iResponseEnum) {
-        return new DefaultResp(null, iResponseEnum.getCode(), iResponseEnum.getMessage());
+    public DefaultResp(Object data, String code) {
+        super(data, code);
     }
 }

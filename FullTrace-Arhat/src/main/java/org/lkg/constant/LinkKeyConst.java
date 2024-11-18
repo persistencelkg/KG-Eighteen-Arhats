@@ -32,4 +32,8 @@ public interface LinkKeyConst {
     static String getTraceIdKey() {
         return DynamicConfigManger.getConfigValue("full.trace.key", LinkKeyConst.TRACE_ID);
     }
+
+    static String getPropagationTraceIdKey() {
+        return DynamicConfigManger.getConfigValue("full.trace.propagation.key", LinkKeyConst.TRACE_ID);
+    }
 }

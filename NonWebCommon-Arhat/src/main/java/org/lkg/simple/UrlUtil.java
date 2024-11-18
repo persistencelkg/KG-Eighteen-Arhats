@@ -1,11 +1,14 @@
 package org.lkg.simple;
 
+import org.lkg.simple.matcher.AntPathMatcher;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -15,6 +18,15 @@ import java.util.stream.Collectors;
  * Date: 2024/2/28 5:26 PM
  */
 public class UrlUtil {
+
+    public static Map<String, String> templateParse(String pattern, String url) {
+        // pattern: /{url:22}/{bb:33} /a/b?a=2   result  {url:a} {bb:b?a=2}
+        AntPathMatcher antPathMatcher = new AntPathMatcher();
+        if (!antPathMatcher.match(pattern, url)) {
+            return new HashMap<>();
+        }
+        return antPathMatcher.extractUriTemplateVariables(pattern, url);
+    }
 
     public static String encodeUrl(String uri) {
         if (ObjectUtil.isEmpty(uri)) {
@@ -96,6 +108,8 @@ public class UrlUtil {
         System.out.println(decodeUrl("https://d.jjxswshuku.com/d/file/p/txt/2024/%E3%80%8A%E6%88%91%E7%9A%84%E7%8B%AC%E7%AB%8B%E6%97%A5%E3%80%8B%E4%BD%9C%E8%80%85%EF%BC%9A%E5%AE%B9%E5%85%89.txt"));
         System.out.println(UrlUtil.encodeURLPath("https://d.jjxswshuku.com/d/file/p/txt/2024/《我的独立日》作者：容光.txt", true, true));
         System.out.println(encodeUrl("%%d"));
+
+        System.out.println(templateParse("/{a}/{ke}", "/atm/atm?a=2&b=3"));
     }
 
     public static String buildUrl(String url, Map<String, Object> param) {

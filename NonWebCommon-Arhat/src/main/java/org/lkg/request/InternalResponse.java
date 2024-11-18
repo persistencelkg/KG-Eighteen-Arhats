@@ -3,6 +3,7 @@ package org.lkg.request;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.lkg.enums.ResponseBodyEnum;
 import org.lkg.simple.JacksonUtil;
 
 import java.util.*;
@@ -40,6 +41,10 @@ public class InternalResponse {
 
     public <T> T toEntity(TypeReference<T> tClass) {
         return JacksonUtil.readObj(result, tClass);
+    }
+
+    public GenericCommonResp toGenericResp(ResponseBodyEnum responseBodyEnum) {
+        return JacksonUtil.deserialize(result, responseBodyEnum);
     }
 
     public boolean is2XXSuccess() {
