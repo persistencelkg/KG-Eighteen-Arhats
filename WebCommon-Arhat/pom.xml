@@ -18,6 +18,7 @@
         <apache.poi.version>4.1.2</apache.poi.version>
         <github.caffeine.version>2.6.2</github.caffeine.version>
         <okhttp.version>4.9.0</okhttp.version>
+        <google-qr.verison>3.3.2</google-qr.verison>
     </properties>
 
     <dependencies>
@@ -117,6 +118,19 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${apache.poi.version}</version>
+        </dependency>
+
+        <!--google二维码工具-->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>${google-qr.verison}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>${google-qr.verison}</version>
         </dependency>
 
 
