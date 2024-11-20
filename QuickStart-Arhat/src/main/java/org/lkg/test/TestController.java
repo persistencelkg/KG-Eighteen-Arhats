@@ -48,7 +48,7 @@ public class TestController {
         }
         try {
             // 保存文件到指定目录
-            File dest = new File(FileUtil.getCurrentResourceDir(this, "off") + File.separator + file.getOriginalFilename());
+            File dest = new File(FileUtil.getCurrentResourceDir(this.getClass(), "off") + File.separator + file.getOriginalFilename());
             file.transferTo(dest);
             redirectAttributes.addFlashAttribute("message", "You successfully uploaded '" + file.getOriginalFilename() + "'.");
 

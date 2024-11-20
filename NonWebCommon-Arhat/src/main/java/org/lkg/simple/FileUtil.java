@@ -14,8 +14,19 @@ import java.util.Objects;
  */
 public class FileUtil {
 
-    public static String getCurrentResourceDir(Object obj, String subfolder) {
-        URL resource = obj.getClass().getClassLoader().getResource("");
+    /**
+     * 生成的文件在目标类的class里
+     * @param cls
+     * @param fileName
+     * @return
+     */
+    public static String getOrCreateFileInClass(Class<?> cls, String fileName) {
+        File file = new File(cls.getResource("").getPath() + fileName);
+        return file.getPath();
+    }
+
+    public static String getCurrentResourceDir(Class<?> cls, String subfolder) {
+        URL resource = cls.getClassLoader().getResource("");
         if (Objects.isNull(resource)) {
             throw new RuntimeException("loss resources dir");
         }
