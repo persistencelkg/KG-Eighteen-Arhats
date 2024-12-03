@@ -20,7 +20,7 @@ public class GenericCommonResp {
 
     private final Object code;
 
-    private final Object data;
+    private final String data;
 
     private final String msg;
 
@@ -44,7 +44,7 @@ public class GenericCommonResp {
         if (ObjectUtil.isEmpty(data)) {
             return null;
         }
-        return (List<T>) data;
+        return JacksonUtil.readList(data, resultClass);
     }
 
     public <T> T unSafeGet(Class<T> resultClass) {
@@ -54,7 +54,7 @@ public class GenericCommonResp {
         if (ObjectUtil.isEmpty(data)) {
             return null;
         }
-        return JacksonUtil.readValue(data.toString(), resultClass);
+        return JacksonUtil.readValue(data, resultClass);
     }
 
 

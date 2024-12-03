@@ -2,6 +2,7 @@ package org.lkg.simple;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
@@ -64,18 +65,10 @@ public class JacksonUtil {
 
             Object code = parseNode(jsonNode.path(responseBodyEnum.getCode()));
             boolean isCodeStr = jsonNode.isInt() || jsonNode.isShort() || jsonNode.isLong();
-            Object data;
             JsonNode path = jsonNode.path(responseBodyEnum.getData());
             boolean isArr = path.isArray();
-            if (isArr) {
-                data = mapper.readValue(path.toString(), mapper.getTypeFactory().constructCollectionType(List.class, Object.class));
-            } else {
-                data = path.toString();
-            }
-
-
             String msg = jsonNode.path(responseBodyEnum.getMessage()).asText();
-            return new GenericCommonResp(code, data, msg, isArr, isCodeStr);
+            return new GenericCommonResp(code, path.toString(), msg, isArr, isCodeStr);
 
         } catch (JsonProcessingException e) {
             log.error("deserialize json exception, {}", e.getMessage(), e);
@@ -200,8 +193,9 @@ public class JacksonUtil {
     @Data
     private static class TestObj {
         private String name;
-        private String aName; // list 没有这个问题
-        private String aaName; // list 没有这个问题
+        @JsonProperty("aName")
+        private String aName;
+        private String aaName;
 
         private String oldAge;
         // 以为代码是生成的setAName方法【lombok按照我们理解的方式】，
