@@ -32,14 +32,11 @@ public abstract class BasicLongPollClient {
 
     // 参数
     @Getter
-    @Setter
     private int longPollInterval;
     @Getter
-    @Setter
     private boolean enableLongPoll;
 
     @Getter
-    @Setter
     private LongPoolConfig longPoolConfig;
 
     protected BasicLongPollClient(int longPollInterval, boolean enableLongPool, LongPoolConfig longPoolConfig) {
@@ -55,8 +52,17 @@ public abstract class BasicLongPollClient {
         this.longPollInterval = longPollInterval;
         this.enableLongPoll = enableLongPool;
         this.longPoolConfig = longPoolConfig;
+    }
+
+    // why not in construct to exec this， to make sure that up applies to this and itself has initial finish
+    public void setLongPollInterval(int longPollInterval) {
+        this.longPollInterval = longPollInterval;
         // start poll
         startPollData();
+    }
+
+    public void setEnableLongPoll(boolean enableLongPoll) {
+        this.enableLongPoll = enableLongPoll;
         // create long link
         createAndRemainLongLink();
     }

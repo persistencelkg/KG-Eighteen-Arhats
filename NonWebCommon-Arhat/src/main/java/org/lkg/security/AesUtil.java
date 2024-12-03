@@ -26,6 +26,13 @@ import java.util.Arrays;
  * Description:
  * Author: 李开广
  * Date: 2024/5/9 3:52 PM
+ *
+ * TODO 将sun实现的Base64 替换成
+ *  <dependency>
+ *   <groupId>commons-codec</groupId>
+ *   <artifactId>commons-codec</artifactId>
+ *   <version>1.8</version>
+ *  </dependency>
  */
 @Slf4j
 public class AesUtil {
