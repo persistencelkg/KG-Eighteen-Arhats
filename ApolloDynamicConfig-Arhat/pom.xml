@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>ApolloDynamicConfig-Arhat</artifactId>
-
+    <packaging>jar</packaging>
     <name>ApolloDynamicConfig-Arhat</name>
 
     <properties>
