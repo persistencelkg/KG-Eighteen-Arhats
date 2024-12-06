@@ -28,6 +28,15 @@ public class SimpleRequestUtil {
     private static final Logger log = LoggerFactory.getLogger(SimpleRequestUtil.class.getSimpleName());
 
     public static InternalResponse request(InternalRequest request) {
+        return request(request, null, null);
+    }
+
+    public static InternalResponse requestDefaultTimeout(InternalRequest request) {
+        return request(request, 10000, 10000);
+    }
+
+
+    public static InternalResponse request(InternalRequest request, Integer connectionTimeOut, Integer readTimeout) {
         InternalResponse response = new InternalResponse(request);
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(request.getUrl()).openConnection();
@@ -37,8 +46,11 @@ public class SimpleRequestUtil {
             connection.setUseCaches(false);
             // 不跟随重定向，如果有单独处理
             connection.setInstanceFollowRedirects(false);
-            connection.setConnectTimeout(10000);
-            connection.setReadTimeout(10000);
+            if (Objects.nonNull(connectionTimeOut) && Objects.nonNull(readTimeout) && connectionTimeOut <= readTimeout) {
+                connection.setConnectTimeout(connectionTimeOut);
+                connection.setReadTimeout(readTimeout);
+            }
+
 
             if (!ObjectUtil.isEmpty(request.getHeaders())) {
                 request.getHeaders().forEach(connection::addRequestProperty);
@@ -52,8 +64,8 @@ public class SimpleRequestUtil {
             }
             RedirectInfo redirectInfo = followRedirects(connection);
             HttpURLConnection httpURLConnection = redirectInfo.getHttpURLConnection();
-            String contentType = httpURLConnection.getContentType();
-            log.info(contentType);
+//            String contentType = httpURLConnection.getContentType();
+//            log.info(contentType);
             String lastUrl = redirectInfo.getRedirectUrl().pollLast();
             if (ObjectUtil.isEmpty(lastUrl)) {
                 lastUrl = httpURLConnection.getURL().toString();
@@ -185,14 +197,13 @@ public class SimpleRequestUtil {
     public static void main(String[] args) {
         HashMap<String, Object> map = new HashMap<>();
 //        map.put("url", "{{test-sgcx-pay-data-sync-8088}}/sys/");
-        InternalResponse response = request(InternalRequest.createGetRequest("https://tools.liumingye.cn/music/#/", InternalRequest.BodyEnum.HTML,null));
+        InternalResponse response = request(InternalRequest.createGetRequest("https://tools.liumingye.cn/music/#/", InternalRequest.BodyEnum.HTML, null));
 
         System.out.println(response.getResult());
 //        System.out.println(response);
         String s = UrlUtil.encodeUrl("http://dev-inside.com/ 1");
         System.out.println();
         System.out.println(UrlUtil.decodeUrl(s));
-
 
 
     }
