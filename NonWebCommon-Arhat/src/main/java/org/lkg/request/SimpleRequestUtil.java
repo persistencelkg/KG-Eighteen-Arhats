@@ -146,7 +146,9 @@ public class SimpleRequestUtil {
             }
         } while (var1);
 //        System.out.println(redirectUrlMap);
-        log.info("pass location:{}", redirectUrlMap);
+        if (log.isDebugEnabled()) {
+            log.debug("pass location:{}", redirectUrlMap);
+        }
         if (!(var0 instanceof HttpURLConnection)) {
             throw new IOException(var0.getURL() + " redirected to non-http URL");
         } else {
