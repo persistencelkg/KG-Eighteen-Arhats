@@ -28,6 +28,19 @@ public class SimpleRequestUtil {
     private static final Logger log = LoggerFactory.getLogger(SimpleRequestUtil.class.getSimpleName());
 
     public static InternalResponse request(InternalRequest request) {
+        return request(request, null, null, true);
+    }
+
+
+    public static InternalResponse request(InternalRequest request, boolean followRedirect) {
+        return request(request, null, null, followRedirect);
+    }
+
+    public static InternalResponse requestDefaultTimeout(InternalRequest request, boolean followRedirect) {
+        return request(request, Math.toIntExact(request.getConnectionTimeout()), Math.toIntExact(request.getReadTimeout()), followRedirect);
+    }
+
+    public static InternalResponse request(InternalRequest request, Integer connectionTimeOut, Integer readTimeout, boolean followRedirect) {
         InternalResponse response = new InternalResponse(request);
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(request.getUrl()).openConnection();
@@ -36,9 +49,22 @@ public class SimpleRequestUtil {
             connection.setDoInput(true);
             connection.setUseCaches(false);
             // 不跟随重定向，如果有单独处理
-            connection.setInstanceFollowRedirects(false);
-            connection.setConnectTimeout(10000);
-            connection.setReadTimeout(10000);
+            if (!followRedirect) {
+                connection.setInstanceFollowRedirects(false);
+                RedirectInfo redirectInfo = followRedirects(connection);
+                connection = redirectInfo.getHttpURLConnection();
+                String lastUrl = redirectInfo.getRedirectUrl().pollLast();
+                if (ObjectUtil.isEmpty(lastUrl)) {
+                    lastUrl = connection.getURL().toString();
+                    // 真实的url
+                    response.setLatestResponseUrl(UrlUtil.decodeUrl(lastUrl));
+                }
+            }
+
+            if (Objects.nonNull(connectionTimeOut) && Objects.nonNull(readTimeout) && connectionTimeOut <= readTimeout) {
+                connection.setConnectTimeout(connectionTimeOut);
+                connection.setReadTimeout(readTimeout);
+            }
 
             if (!ObjectUtil.isEmpty(request.getHeaders())) {
                 request.getHeaders().forEach(connection::addRequestProperty);
@@ -50,23 +76,14 @@ public class SimpleRequestUtil {
                 out.flush();
                 out.close();
             }
-            RedirectInfo redirectInfo = followRedirects(connection);
-            HttpURLConnection httpURLConnection = redirectInfo.getHttpURLConnection();
-            String contentType = httpURLConnection.getContentType();
-            log.info(contentType);
-            String lastUrl = redirectInfo.getRedirectUrl().pollLast();
-            if (ObjectUtil.isEmpty(lastUrl)) {
-                lastUrl = httpURLConnection.getURL().toString();
-            }
+
             // 解析
-            byte[] str = parseInputStream(httpURLConnection.getInputStream());
-            int responseCode = httpURLConnection.getResponseCode();
+            byte[] str = parseInputStream(connection.getInputStream());
+            int responseCode = connection.getResponseCode();
             response.setStatusCode(responseCode);
             response.setResult(new String(str, StandardCharsets.UTF_8));
             response.setResultBytes(str);
-            // 真实的url
-            response.setLatestResponseUrl(UrlUtil.decodeUrl(lastUrl));
-            httpURLConnection.disconnect();
+            connection.disconnect();
         } catch (IOException e) {
             response.addException(e);
         }
@@ -134,7 +151,9 @@ public class SimpleRequestUtil {
             }
         } while (var1);
 //        System.out.println(redirectUrlMap);
-        log.info("pass location:{}", redirectUrlMap);
+        if (log.isDebugEnabled()) {
+            log.debug("pass location:{}", redirectUrlMap);
+        }
         if (!(var0 instanceof HttpURLConnection)) {
             throw new IOException(var0.getURL() + " redirected to non-http URL");
         } else {
@@ -185,14 +204,13 @@ public class SimpleRequestUtil {
     public static void main(String[] args) {
         HashMap<String, Object> map = new HashMap<>();
 //        map.put("url", "{{test-sgcx-pay-data-sync-8088}}/sys/");
-        InternalResponse response = request(InternalRequest.createGetRequest("https://tools.liumingye.cn/music/#/", InternalRequest.BodyEnum.HTML,null));
+        InternalResponse response = request(InternalRequest.createGetRequest("https://tools.liumingye.cn/music/#/", InternalRequest.BodyEnum.HTML, null));
 
         System.out.println(response.getResult());
 //        System.out.println(response);
         String s = UrlUtil.encodeUrl("http://dev-inside.com/ 1");
         System.out.println();
         System.out.println(UrlUtil.decodeUrl(s));
-
 
 
     }

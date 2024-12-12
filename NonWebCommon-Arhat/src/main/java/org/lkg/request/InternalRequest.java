@@ -34,6 +34,9 @@ public class InternalRequest {
 
     private Map<String, Object> body;
 
+    private long connectionTimeout = 10000;
+    private long readTimeout = 10000;
+
     public static InternalRequest createGetRequest(String url) {
         return createGetRequest(url, null, null, null);
     }

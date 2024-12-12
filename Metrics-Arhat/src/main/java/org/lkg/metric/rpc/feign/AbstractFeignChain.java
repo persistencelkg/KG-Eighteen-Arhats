@@ -39,33 +39,8 @@ public abstract class AbstractFeignChain implements SelfFeignInterceptor.FeignCh
 
     @Override
     public Response process(Request request, Request.Options options) throws IOException {
-        List<SelfFeignInterceptor> handleResultInteceptorList = new ArrayList<>();
         this.start = System.currentTimeMillis();
-        // only enhance
-        iterator.forEachRemaining((val) -> {
-            if (val.interceptResult()) {
-                handleResultInteceptorList.add(val);
-                return;
-            }
-            try {
-                iterator.next().interceptor(this);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        // change result
-        Response interceptor = null;
-        if (ObjectUtil.isNotEmpty(handleResultInteceptorList)) {
-            for (SelfFeignInterceptor selfFeignInterceptor : handleResultInteceptorList) {
-                interceptor = selfFeignInterceptor.interceptor(this);
-                if (!selfFeignInterceptor.isInterceptResultContinue()) {
-                    return interceptor;
-                }
-            }
-            return interceptor;
-        }
-        // the bottom line result
-        return doProcess(request, options);
+        return iterator.hasNext() ? iterator.next().interceptor(this) : doProcess(request, options);
 
     }
 

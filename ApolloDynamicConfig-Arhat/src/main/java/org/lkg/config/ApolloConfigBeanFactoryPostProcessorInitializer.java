@@ -37,27 +37,6 @@ public class ApolloConfigBeanFactoryPostProcessorInitializer
 
     private Environment environment;
 
-    @Bean
-    public BeanPostProcessor dynamicApolloConfigBeanPostProcessor() {
-        return new BeanPostProcessor() {
-            @Override
-            public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-                if (bean instanceof ApolloConfigService) {
-                    DynamicConfigManger.registerConfigService((KeyConfigService) bean);
-                }
-                return bean;
-            }
-        };
-    }
-
-    @Bean
-    public ApolloConfigService apolloConfigService(Environment environment){
-        String namespaces = environment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_NAMESPACES, ConfigConsts.NAMESPACE_APPLICATION);
-        ApolloConfigService instance = ApolloConfigService.getInstance();
-        Arrays.stream(namespaces.split(",")).forEach(instance::registerNameSpace);
-        return instance;
-    }
-//
 
     @Override
     public void initialize(GenericApplicationContext applicationContext) {
