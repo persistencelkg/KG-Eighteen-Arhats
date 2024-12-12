@@ -102,7 +102,7 @@ public class DownFileUtil {
         populateResponse(response, ContentTypeEnum.ZIP, zip);
         ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
         for (String url : urlList) {
-            InternalResponse request = SimpleRequestUtil.request(InternalRequest.createGetRequest(url));
+            InternalResponse request = SimpleRequestUtil.request(InternalRequest.createGetRequest(url), false);
             String fileName = UrlUtil.parseName(request.getLatestResponseUrl());
             byte[] bytes = request.getResult().getBytes(StandardCharsets.UTF_8);
             log.info("url:{} size:{} KB", fileName, bytes.length / 1024);
