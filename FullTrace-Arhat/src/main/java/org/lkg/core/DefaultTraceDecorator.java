@@ -30,12 +30,9 @@ public class DefaultTraceDecorator implements TraceDecorator {
             }
         } else {
             MDC.remove(LinkKeyConst.getTraceIdKey());
-            if (!trace.getExtraMap().isEmpty()) {
-                trace.getExtraMap().keySet().forEach(MDC::remove);
-            }
         }
         return () -> {
-            // 这么做是考虑多个装饰器，会存在链式装饰
+            // 在释放资源之前释放还需要在拿出来
             Trace currentContext = TraceContext.getCurrentContext();
             // 保存上文
             traceScope.close();

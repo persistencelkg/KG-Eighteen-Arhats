@@ -124,11 +124,12 @@ public final class TraceHolder {
         // 携带自定义key-value的额外信息
         trace = entryInjector.populateExtra(trace);
         Trace previous = TraceContext.getCurrentContext();
-        TraceContext.setContext(trace);
-        TraceScope decorator = decorator(trace, () -> {
-            TraceContext.remove();
-            TraceContext.setContext(previous);
-        });
+        if (Objects.nonNull(previous)) {
+            TraceContext.setContext(trace);
+        }
+
+        // 资源释放以lambada形式装饰最后执行
+        TraceScope decorator = decorator(trace, TraceContext::remove);
         return new TraceClose(trace, decorator);
     }
 
