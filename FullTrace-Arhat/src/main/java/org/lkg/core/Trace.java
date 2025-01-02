@@ -5,7 +5,10 @@ import com.google.common.collect.Sets;
 import lombok.Data;
 import org.lkg.constant.LinkKeyConst;
 import org.lkg.simple.ObjectUtil;
+import org.slf4j.MDC;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Date: 2024/9/23 8:58 PM
  */
 @Data
-public class Trace {
+public class Trace implements Closeable {
     private static final Set<String> COMMON_FULL_LINK =
             Sets.newHashSet(
                     LinkKeyConst.STRESS_ID,
@@ -41,7 +44,7 @@ public class Trace {
         this.traceId = ObjectUtil.isEmpty(tid) ? newTraceId() : tid;
         this.extraMap = new ConcurrentHashMap<>();
         // 决定是否在SETTER中透传信息
-        this.fullLinkKeySet = DynamicConfigManger.initAndRegistChangeEvent("full.link.key", DynamicConfigManger::toSet, this::reSet);
+        this.fullLinkKeySet = DynamicConfigManger.initAndRegistChangeEvent(LinkKeyConst.DEFAULT_GLOBAL_FULL_LINK_KEY, DynamicConfigManger::toSet, this::reSet);
         googleStopWatch = new AtomicReference<>(Stopwatch.createStarted());
     }
 
@@ -58,6 +61,7 @@ public class Trace {
         fullLinkKeySet.addAll(COMMON_FULL_LINK);
         fullLinkKeySet.addAll(newKeyList);
     }
+
 
     public long escapeMills() {
         Stopwatch stopwatch = googleStopWatch.get();
@@ -97,5 +101,12 @@ public class Trace {
 
     public void removeExtra(String key) {
         extraMap.remove(key);
+    }
+
+    @Override
+    public void close() throws IOException {
+        // 确保回收前所有的数据都完成清理
+        fullLinkKeySet.forEach(MDC::remove);
+        extraMap.keySet().forEach(MDC::remove);
     }
 }

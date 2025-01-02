@@ -3,7 +3,6 @@ package org.lkg.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.poi.ss.formula.functions.T;
 import org.lkg.exception.IResponseEnum;
 
 import java.io.Serializable;
@@ -31,7 +30,6 @@ public abstract class CommonResp<D, Code> implements Serializable {
         this.data = data;
         this.code = code;
     }
-
 
 
     // --  int  code ------

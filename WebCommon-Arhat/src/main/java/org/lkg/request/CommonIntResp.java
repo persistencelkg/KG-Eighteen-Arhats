@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
  * Date: 2024/7/2 11:52 AM
  */
 @NoArgsConstructor
-public class CommonIntResp<T> extends CommonResp<T, Integer> {
+public final class CommonIntResp<T> extends CommonResp<T, Integer> {
     private static final long serialVersionUID = 1L;
 
     public CommonIntResp(T t, Integer integer, String message) {

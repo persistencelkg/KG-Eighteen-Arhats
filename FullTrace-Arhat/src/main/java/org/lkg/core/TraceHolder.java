@@ -9,6 +9,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -101,14 +102,26 @@ public final class TraceHolder {
         return newTraceScope(trace);
     }
 
+    /**
+     * 接收来自组件的traceId
+     * @param getter
+     * @param carrier
+     * @return
+     * @param <Carrier>
+     */
     public <Carrier> TraceClose newTraceScope(FullLinkPropagation.Getter<Carrier, String> getter, Carrier carrier) {
+        if (Objects.isNull(getter) || Objects.isNull(carrier)) {
+            return newTraceScope();
+        }
+        // 按默认全链路透传key
         String tid = getter.get(carrier, LinkKeyConst.getTraceIdKey());
-        return newTraceScope(new Trace(tid));
+        // 理论这里也可以自动去扩展extra key，为了保证trace的原子性和可维护性，使用者可以通过 TraceExtraHelper 去定制化处理，比较实用extra仅仅存在有限的场景
+        return newTraceScope( new Trace(tid));
     }
 
     // 自带传播特性
     public TraceClose newTraceScope(Trace trace) {
-        // 携带额外信息
+        // 携带自定义key-value的额外信息
         trace = entryInjector.populateExtra(trace);
         Trace previous = TraceContext.getCurrentContext();
         TraceContext.setContext(trace);

@@ -1,5 +1,8 @@
 package org.lkg.core;
 
+import org.checkerframework.checker.units.qual.C;
+import org.lkg.simple.ObjectUtil;
+
 import java.util.Objects;
 
 /**
@@ -17,17 +20,27 @@ public class TraceExtraHelper {
         return null;
     }
 
-    public static boolean addExtra(String key, String value) {
+    public static String addExtra(String key, String value) {
         Trace currentContext = TraceContext.getCurrentContext();
         if (Objects.nonNull(currentContext)) {
             currentContext.addExtra(key, value);
+            return value;
         }
-        return false;
+        return null;
     }
+
+    public static <C> String addExtra(FullLinkPropagation.Getter<C, String> getter, C carrier, String key) {
+        if (ObjectUtil.isEmpty(getter) || ObjectUtil.isEmpty(key)) {
+            return null;
+        }
+        String value = getter.get(carrier, key);
+        return addExtra(key, value);
+    }
+
 
     public static boolean removeExtra(String key) {
         TraceHolder instance = TraceHolder.getInstance();
-        if (Objects.nonNull(instance)) {
+        if (Objects.nonNull(instance) ) {
             instance.getEntryInjector().remove(key);
             Trace current = TraceHolder.getCurrent();
             if (Objects.nonNull(current)) {

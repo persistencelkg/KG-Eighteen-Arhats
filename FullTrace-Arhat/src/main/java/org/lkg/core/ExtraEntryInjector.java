@@ -1,5 +1,6 @@
 package org.lkg.core;
 
+import org.lkg.constant.LinkKeyConst;
 import org.lkg.simple.ObjectUtil;
 import org.slf4j.MDC;
 
@@ -26,7 +27,7 @@ public interface ExtraEntryInjector {
         private Map<String, String> dynamicExtraEntry;
 
         private DefaultInjector() {
-            dynamicExtraEntry = DynamicConfigManger.initAndRegistChangeEvent("full-link-entry", DynamicConfigManger::toMap, this::refresh);
+            dynamicExtraEntry = DynamicConfigManger.initAndRegistChangeEvent(LinkKeyConst.CUSTOM_FULL_LINK_KEY, DynamicConfigManger::toMap, this::refresh);
         }
 
         private void refresh(Map<String, String> map) {
