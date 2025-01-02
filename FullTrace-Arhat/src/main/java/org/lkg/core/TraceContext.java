@@ -33,7 +33,11 @@ public class TraceContext implements Closeable {
     }
 
     public static void remove() {
-        inheritableThreadLocal.remove();
+        try (Trace trace = inheritableThreadLocal.get()) {
+            inheritableThreadLocal.remove();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

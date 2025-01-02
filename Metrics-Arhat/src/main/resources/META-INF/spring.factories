@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.lkg.metric.rpc.feign.FeignMetricAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.lkg.metric.rpc.feign.FeignMetricAutoConfiguration,org.lkg.metric.api.MetricFilterAutoConfiguration

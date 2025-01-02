@@ -2,6 +2,7 @@ package org.lkg.metric.api;
 
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
+import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.simple.ObjectUtil;
 import org.springframework.util.ObjectUtils;
@@ -17,13 +18,16 @@ import java.time.Duration;
  * Author: 李开广
  * Date: 2024/9/5 7:23 PM
  */
+@Slf4j
 public class MetricFilter implements CommonFilter {
     @Override
     public void filter(SelfChain selfChain) {
         long start = System.currentTimeMillis();
         boolean suc = true;
         HttpServletRequest request = selfChain.request();
-        System.out.println("参数" + request.getParameterMap());
+        if (log.isDebugEnabled()) {
+            log.debug("web filter param:{}",  request.getParameterMap());
+        }
         try {
             selfChain.proceed();
         } catch (ServletException | IOException e) {
