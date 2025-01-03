@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Data
 public class Trace implements Closeable {
+    // trace独立清理和存储 避免干扰
     private static final Set<String> COMMON_FULL_LINK =
             Sets.newHashSet(
                     LinkKeyConst.STRESS_ID,
@@ -33,7 +34,7 @@ public class Trace implements Closeable {
     // 在不同中间件网络传输中，有类型差异，因此统一转为str，解析根据需要再根据包装类拆箱
     private ConcurrentHashMap<String, String> extraMap;
 
-    // 意味着可以全链路透传的key信息
+    // 可以全链路透传的key信息
     private Set<String> fullLinkKeySet;
 
     // for ttl timeout control
@@ -51,6 +52,9 @@ public class Trace implements Closeable {
     public Trace() {
         this(newTraceId());
     }
+
+
+
 
     private void reSet(Set<String> newKeyList) {
         if (ObjectUtil.isNotEmpty(fullLinkKeySet)) {
@@ -106,7 +110,7 @@ public class Trace implements Closeable {
     @Override
     public void close() throws IOException {
         // 确保回收前所有的数据都完成清理
-        fullLinkKeySet.forEach(MDC::remove);
+        MDC.remove(LinkKeyConst.getTraceIdKey());
         extraMap.keySet().forEach(MDC::remove);
     }
 }

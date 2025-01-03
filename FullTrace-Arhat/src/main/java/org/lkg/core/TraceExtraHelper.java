@@ -42,7 +42,7 @@ public class TraceExtraHelper {
         TraceHolder instance = TraceHolder.getInstance();
         if (Objects.nonNull(instance) ) {
             instance.getEntryInjector().remove(key);
-            Trace current = TraceHolder.getCurrent();
+            Trace current = TraceContext.getCurrentContext();
             if (Objects.nonNull(current)) {
                 current.removeExtra(key);
             }

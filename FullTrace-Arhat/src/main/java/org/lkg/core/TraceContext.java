@@ -1,48 +1,33 @@
 package org.lkg.core;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * Description:
  * Author: 李开广
  * Date: 2024/9/23 9:12 PM
  */
-public class TraceContext implements Closeable {
+public class TraceContext{
 
 
-    private final static InheritableThreadLocal<Trace> inheritableThreadLocal = new InheritableThreadLocal() {
-        @Override
-        protected Trace initialValue() {
-            return new Trace();
-        }
-    };
+    private final static InheritableThreadLocal<Trace> inheritableThreadLocal = new InheritableThreadLocal<>();
 
 
     public static Trace getCurrentContext() {
         return inheritableThreadLocal.get();
     }
 
-    public static void setContext(Trace trace) {
-        if (Objects.isNull(trace)) {
-            remove();
-        } else {
-            inheritableThreadLocal.set(trace);
-        }
+    public static void setContextAfterRemove(Trace trace) {
+        remove();
+        inheritableThreadLocal.set(trace);
     }
 
     public static void remove() {
+        // 确保资源的彻底清理
         try (Trace trace = inheritableThreadLocal.get()) {
             inheritableThreadLocal.remove();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    @Override
-    public void close() throws IOException {
-
     }
 }

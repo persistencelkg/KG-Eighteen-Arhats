@@ -19,7 +19,7 @@ public class FeignAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SelfFeignInterceptor feignTraceableInterceptor(TraceHolder traceHolder) {
+    public FeignTraceInterceptor feignTraceableInterceptor(TraceHolder traceHolder) {
         return new FeignTraceInterceptor(traceHolder);
     }
 }
