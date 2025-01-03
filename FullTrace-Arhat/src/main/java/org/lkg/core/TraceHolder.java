@@ -6,10 +6,7 @@ import org.lkg.simple.ObjectUtil;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.ObjectProvider;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,8 +42,8 @@ public final class TraceHolder {
         this.entryInjector = entryInjector;
     }
 
-    public static Trace getCurrent() {
-        return TraceContext.getCurrentContext();
+    public static Trace getCurrentOrCreate() {
+        return Optional.ofNullable(TraceContext.getCurrentContext()).orElse(new Trace());
     }
 
 
@@ -90,10 +87,7 @@ public final class TraceHolder {
 
     // 需要创建传播
     public <Carrier> TraceClose newTraceScope(FullLinkPropagation.Setter<Carrier> setter, Carrier carrier) {
-        Trace trace = TraceContext.getCurrentContext();
-        if (Objects.isNull(trace)) {
-            trace = new Trace();
-        }
+        Trace trace = getCurrentOrCreate();
         if (Objects.nonNull(setter) && Objects.nonNull(carrier)) {
             DefaultPropagation<Carrier> defaultPropagation = new DefaultPropagation<>(setter);
             defaultPropagation.propagation(trace, carrier);
@@ -123,13 +117,11 @@ public final class TraceHolder {
     public TraceClose newTraceScope(Trace trace) {
         // 携带自定义key-value的额外信息
         trace = entryInjector.populateExtra(trace);
-        Trace previous = TraceContext.getCurrentContext();
-        if (Objects.nonNull(previous)) {
-            TraceContext.setContext(trace);
-        }
+//        Trace previous = TraceContext.getCurrentContext();
+        TraceContext.setContextAfterRemove(trace);
 
         // 资源释放以lambada形式装饰最后执行
-        TraceScope decorator = decorator(trace, TraceContext::remove);
+        TraceScope decorator = decorator(trace, () ->{});
         return new TraceClose(trace, decorator);
     }
 

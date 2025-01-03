@@ -1,8 +1,6 @@
 package org.lkg.core;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * Description:
@@ -19,7 +17,7 @@ public class TraceContext{
         return inheritableThreadLocal.get();
     }
 
-    public static void setContext(Trace trace) {
+    public static void setContextAfterRemove(Trace trace) {
         remove();
         inheritableThreadLocal.set(trace);
     }
