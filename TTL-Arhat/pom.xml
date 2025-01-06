@@ -35,7 +35,5 @@
             <artifactId>FullTrace-Arhat</artifactId>
         </dependency>
 
-
-
     </dependencies>
 </project>

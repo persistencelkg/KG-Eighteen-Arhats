@@ -2,12 +2,11 @@ package org.lkg.core.limit;
 
 import io.micrometer.core.instrument.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.ThreadContext;
 import org.lkg.constant.LinkKeyConst;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.Trace;
 import org.lkg.core.TraceContext;
-import org.lkg.core.config.OnTraceTimeoutEnable;
+import org.lkg.core.config.EnableTraceTimeOut;
 import org.lkg.core.config.TraceLogEnum;
 import org.lkg.core.exception.TraceTimeoutException;
 import org.lkg.enums.TrueFalseEnum;
@@ -31,7 +30,7 @@ public class TraceTimeoutLimiter {
     private static boolean enable;
 
     static {
-        DynamicConfigManger.initAndRegistChangeEvent(OnTraceTimeoutEnable.key, DynamicConfigManger::getInt, (ref) -> {
+        DynamicConfigManger.initAndRegistChangeEvent(EnableTraceTimeOut.key, DynamicConfigManger::getInt, (ref) -> {
             enable = TrueFalseEnum.isTrue(ref);
         });
     }

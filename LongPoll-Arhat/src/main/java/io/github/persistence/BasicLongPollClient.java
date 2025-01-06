@@ -28,13 +28,13 @@ public abstract class BasicLongPollClient {
     private final ScheduledExecutorService remainLongLinkScheduledExecutorService;
     // 负责定期拉取数据
     private ScheduledFuture<?> poolDataScheduledFuture;
-    private boolean isLongLinkRunning;
+    private volatile boolean isLongLinkRunning;
 
     // 参数
     @Getter
-    private int longPollInterval;
+    private volatile int longPollInterval;
     @Getter
-    private boolean enableLongPoll;
+    private volatile boolean enableLongPoll;
 
     @Getter
     private LongPoolConfig longPoolConfig;
@@ -55,17 +55,21 @@ public abstract class BasicLongPollClient {
     }
 
     // why not in construct to exec this， to make sure that up applies to this and itself has initial finish
-    public void setLongPollInterval(int longPollInterval) {
-        this.longPollInterval = longPollInterval;
-        // start poll
-        startPollData();
-    }
-
     public void setEnableLongPoll(boolean enableLongPoll) {
         this.enableLongPoll = enableLongPoll;
         // create long link
         createAndRemainLongLink();
     }
+
+    public void setLongPollInterval(int intervalSecond) {
+        // 减少轮询时间就需要打断当前执行中的任务，增大或者等于直接在下一周期自动生效 无需处理
+        if (intervalSecond < this.longPollInterval && !poolDataScheduledFuture.isDone() && !poolDataScheduledFuture.isCancelled()) {
+            poolDataScheduledFuture.cancel(true);
+        }
+        this.longPollInterval = intervalSecond;
+        startPollData();
+    }
+
 
     private void createAndRemainLongLink() {
         if (!isLongLinkRunning && enableLongPoll) {
@@ -104,18 +108,6 @@ public abstract class BasicLongPollClient {
 
     }
 
-    public void refreshInterval(int intervalSecond) {
-        // 减少轮询时间就需要打断当前执行中的任务，增大或者等于直接在下一周期自动生效 无需处理
-        if (intervalSecond < this.longPollInterval && !poolDataScheduledFuture.isDone() && !poolDataScheduledFuture.isCancelled()) {
-            poolDataScheduledFuture.cancel(true);
-        }
-        this.longPollInterval = intervalSecond;
-    }
-
-    public void setLongLinkEnable(boolean enableLongPoll) {
-        this.enableLongPoll = enableLongPoll;
-        createAndRemainLongLink();
-    }
 
     protected abstract void loadData(LongPoolConfig longPoolConfig);
 

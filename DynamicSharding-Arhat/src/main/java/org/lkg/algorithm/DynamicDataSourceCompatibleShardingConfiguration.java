@@ -25,6 +25,7 @@ import java.util.Map;
  */
 @Configuration
 // 这个目的是不和自带的配置注入shardingDataSource 共享
+@EnableMoreDynamicDatasource
 @AutoConfigureBefore({DynamicDataSourceAutoConfiguration.class})
 public class DynamicDataSourceCompatibleShardingConfiguration {
 

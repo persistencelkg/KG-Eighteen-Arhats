@@ -96,6 +96,18 @@ public class ApolloConfigService implements DynamicConfigService {
         keyChangeListener.computeIfAbsent(key, ref -> new HashSet<>()).add(keyChangeHandler);
     }
 
+
+    public boolean existKeyChange(String key) {
+        HashSet<KeyChangeHandler> keyChangeHandlers = keyChangeListener.get(key);
+        if (ObjectUtil.isNotEmpty(keyChangeHandlers)) {
+            if (log.isDebugEnabled()) {
+                log.debug("key:{} exist handler size:{}", key, keyChangeHandlers.size());
+            }
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public Set<KeyChangeHandler> setAllChangeKeySet(String key) {
         return keyChangeListener.get(key);
