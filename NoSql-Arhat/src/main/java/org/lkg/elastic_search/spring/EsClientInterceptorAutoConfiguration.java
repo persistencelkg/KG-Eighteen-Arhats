@@ -8,13 +8,8 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.protocol.HttpContext;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
 import org.lkg.core.config.EnableLongHengMetric;
-import org.lkg.core.config.OnTraceTimeoutEnable;
+import org.lkg.core.config.EnableTraceTimeOut;
 import org.lkg.core.config.TraceLogEnum;
 import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.core.limit.TraceTimeoutLimiter;
@@ -27,7 +22,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -40,7 +34,7 @@ public class EsClientInterceptorAutoConfiguration {
 
 
     @Configuration
-    @OnTraceTimeoutEnable
+    @EnableTraceTimeOut
     static class TraceTimeoutAutoConfiguration {
 
         @Bean

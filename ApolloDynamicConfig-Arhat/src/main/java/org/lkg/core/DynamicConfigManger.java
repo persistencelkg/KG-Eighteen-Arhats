@@ -67,6 +67,14 @@ public class DynamicConfigManger {
         return Optional.ofNullable(AdvanceFunctions.STR_TO_DURATION.apply(configValue)).orElse(defVal);
     }
 
+    /**
+     * 此处是静态配置，并不能实时生效，如果需要实时生效
+     * 需要业务自己去实现key handler，通过supplier 、consumer等方式去接受change事件
+     * @see DynamicConfigManger#addKeyChangeHandler
+     * @param key dynamic-key
+     * @param def 默认值
+     * @return static value
+     */
     public static String getConfigValue(String key, String def) {
         String strValue = null;
         for (KeyConfigService keyConfigService : KEY_CONFIG_SERVICE_SET) {
@@ -79,8 +87,6 @@ public class DynamicConfigManger {
                 break;
             }
         }
-        ;
-
         return Optional.ofNullable(strValue).orElse(def);
     }
 

@@ -1,8 +1,10 @@
 package org.lkg.core.config;
 
+import org.lkg.spring.TraceTimeoutAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
 
@@ -16,7 +18,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ConditionalOnClass(FeignClient.class)
-@ConditionalOnProperty(name = OnTraceTimeoutEnable.key, havingValue = "1")
-public @interface OnTraceTimeoutEnable {
+@ConditionalOnProperty(name = EnableTraceTimeOut.key, havingValue = "1")
+@Import(TraceTimeoutAutoConfiguration.class)
+public @interface EnableTraceTimeOut {
     String key ="ttl.check.enable";
 }

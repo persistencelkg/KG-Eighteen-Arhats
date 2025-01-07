@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * Date: 2024/8/28 8:57 PM
  */
 @Configuration
-@ConditionalOnClass(StatementHandler.class)
+@ConditionalOnClass(value = {StatementHandler.class, ConfigurationCustomizer.class})
 @EnableLongHengMetric
 public class MybatisMonitorAutoConfiguration {
 

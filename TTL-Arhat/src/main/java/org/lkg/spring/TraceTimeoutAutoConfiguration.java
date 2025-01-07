@@ -1,10 +1,8 @@
 package org.lkg.spring;
 
-import org.lkg.core.config.OnTraceTimeoutEnable;
 import org.lkg.core.limit.FeignTraceTimeoutInterceptor;
 import org.lkg.core.limit.MybatisTimeoutInterceptor;
 import org.lkg.core.limit.RedisTraceTimeoutInterceptor;
-import org.lkg.metric.redis.RedisInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
  * Date: 2024/10/17 5:08 PM
  */
 @Configuration
-@OnTraceTimeoutEnable
 public class TraceTimeoutAutoConfiguration {
 
     // feign interceptor

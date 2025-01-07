@@ -1,0 +1,8 @@
+## 考虑了很久 还是让使用者按需引入
+# org.springframework.context.ApplicationContextInitializer=org.lkg.config.ApolloConfigBeanFactoryPostProcessorInitializer
+#
+#
+#org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+#  org.lkg.config.ApolloConfigBeanFactoryPostProcessorInitializer,\
+#  org.lkg.metric.rpc.feign.FeignMetricAutoConfiguration,\
+#  org.lkg.metric.api.MetricFilterAutoConfiguration

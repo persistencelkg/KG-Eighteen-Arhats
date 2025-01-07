@@ -22,10 +22,50 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>DynamicSharding-Arhat</artifactId>
+            <!--  内置必须扫描datasource，这就只能按需了-->
+            <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>NoSql-Arhat</artifactId>
+            
+        </dependency>
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>NonWebCommon-Arhat</artifactId>
+            
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>FullTrace-Arhat</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>Metrics-Arhat</artifactId>
+            
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>TTL-Arhat</artifactId>
+        </dependency>
+
+        <!--  生产spring-config-properties-metadata 提示    -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+        </dependency>
+
+        <!--autoconfigure-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

@@ -1,7 +1,7 @@
-#初始化类
-org.springframework.context.ApplicationContextInitializer=\
-org.lkg.config.ApolloConfigBeanFactoryPostProcessorInitializer
-
-#自动装配
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.lkg.config.ApolloConfigBeanFactoryPostProcessorInitializer
+##初始化类
+#org.springframework.context.ApplicationContextInitializer=\
+#org.lkg.config.ApolloConfigBeanFactoryPostProcessorInitializer
+#
+##自动装配
+#org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+#org.lkg.config.ApolloConfigBeanFactoryPostProcessorInitializer

@@ -1,6 +1,8 @@
 package org.lkg.simple;
 
-
+/**
+ * if use must enable config <code>@EnableDynamicApollo</code>
+ */
 public class ServerInfo {
 
     private static String serverName;
