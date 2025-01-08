@@ -27,7 +27,7 @@
  <dependency>
     <groupId>io.github.persistence</groupId>
     <artifactId>EighteenArhat-spring-boot-starter</artifactId>
-    <version>${xxx}</version>
+    <version>1.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
