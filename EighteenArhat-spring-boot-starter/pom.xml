@@ -6,13 +6,9 @@
         <artifactId>KG-Eighteem-Arhats</artifactId>
         <version>1.0.1-SNAPSHOT</version>
     </parent>
-
-    <groupId>io.github.persistence</groupId>
     <artifactId>EighteenArhat-spring-boot-starter</artifactId>
     <packaging>jar</packaging>
-
     <name>EighteenArhat-spring-boot-starter</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

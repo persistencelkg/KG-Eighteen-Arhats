@@ -7,8 +7,8 @@ import lombok.Getter;
  * 1. 用户服务异常 【自定义为主】
  * 2. 系统异常 【默认】
  * 3. Http/RPC 调用异常 【默认】
- * @author: likaiguang
- * @date： 2021/3/13 9:29 下午
+ * @author likaiguang
+ * @date  2021/3/13 9:29 下午
  **/
 @Getter
 public class BaseException extends RuntimeException {
