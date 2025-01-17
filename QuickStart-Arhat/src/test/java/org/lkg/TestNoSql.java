@@ -9,7 +9,6 @@ import org.lkg.elastic_search.crud.demo.Orders;
 import org.lkg.elastic_search.enums.EsDoc;
 import org.lkg.redis.crud.RedisService;
 import org.lkg.redis.crud.TestInterFace;
-import org.lkg.simple.JacksonUtil;
 
 import javax.annotation.Resource;
 import java.util.Date;

@@ -1,7 +1,7 @@
 package org.lkg.utils.http;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lkg.simple.JacksonUtil;
+import org.lkg.utils.JacksonUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 

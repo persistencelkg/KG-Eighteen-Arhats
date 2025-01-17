@@ -10,7 +10,7 @@ import org.lkg.core.config.EnableTraceTimeOut;
 import org.lkg.core.config.TraceLogEnum;
 import org.lkg.core.exception.TraceTimeoutException;
 import org.lkg.enums.TrueFalseEnum;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 
 import java.util.Map;
 import java.util.Objects;

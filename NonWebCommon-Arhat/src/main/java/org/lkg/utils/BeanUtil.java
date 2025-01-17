@@ -1,4 +1,4 @@
-package org.lkg.simple;
+package org.lkg.utils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;

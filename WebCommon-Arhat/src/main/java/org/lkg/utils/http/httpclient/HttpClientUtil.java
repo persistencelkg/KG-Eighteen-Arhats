@@ -1,7 +1,6 @@
 package org.lkg.utils.http.httpclient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -14,14 +13,13 @@ import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.lkg.enums.TrueFalseEnum;
 import org.lkg.request.CommonResp;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
-import org.lkg.simple.JacksonUtil;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.JacksonUtil;
+import org.lkg.utils.ObjectUtil;
 import org.lkg.utils.http.CustomWebClientConfig;
 import org.lkg.utils.http.CustomWebClientHolder;
 import org.springframework.util.Assert;

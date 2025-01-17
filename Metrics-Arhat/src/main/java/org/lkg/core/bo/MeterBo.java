@@ -6,8 +6,8 @@ import lombok.*;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.config.LongHongConst;
 import org.lkg.core.config.LongHongAlarmConfig;
-import org.lkg.simple.NetUtils;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.NetUtils;
+import org.lkg.utils.ObjectUtil;
 
 import java.util.HashMap;
 import java.util.Map;

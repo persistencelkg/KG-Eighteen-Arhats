@@ -7,7 +7,7 @@ import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
 import org.lkg.algorithm.ConsistenceHash;
-import org.lkg.simple.DateTimeUtils;
+import org.lkg.utils.DateTimeUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

@@ -5,7 +5,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.*;
 
-import static org.lkg.security.KernelUtil.CPU_CORE_NUM;
+import static org.lkg.utils.security.KernelUtil.CPU_CORE_NUM;
 
 /**
  * 非业务类线程，

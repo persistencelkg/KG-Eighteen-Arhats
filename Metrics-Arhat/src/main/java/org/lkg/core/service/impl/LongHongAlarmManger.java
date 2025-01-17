@@ -11,8 +11,8 @@ import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.core.service.AlarmWindowManger;
 import org.lkg.ding.DingDingMsg;
 import org.lkg.ding.DingDingUtil;
-import org.lkg.simple.JacksonUtil;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.JacksonUtil;
+import org.lkg.utils.ObjectUtil;
 
 import java.util.List;
 import java.util.Map;

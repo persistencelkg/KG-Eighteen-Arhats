@@ -2,7 +2,7 @@ package org.lkg.dao;
 
 import org.lkg.core.bo.MeterBo;
 import org.lkg.core.config.LongHongConst;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 
 import java.util.List;
 import java.util.Map;

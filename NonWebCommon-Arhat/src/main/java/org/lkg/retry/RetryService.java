@@ -1,8 +1,7 @@
 package org.lkg.retry;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 

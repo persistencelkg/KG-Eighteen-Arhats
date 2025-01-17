@@ -4,7 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
 import lombok.Data;
 import org.lkg.constant.LinkKeyConst;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 import org.slf4j.MDC;
 
 import java.io.Closeable;

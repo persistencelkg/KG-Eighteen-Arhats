@@ -1,12 +1,11 @@
 package org.lkg.core;
 
 import org.lkg.constant.LinkKeyConst;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 import org.slf4j.MDC;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Description: 可扩展其他参数到链路的注入器，支持动态配置，例如全链路压测标识

@@ -2,7 +2,7 @@ package org.lkg.retry;
 
 import org.lkg.enums.TrueFalseEnum;
 import org.lkg.exception.RetryException;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 
 import java.io.InterruptedIOException;
 import java.net.ConnectException;

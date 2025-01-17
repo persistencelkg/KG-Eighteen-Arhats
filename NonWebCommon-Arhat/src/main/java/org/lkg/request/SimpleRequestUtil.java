@@ -2,9 +2,9 @@ package org.lkg.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.lkg.simple.IOStreamUtil;
-import org.lkg.simple.ObjectUtil;
-import org.lkg.simple.UrlUtil;
+import org.lkg.utils.IOStreamUtil;
+import org.lkg.utils.ObjectUtil;
+import org.lkg.utils.UrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

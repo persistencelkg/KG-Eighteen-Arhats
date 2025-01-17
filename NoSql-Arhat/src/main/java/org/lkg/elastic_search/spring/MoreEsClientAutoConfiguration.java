@@ -18,7 +18,7 @@ import org.lkg.elastic_search.config.MoreEsClient;
 import org.lkg.elastic_search.config.OnEnableMoreEs;
 import org.lkg.enums.StringEnum;
 import org.lkg.retry.BulkAsyncRetryAble;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

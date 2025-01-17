@@ -1,7 +1,7 @@
 package org.lkg.metric.threadpool;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

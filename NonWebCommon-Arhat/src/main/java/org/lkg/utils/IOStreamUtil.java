@@ -1,4 +1,4 @@
-package org.lkg.simple;
+package org.lkg.utils;
 
 import lombok.extern.slf4j.Slf4j;
 

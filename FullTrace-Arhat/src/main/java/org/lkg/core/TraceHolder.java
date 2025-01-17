@@ -2,7 +2,7 @@ package org.lkg.core;
 
 import lombok.Getter;
 import org.lkg.constant.LinkKeyConst;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.ObjectProvider;
 

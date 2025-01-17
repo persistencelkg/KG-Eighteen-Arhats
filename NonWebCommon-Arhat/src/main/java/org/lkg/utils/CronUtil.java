@@ -1,6 +1,6 @@
-package org.lkg.simple;
+package org.lkg.utils;
 
-import org.lkg.simple.matcher.CronExpression;
+import org.lkg.utils.matcher.CronExpression;
 
 import java.util.Date;
 

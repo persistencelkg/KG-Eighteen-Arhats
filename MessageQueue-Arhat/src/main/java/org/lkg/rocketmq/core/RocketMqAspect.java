@@ -17,7 +17,7 @@ import org.lkg.core.TraceHolder;
 import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.core.service.MetricCoreExecutor;
 import org.lkg.rocketmq.core.consume.ConsumeMessageProcessJoinPointInterceptor;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 
 import java.io.IOException;
 import java.time.Duration;

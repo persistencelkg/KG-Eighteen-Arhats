@@ -2,8 +2,8 @@ package org.lkg.core;
 
 import org.lkg.apollo.ApolloConfigService;
 import org.lkg.enums.StringEnum;
-import org.lkg.simple.JacksonUtil;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.JacksonUtil;
+import org.lkg.utils.ObjectUtil;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
 
 import java.lang.reflect.ParameterizedType;

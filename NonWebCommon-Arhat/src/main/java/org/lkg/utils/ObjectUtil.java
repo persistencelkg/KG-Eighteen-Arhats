@@ -1,9 +1,9 @@
-package org.lkg.simple;
+package org.lkg.utils;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.lkg.enums.StringEnum;
-import org.lkg.security.RandomUtil;
+import org.lkg.utils.security.RandomUtil;
 import org.springframework.lang.Nullable;
 
 import java.lang.reflect.Array;

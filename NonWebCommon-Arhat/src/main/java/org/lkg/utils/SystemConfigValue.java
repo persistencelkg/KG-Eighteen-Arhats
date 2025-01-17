@@ -1,4 +1,4 @@
-package org.lkg.simple;
+package org.lkg.utils;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

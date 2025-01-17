@@ -5,14 +5,12 @@ import feign.MethodMetadata;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.lkg.enums.StringEnum;
-import org.lkg.simple.ObjectUtil;
-import org.lkg.simple.UrlUtil;
+import org.lkg.utils.ObjectUtil;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.env.Environment;
 
 import java.io.File;
-import java.net.URI;
 import java.util.Collection;
 
 /**

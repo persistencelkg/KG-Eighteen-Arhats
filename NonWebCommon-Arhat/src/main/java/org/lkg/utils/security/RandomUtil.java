@@ -1,11 +1,10 @@
-package org.lkg.security;
+package org.lkg.utils.security;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.lkg.enums.StringEnum;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**

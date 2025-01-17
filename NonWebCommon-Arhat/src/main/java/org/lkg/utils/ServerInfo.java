@@ -1,4 +1,4 @@
-package org.lkg.simple;
+package org.lkg.utils;
 
 /**
  * if use must enable config <code>@EnableDynamicApollo</code>

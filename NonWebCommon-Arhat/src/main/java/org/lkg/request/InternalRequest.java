@@ -2,13 +2,12 @@ package org.lkg.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.*;
-import org.lkg.simple.JacksonUtil;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.JacksonUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.lkg.simple.ObjectUtil.isEmpty;
+import static org.lkg.utils.ObjectUtil.isEmpty;
 
 /**
  * Description: 对内请求的参数

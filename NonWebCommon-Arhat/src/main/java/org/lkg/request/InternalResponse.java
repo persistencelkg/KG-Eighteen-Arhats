@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.enums.ResponseBodyEnum;
-import org.lkg.simple.JacksonUtil;
+import org.lkg.utils.JacksonUtil;
 
 import java.util.*;
 
