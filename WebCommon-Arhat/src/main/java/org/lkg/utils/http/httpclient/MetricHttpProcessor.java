@@ -1,7 +1,5 @@
 package org.lkg.utils.http.httpclient;
 
-import io.micrometer.core.instrument.Tags;
-import io.micrometer.core.instrument.Timer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -13,14 +11,12 @@ import org.apache.http.util.VersionInfo;
 import org.lkg.core.FullLinkPropagation;
 import org.lkg.core.TraceClose;
 import org.lkg.core.TraceHolder;
-import org.lkg.core.init.LongHengMeterRegistry;
 import org.lkg.exception.ExceptionSystemConst;
 import org.lkg.metric.rpc.http.MetricHttp;
 import org.lkg.request.InternalRequest;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

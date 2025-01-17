@@ -5,9 +5,7 @@ import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.lkg.core.DynamicConfigManger;
 import org.lkg.core.config.LongHongConst;
-import org.lkg.simple.JacksonUtil;
-import org.lkg.simple.ServerInfo;
-import org.springframework.stereotype.Component;
+import org.lkg.utils.JacksonUtil;
 
 import java.util.Map;
 import java.util.concurrent.Future;

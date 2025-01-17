@@ -1,14 +1,11 @@
 package org.lkg.utils.http.httpclient;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
 import org.lkg.request.InternalRequest;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 import org.springframework.http.HttpMethod;
 
 import java.net.URI;

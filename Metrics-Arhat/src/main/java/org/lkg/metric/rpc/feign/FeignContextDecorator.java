@@ -3,7 +3,7 @@ package org.lkg.metric.rpc.feign;
 import feign.Client;
 import feign.Contract;
 import feign.Feign;
-import org.lkg.simple.ReflectUtil;
+import org.lkg.utils.ReflectUtil;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.cloud.openfeign.FeignContext;

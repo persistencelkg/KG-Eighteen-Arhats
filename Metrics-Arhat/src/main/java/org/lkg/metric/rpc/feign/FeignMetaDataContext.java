@@ -4,12 +4,10 @@ import feign.MethodMetadata;
 import feign.RequestTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.lkg.simple.matcher.AntPathMatcher;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.lkg.utils.matcher.AntPathMatcher;
 import org.springframework.web.util.UriTemplate;
 
 import java.io.File;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

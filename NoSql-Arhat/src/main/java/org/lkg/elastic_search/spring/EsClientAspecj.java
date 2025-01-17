@@ -9,8 +9,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
-import org.lkg.simple.ObjectUtil;
-import org.springframework.stereotype.Component;
+import org.lkg.utils.ObjectUtil;
 
 import java.util.List;
 

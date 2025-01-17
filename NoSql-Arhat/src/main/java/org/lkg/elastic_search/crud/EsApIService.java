@@ -4,7 +4,7 @@ import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.lkg.request.PageResponse;
-import org.lkg.simple.JacksonUtil;
+import org.lkg.utils.JacksonUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;

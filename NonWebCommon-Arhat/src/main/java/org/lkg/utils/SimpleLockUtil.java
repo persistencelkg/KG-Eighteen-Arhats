@@ -1,4 +1,4 @@
-package org.lkg.simple;
+package org.lkg.utils;
 
 /**
  * Description: 单机锁

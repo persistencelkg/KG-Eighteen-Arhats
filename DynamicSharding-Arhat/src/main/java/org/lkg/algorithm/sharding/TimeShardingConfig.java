@@ -1,6 +1,6 @@
 package org.lkg.algorithm.sharding;
 
-import org.lkg.simple.DateTimeUtils;
+import org.lkg.utils.DateTimeUtils;
 
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;

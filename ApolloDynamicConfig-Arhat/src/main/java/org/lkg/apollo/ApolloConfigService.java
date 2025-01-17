@@ -10,7 +10,7 @@ import com.ctrip.framework.apollo.util.ConfigUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.core.DynamicConfigService;
 import org.lkg.core.KeyChangeHandler;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 
 import java.util.*;
 

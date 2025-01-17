@@ -1,7 +1,7 @@
 package org.lkg.algorithm;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
-import org.lkg.simple.DateTimeUtils;
+import org.lkg.utils.DateTimeUtils;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;

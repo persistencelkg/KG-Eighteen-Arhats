@@ -1,11 +1,10 @@
-package org.lkg.security;
+package org.lkg.utils.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.lkg.simple.DateTimeUtils;
+import org.lkg.utils.DateTimeUtils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * Description: 根据身份证获取年龄

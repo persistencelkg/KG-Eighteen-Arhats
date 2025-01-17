@@ -15,7 +15,7 @@
  * 
  */
 
-package org.lkg.simple.matcher;
+package org.lkg.utils.matcher;
 
 import java.io.Serializable;
 import java.text.ParseException;

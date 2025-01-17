@@ -14,7 +14,7 @@ import org.lkg.core.TraceHolder;
 import org.lkg.rocketmq.core.MoreRocketMqConfig;
 import org.lkg.rocketmq.core.OnEnableMoreRocket;
 import org.lkg.rocketmq.core.ProxyCreateProducerInterceptor;
-import org.lkg.simple.RegxUtil;
+import org.lkg.utils.RegxUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;

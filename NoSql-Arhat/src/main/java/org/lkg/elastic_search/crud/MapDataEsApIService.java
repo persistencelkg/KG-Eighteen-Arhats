@@ -19,10 +19,8 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.lkg.elastic_search.enums.EsDoc;
-import org.lkg.request.PageResponse;
-import org.lkg.retry.BulkAsyncRetryAble;
-import org.lkg.simple.JacksonUtil;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.JacksonUtil;
+import org.lkg.utils.ObjectUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 

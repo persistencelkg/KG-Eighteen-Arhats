@@ -2,8 +2,8 @@ package org.lkg.core;
 
 import com.google.common.base.Function;
 import org.lkg.function.ThrowableFunction;
-import org.lkg.simple.DateTimeUtils;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.DateTimeUtils;
+import org.lkg.utils.ObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

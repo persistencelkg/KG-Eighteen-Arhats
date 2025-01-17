@@ -2,13 +2,9 @@ package org.lkg.metric.rpc.feign;
 
 import feign.Request;
 import feign.Response;
-import org.lkg.simple.matcher.AntPathMatcher;
 import org.springframework.core.Ordered;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Description:

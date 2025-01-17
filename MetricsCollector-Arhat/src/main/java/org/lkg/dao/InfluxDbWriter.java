@@ -5,15 +5,12 @@ import org.influxdb.dto.Point;
 import org.lkg.core.bo.MeterBo;
 import org.lkg.core.config.LongHongConst;
 import org.lkg.service.InfluxDbService;
-import org.lkg.simple.ObjectUtil;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * Description:

@@ -4,7 +4,7 @@ import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
 import org.lkg.metric.rpc.feign.SelfFeignInterceptor;
-import org.lkg.simple.UrlUtil;
+import org.lkg.utils.UrlUtil;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

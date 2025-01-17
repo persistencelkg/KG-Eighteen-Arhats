@@ -2,7 +2,7 @@ package org.lkg.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 
 import java.beans.Transient;
 

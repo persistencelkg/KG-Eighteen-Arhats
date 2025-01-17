@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.lkg.simple.ObjectUtil;
-import org.lkg.simple.RegxUtil;
+import org.lkg.utils.ObjectUtil;
+import org.lkg.utils.RegxUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;

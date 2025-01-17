@@ -5,13 +5,11 @@ import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.lkg.simple.ObjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.Map;
 import java.util.Objects;
 

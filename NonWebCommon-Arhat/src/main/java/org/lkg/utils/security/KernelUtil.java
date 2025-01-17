@@ -1,4 +1,4 @@
-package org.lkg.security;
+package org.lkg.utils.security;
 
 /**
  * Description:

@@ -1,14 +1,13 @@
 package org.lkg.ding;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.lkg.request.InternalRequest;
 import org.lkg.request.InternalResponse;
 import org.lkg.request.SimpleRequestUtil;
-import org.lkg.simple.JacksonUtil;
-import org.lkg.simple.ObjectUtil;
-import org.lkg.simple.UrlUtil;
+import org.lkg.utils.JacksonUtil;
+import org.lkg.utils.ObjectUtil;
+import org.lkg.utils.UrlUtil;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

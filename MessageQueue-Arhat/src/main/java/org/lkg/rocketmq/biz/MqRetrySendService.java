@@ -1,13 +1,11 @@
 package org.lkg.rocketmq.biz;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.lkg.simple.JacksonUtil;
-import org.lkg.simple.SystemConfigValue;
+import org.lkg.utils.JacksonUtil;
+import org.lkg.utils.SystemConfigValue;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 /**
  * Description: 带重试的MQ 保障一定发送消息成功

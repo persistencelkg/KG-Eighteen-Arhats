@@ -1,9 +1,9 @@
-package org.lkg.security;
+package org.lkg.utils.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 import org.springframework.util.Base64Utils;
 import sun.misc.BASE64Encoder;
 

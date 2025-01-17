@@ -1,4 +1,4 @@
-package org.lkg.simple;
+package org.lkg.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.lkg.enums.StringEnum;
-import org.lkg.simple.JacksonUtil;
+import org.lkg.utils.JacksonUtil;
 
 /**
  * Description:

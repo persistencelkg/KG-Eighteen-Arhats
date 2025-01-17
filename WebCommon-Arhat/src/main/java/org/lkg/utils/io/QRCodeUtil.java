@@ -9,8 +9,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 import org.lkg.core.DynamicConfigManger;
-import org.lkg.simple.FileUtil;
-import org.lkg.simple.IOStreamUtil;
+import org.lkg.utils.FileUtil;
 
 import java.io.*;
 import java.util.Base64;

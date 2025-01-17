@@ -1,8 +1,8 @@
-package org.lkg.security;
+package org.lkg.utils.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.enums.StringEnum;
-import org.lkg.simple.ObjectUtil;
+import org.lkg.utils.ObjectUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

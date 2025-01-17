@@ -2,9 +2,8 @@ package org.lkg.test;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.lkg.request.CommonIntResp;
 import org.lkg.request.InternalResponse;
-import org.lkg.simple.FileUtil;
+import org.lkg.utils.FileUtil;
 import org.lkg.up_download.down.DownFileUtil;
 import org.lkg.up_download.down.DownloadService;
 import org.springframework.stereotype.Controller;
@@ -17,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
