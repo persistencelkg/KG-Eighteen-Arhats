@@ -3,6 +3,7 @@ package org.lkg.algorithm;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import java.util.TreeMap;
  * Author: 李开广
  * Date: 2024/9/13 3:52 PM
  */
+@Slf4j
 public class ConsistenceHash {
 
     private final static String EMPTY = "";
@@ -60,7 +62,9 @@ public class ConsistenceHash {
                 HASH_CIRCLE.put(hash, node);
             }
         }
-        System.out.println(HASH_CIRCLE);
+        if (log.isDebugEnabled()) {
+            log.debug("build hash circle:{}", HASH_CIRCLE);
+        }
     }
 
     public static String joinWithSpit(Object... obj) {

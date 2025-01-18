@@ -14,7 +14,7 @@ public class HelpTool {
 
     public static String getTableName(Long val) {
         UserIdMockPreciseShardingTableAlgorithm userIdMockPreciseShardingTableAlgorithm = new UserIdMockPreciseShardingTableAlgorithm();
-        String s = userIdMockPreciseShardingTableAlgorithm.doSharding(null, new PreciseShardingValue<>("user", "user_id", val));
+        String s = userIdMockPreciseShardingTableAlgorithm.doSharding(null, new PreciseShardingValue<>("table", "user_id", val));
         log.info("hit table:{}", s);
         return s;
     }
