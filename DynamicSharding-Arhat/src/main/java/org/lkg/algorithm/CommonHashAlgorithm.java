@@ -10,7 +10,7 @@ import java.util.zip.CRC32;
 
 /**
  * 使用建议:在一般散列分表、分布式节点中碰撞率最低 && 性能最好的【千万次计算耗时3s以内】的top3
- * hashcode(最强为0) > ELF_HASH > RS_HASH [冲突概率<0.04%]
+ * hashcode(最强为0) > ELF_HASH > RS_HASH [冲突概率<0.04%]<br/>
  * 第二梯队
  * FNV1_64_HASH [冲突概率<0.05%, 千万次耗时3s]
  * FNV1A_64_HASH [冲突概率<0.05%, 千万次耗时5.5s]
@@ -20,7 +20,7 @@ import java.util.zip.CRC32;
  * MurMurHash  [冲突概率<0.1%， 千万次计算耗时7.5s]
  * LUA_HASH、ONE_AT_A_TIME  [冲突概率<0.2%， 千万次计算耗时7s]
  * MYSQL_HASH [冲突概率<0.2%， 千万次计算耗时5.8s]
- *
+ *<br/>
  * CRC32 不属于hash算法，他的碰撞是100%的 多用于整合长字符串的hash值固定映射为4字节32位长度
  * Description: 通用hash算法能力
  * Author: 李开广
