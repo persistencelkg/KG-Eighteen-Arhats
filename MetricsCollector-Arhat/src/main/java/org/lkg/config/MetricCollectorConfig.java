@@ -22,6 +22,8 @@ public class MetricCollectorConfig {
 
     private Integer batchSize;
 
+    private Integer enable = 1;
+
     public static MetricCollectorConfig getInstance() {
         return DynamicConfigManger.getAnnotationConfig(MetricCollectorConfig.class);
     }
