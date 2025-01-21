@@ -6,6 +6,7 @@ import org.lkg.core.bo.MeterBo;
 import org.lkg.core.config.LongHongConst;
 import org.lkg.dao.DataWriter;
 import org.lkg.dao.InfluxDbWriter;
+import org.lkg.enums.TrueFalseEnum;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class MeterQueueService {
 //    @Resource
     private DataWriter dataWriter;
 
-    private final LinkedBlockingQueue<MeterBo> meterBoQueue = new LinkedBlockingQueue<>(100000);
+    private final LinkedBlockingQueue<MeterBo> meterBoQueue = new LinkedBlockingQueue<>(100_000);
 
 
     public void off(MeterBo meterBo) {
@@ -52,21 +53,22 @@ public class MeterQueueService {
             if (meterBoQueue.size() >= metricCollectorConfig.getBatchSize()) {
                 flush();
             }
+
         } catch (InterruptedException e) {
             log.error("meter queue has full，current size:{}", meterBoQueue.size(), e);
         }
     }
 
-
+    // 如果长时间（需要设定一个阈值例如5s）没有数据点上报 也应该及时发送，避免时间穿越
     @Scheduled(cron="0/5 * * * * ? ")
     public void flush() {
         MetricCollectorConfig metricCollectorConfig = MetricCollectorConfig.getInstance();
-        if (Objects.isNull(metricCollectorConfig)) {
+        if (Objects.isNull(metricCollectorConfig) || TrueFalseEnum.isFalse(metricCollectorConfig.getEnable())) {
             return;
         }
         Integer batchSize = metricCollectorConfig.getBatchSize();
         List<MeterBo> list = new ArrayList<>((int) (batchSize * 1.5));
-        while(!meterBoQueue.isEmpty()) {
+        while(!meterBoQueue.isEmpty() && TrueFalseEnum.isTrue( MetricCollectorConfig.getInstance().getEnable())) {
             list.add(meterBoQueue.poll());
             if (list.size() >= batchSize) {
                  dataWriter.batchWrite(list);
