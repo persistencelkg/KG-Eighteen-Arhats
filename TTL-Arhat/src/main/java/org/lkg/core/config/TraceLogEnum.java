@@ -12,6 +12,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TraceLogEnum {
 
+
     Feign("third"),
     MySQL("sql"),
     Redis("redis"),
