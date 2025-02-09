@@ -1,5 +1,8 @@
 package org.lkg.core;
 
+import com.ctrip.framework.apollo.enums.PropertyChangeType;
+import com.ctrip.framework.apollo.model.ConfigChange;
+import lombok.extern.slf4j.Slf4j;
 import org.lkg.apollo.ApolloConfigService;
 import org.lkg.enums.StringEnum;
 import org.lkg.utils.JacksonUtil;
@@ -9,6 +12,8 @@ import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import java.lang.reflect.ParameterizedType;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -19,13 +24,14 @@ import java.util.stream.Collectors;
  * Author: 李开广
  * Date: 2024/8/8 4:18 PM
  */
+@Slf4j
 public class DynamicConfigManger {
 
     // 不直接初始化的原因是，使用了ApplicationContextInitializer 注入configService 但是如果此时初始化了ApolloConfigService
     // 会在容器之初加载apollo核心配置，但是这个时候核心配置都还没有准备好，获取的一定是null，而走到默认值，甚至app-id 都获取不到
     private static final ApolloConfigService apolloConfigService = null;
 
-    private static final Map<String, Object> LOCAL_CACHE = new HashMap<>();
+    private static final Map<String, String> LOCAL_CACHE = new ConcurrentHashMap<String, String>();
     private static final List<Function<String, String>> FILTERS = new ArrayList<>();
     // 未来如果要支持其他配置中心的动态key change, 例如nacos，但是需要注意nacos需要单独一个模块切记不能将 可以通过下面方式，目前apollo挺好的
     private static final Set<KeyConfigService> KEY_CONFIG_SERVICE_SET = new HashSet<>(4);
@@ -70,13 +76,18 @@ public class DynamicConfigManger {
     /**
      * 此处是静态配置，并不能实时生效，如果需要实时生效
      * 需要业务自己去实现key handler，通过supplier 、consumer等方式去接受change事件
-     * @see DynamicConfigManger#addKeyChangeHandler
+     *
      * @param key dynamic-key
      * @param def 默认值
      * @return static value
+     * @see DynamicConfigManger#addKeyChangeHandler
      */
     public static String getConfigValue(String key, String def) {
         String strValue = null;
+        String cache = LOCAL_CACHE.get(key);
+        if (Objects.nonNull(cache)) {
+            return cache;
+        }
         for (KeyConfigService keyConfigService : KEY_CONFIG_SERVICE_SET) {
             strValue = keyConfigService.getStrValue(key, def);
             // 解决值本身是占位符的问题
@@ -87,7 +98,10 @@ public class DynamicConfigManger {
                 break;
             }
         }
-        return Optional.ofNullable(strValue).orElse(def);
+        String val = Optional.ofNullable(strValue).orElse(def);
+        addKeyChangeHandler(key, ref -> new CommonKeyChangeListener(key));
+        LOCAL_CACHE.put(key, val);
+        return val;
     }
 
     public static Integer getInt(String key, Integer defaultVal) {
@@ -200,6 +214,30 @@ public class DynamicConfigManger {
     public static void addKeyChangeHandler(String key, Supplier<?> supplier) {
         // 不依赖key
         addKeyChangeHandler(key, ref -> supplier.get());
+    }
+
+    private static final class CommonKeyChangeListener implements KeyChangeHandler {
+
+        private final String configKey;
+
+        private CommonKeyChangeListener(String key) {
+            addKeyChangeHandler(key, this);
+            this.configKey = key;
+        }
+
+        @Override
+        public void onChange(ConfigChange keyChange) {
+            PropertyChangeType changeType = keyChange.getChangeType();
+            if (Objects.equals(changeType, PropertyChangeType.DELETED)) {
+                Object remove = LOCAL_CACHE.remove(configKey);
+                log.info("remove config:{} success, prev config value:{}", configKey, remove);
+                return;
+            }
+            String newVal = getConfigValue(configKey);
+            // add or update
+            Object put = LOCAL_CACHE.put(configKey, newVal);
+            log.info("refresh local config:{} success, pre config value:{}", configKey, put);
+        }
     }
 
     public static void main(String[] args) {
