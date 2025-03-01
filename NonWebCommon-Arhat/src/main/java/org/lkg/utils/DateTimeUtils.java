@@ -152,7 +152,9 @@ public class DateTimeUtils {
     }
 
     /**
-     * 参数不完全参考先后顺序
+     * 绝对时间差，即不足整数unit单位时按1个unit算
+     * 例如<code>dateAbsoluteDiff(d1,d2,CalendarUnit.DAY)</code>
+     * 等价计算d1-d2间隔绝对天数，如果不足1天按1天算
      *
      * @param d1   开始时间
      * @param d2   结束时间
@@ -175,8 +177,16 @@ public class DateTimeUtils {
         return dateAbsoluteDiff(d1, d2, CalendarUnit.DAY);
     }
 
+    public static long dayOfRelativeDiff(String d1, String d2) {
+        return dateRelativeDiff(convertToDate(strCovertToDateTime(d1)), convertToDate(strCovertToDateTime(d2)), CalendarUnit.DAY);
+    }
+
+    public static long dayOfAbsoluteDiff(String d1, String d2) {
+        return dayOfAbsoluteDiff(convertToDate(strCovertToDateTime(d1)), convertToDate(strCovertToDateTime(d2)));
+    }
+
     /**
-     * 相对时间间隔，多用于距离今天数，已过去天数、剩余天数计算
+     * 相对时间间隔, 即只考虑整天，不足1天忽略，多用于距离今天数，已过去天数、剩余天数计算
      * @param d1 参数1
      * @param d2 参数2
      * @param unit 单位
@@ -250,6 +260,24 @@ public class DateTimeUtils {
         System.out.println(t2);
         System.out.println(dateAbsoluteDiff(t1, t2, CalendarUnit.HOUR));
         System.out.println(dayOfRelativeDiffNow(t2));
+
+        timeRelativeTest();
     }
+
+    public static void timeRelativeTest() {
+        String now = "2025-02-13 13:00:00";
+        String before ="2025-02-11 23:59:59";
+        String after = "2025-02-15 23:59:59";
+        String nowEnd = "2025-02-13 23:59:59";
+        System.out.println("----------相对计算------------");
+        System.out.println(dayOfRelativeDiff(before, now));
+        System.out.println(dayOfRelativeDiff(after, nowEnd));
+        System.out.println(dayOfRelativeDiff(nowEnd, now));
+        System.out.println("----------绝对计算------------");
+        System.out.println(dayOfAbsoluteDiff(before, now));
+        System.out.println(dayOfAbsoluteDiff(after, nowEnd));
+        System.out.println(dayOfAbsoluteDiff(nowEnd, now));
+    }
+
 
 }
