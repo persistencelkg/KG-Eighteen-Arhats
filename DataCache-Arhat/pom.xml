@@ -17,5 +17,10 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>io.github.persistencelkg</groupId>
+            <artifactId>NoSql-Arhat</artifactId>
+        </dependency>
     </dependencies>
 </project>
