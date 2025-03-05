@@ -2,6 +2,8 @@ package org.lkg.enums;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public interface StringEnum {
     String EMPTY = "";
@@ -9,6 +11,9 @@ public interface StringEnum {
     String AND = "and";
     String AT = "@";
     String STAR = "*";
+
+    String SLASH = "/";
+    String HASH = "#";
 
     String PIPE = "|";
     String QUESTION = "?";
@@ -33,6 +38,12 @@ public interface StringEnum {
     String RIGHT_SQ_BRACKET = "]";
     String LEFT_BRACE = "{";
     String RIGHT_BRACE = "}";
+    String LEFT_CHEV = "<";
+    String RIGHT_CHEV = ">";
+    String LEFT_BRACKET = "(";
+    String RIGHT_BRACKET = ")";
+    String DOLLAR_LEFT_BRACE = "${";
+    String HASH_LEFT_BRACE = "#{";
 
     char[] ONE_TO_NINE = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
     char[] UPPER_CHAR = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
@@ -57,4 +68,18 @@ public interface StringEnum {
         return getEscape(COMMA);
     }
 
+
+    Map<String, String> wellKnownSimplePrefixes = new HashMap<String, String>(8) {{
+        put(LEFT_BRACE, RIGHT_BRACE);
+        put(LEFT_SQ_BRACKET, RIGHT_SQ_BRACKET);
+        put(LEFT_BRACKET, RIGHT_BRACKET);
+        put(LEFT_CHEV, RIGHT_CHEV);
+        put(HASH_LEFT_BRACE, RIGHT_BRACE);
+        put(DOLLAR_LEFT_BRACE, RIGHT_BRACE);
+
+    }};
+
+    static void addPrefixPartner(String prefix, String suffix) {
+        wellKnownSimplePrefixes.put(prefix, suffix);
+    }
 }
