@@ -1,5 +1,7 @@
 package org.lkg.utils;
 
+import lombok.extern.slf4j.Slf4j;
+import org.lkg.enums.StringEnum;
 import org.lkg.utils.matcher.AntPathMatcher;
 
 import java.io.File;
@@ -10,6 +12,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -17,8 +20,15 @@ import java.util.stream.Collectors;
  * Author: 李开广
  * Date: 2024/2/28 5:26 PM
  */
+@Slf4j
 public class UrlUtil {
 
+
+    /**
+     * @param pattern 带参数模版的uri
+     * @param url     已经解析过参数uri
+     * @return 动态参数map
+     */
     public static Map<String, String> templateParse(String pattern, String url) {
         // pattern: /{url:22}/{bb:33} /a/b?a=2   result  {url:a} {bb:b?a=2}
         AntPathMatcher antPathMatcher = new AntPathMatcher();
@@ -27,6 +37,24 @@ public class UrlUtil {
         }
         return antPathMatcher.extractUriTemplateVariables(pattern, url);
     }
+
+
+    public static String populateTemplate(Map<String, Object> map, String pattern) {
+        return populateTemplate(map, pattern, StringEnum.LEFT_BRACE);
+    }
+
+    public static String populateTemplate(Map<String, Object> map, String pattern, String leftMatch) {
+        if (ObjectUtil.isEmpty(map)) {
+            return pattern;
+        }
+        Set<Map.Entry<String, Object>> entries = map.entrySet();
+        for (Map.Entry<String, Object> entry : entries) {
+            String template = leftMatch + entry.getKey() + StringEnum.wellKnownSimplePrefixes.get(leftMatch);
+            pattern = pattern.replace(template, entry.getValue().toString());
+        }
+        return pattern;
+    }
+
 
     public static String encodeUrl(String uri) {
         if (ObjectUtil.isEmpty(uri)) {
@@ -109,7 +137,11 @@ public class UrlUtil {
         System.out.println(UrlUtil.encodeURLPath("https://d.jjxswshuku.com/d/file/p/txt/2024/《我的独立日》作者：容光.txt", true, true));
         System.out.println(encodeUrl("%%d"));
 
-        System.out.println(templateParse("/{a}/{ke}", "/atm/atm?a=2&b=3"));
+        System.out.println(templateParse("/order/{a}/{ke}", "/order/123/atm"));
+        Map<String, Object> obj = new HashMap<>();
+        obj.put("a", "lkg");
+        obj.put("ke", "25");
+        System.out.println(populateTemplate(obj, "/order/{a}/[a]/{ke}", "["));
     }
 
     public static String buildUrl(String url, Map<String, Object> param) {
