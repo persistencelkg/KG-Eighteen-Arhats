@@ -65,7 +65,7 @@ public class DynamicConfigManger {
     }
 
     public static String getConfigValue(String key) {
-        return getConfigValue(key, null);
+        return getConfigValue(key, "");
     }
 
     public static Duration getDuration(String key, Duration defVal) {
@@ -100,7 +100,9 @@ public class DynamicConfigManger {
         }
         String val = Optional.ofNullable(strValue).orElse(def);
         addKeyChangeHandler(key, ref -> new CommonKeyChangeListener(key));
-        LOCAL_CACHE.put(key, val);
+        if (Objects.nonNull(val)) {
+            LOCAL_CACHE.put(key, val);
+        }
         return val;
     }
 
