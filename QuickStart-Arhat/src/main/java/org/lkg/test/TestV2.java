@@ -22,9 +22,11 @@ import org.lkg.rocketmq.biz.MqRetrySendService;
 import org.lkg.rpc.lb.LoadBalanceService;
 import org.lkg.rpc.lb.ThirdServiceInvokeEnum;
 import org.lkg.rpc.lb.demo.AtmCouponProxy;
+import org.lkg.utils.DateTimeUtils;
 import org.lkg.utils.http.httpclient.HttpClientUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +55,12 @@ public class TestV2 implements InitializingBean {
 
     @Value("${config-set:测试,hh,hh,ff,ff}")
     private Set<String> set;
+
+
+    // 可以直接解析日期、周期
+    @Value("${annual.coupon-end-time:}")
+    @DateTimeFormat(pattern = DateTimeUtils.YYYY_MM_DD_HH_MM_SS)
+    private Date couponPrizeEndTime;
 
     @Resource
     private ExecutorService kgService;
