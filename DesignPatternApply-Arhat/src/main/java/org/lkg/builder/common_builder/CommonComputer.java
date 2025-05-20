@@ -22,6 +22,10 @@ public class CommonComputer {
         System.out.println("111");
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder {
         private final CommonComputer computerBuilder = new CommonComputer();
 

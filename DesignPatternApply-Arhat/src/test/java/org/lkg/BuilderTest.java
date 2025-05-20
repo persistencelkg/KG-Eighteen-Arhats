@@ -12,7 +12,7 @@ public class BuilderTest {
 
     @Test
     public void testCommonBuilder() {
-        CommonComputer build = new CommonComputer.Builder().cpu("cpu").disk("disk").memory("memory").build();
+        CommonComputer build = CommonComputer.builder().cpu("cpu").disk("disk").memory("memory").build();
         System.out.println(build);
     }
 }
