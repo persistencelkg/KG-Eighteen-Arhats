@@ -1,10 +1,10 @@
 package org.lkg;
 
 import org.junit.Test;
-import org.lkg.facade.AirSystem;
-import org.lkg.facade.AroundSystem;
-import org.lkg.facade.LightSystem;
-import org.lkg.facade.fix.FixFacade;
+import org.lkg.structable_pattern.facade.AirSystem;
+import org.lkg.structable_pattern.facade.AroundSystem;
+import org.lkg.structable_pattern.facade.LightSystem;
+import org.lkg.structable_pattern.facade.fix.FixFacade;
 
 /**
  * @date: 2025/5/25 17:16

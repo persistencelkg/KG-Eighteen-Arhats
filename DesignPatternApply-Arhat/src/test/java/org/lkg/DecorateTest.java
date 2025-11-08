@@ -1,9 +1,8 @@
 package org.lkg;
 
 import org.junit.Test;
-import org.lkg.decorate.DataLoaderDecorator;
-import org.lkg.decorate.DefaultDataLoader;
-import org.lkg.decorate.EncryptDataLoader;
+import org.lkg.structable_pattern.decorate.DefaultDataLoader;
+import org.lkg.structable_pattern.decorate.EncryptDataLoader;
 
 /**
  * @date: 2025/5/24 21:54

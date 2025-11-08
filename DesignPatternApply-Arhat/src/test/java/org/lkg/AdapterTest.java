@@ -1,10 +1,9 @@
 package org.lkg;
 
 import org.junit.Test;
-import org.lkg.adapter.class_adapter.ClassPaymentAdapter;
-import org.lkg.adapter.object_adapter.DefaultLegacyPayment;
-import org.lkg.adapter.object_adapter.LegacyPaymentSystem;
-import org.lkg.adapter.object_adapter.PaymentAdapter;
+import org.lkg.structable_pattern.adapter.class_adapter.ClassPaymentAdapter;
+import org.lkg.structable_pattern.adapter.object_adapter.DefaultLegacyPayment;
+import org.lkg.structable_pattern.adapter.object_adapter.PaymentAdapter;
 
 import java.math.BigDecimal;
 

@@ -1,8 +1,8 @@
 package org.lkg;
 
 import org.junit.Test;
-import org.lkg.commbine.Directory;
-import org.lkg.commbine.FileComponent;
+import org.lkg.structable_pattern.commbine.Directory;
+import org.lkg.structable_pattern.commbine.FileComponent;
 
 /**
  * @date: 2025/6/8 11:00

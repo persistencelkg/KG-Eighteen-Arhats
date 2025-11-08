@@ -1,11 +1,11 @@
 package org.lkg;
 
 import org.junit.Test;
-import org.lkg.proxy.ProxyStaticCase;
-import org.lkg.proxy.StaticProxyCase;
-import org.lkg.proxy.StaticProxyCaseImpl;
-import org.lkg.proxy.dynamic.CglibDynamicFactory;
-import org.lkg.proxy.dynamic.JdkDynamicFactory;
+import org.lkg.creatable_pattern.proxy.ProxyStaticCase;
+import org.lkg.creatable_pattern.proxy.StaticProxyCase;
+import org.lkg.creatable_pattern.proxy.StaticProxyCaseImpl;
+import org.lkg.creatable_pattern.proxy.dynamic.CglibDynamicFactory;
+import org.lkg.creatable_pattern.proxy.dynamic.JdkDynamicFactory;
 
 /**
  * @date: 2025/5/17 23:12

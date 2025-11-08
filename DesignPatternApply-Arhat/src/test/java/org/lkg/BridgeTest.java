@@ -1,10 +1,8 @@
 package org.lkg;
 
 import org.junit.Test;
-import org.lkg.bridge.CpicCompany;
-import org.lkg.bridge.InsuranceCompany;
-import org.lkg.bridge.PhiProduct;
-import org.lkg.bridge.PicCompany;
+import org.lkg.structable_pattern.bridge.CpicCompany;
+import org.lkg.structable_pattern.bridge.PhiProduct;
 
 /**
  * @date: 2025/5/18 22:01

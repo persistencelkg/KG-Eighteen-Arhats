@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- MyBatis-Generator 相关配置 -->
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<!-- 所有的配置均在根元素 generatorConfiguration 下 -->
+<generatorConfiguration>
+    <context id="MySqlContext" targetRuntime="MyBatis3" defaultModelType="flat">
+        <!-- 生成的pojo，将implements Serializable -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <!-- 生成的pojo，增加了equals 和 hashCode方法-->
+        <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>
+
+        <commentGenerator>
+            <!--  不生成所有注释，默认为 false  -->
+            <property name="suppressAllComments" value="true"/>
+
+            <!--  生成的注释中不包含时间信息，默认为 false -->
+            <property name="suppressDate" value="true"/>
+            <!--  生成的注释中，时间的显示格式 -->
+            <property name="dateFormat" value="yyyy/MM/dd"/>
+            <!-- 是否添加数据库表中字段的注释，默认为 false  -->
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+
+
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/sys"
+                        userId="root"
+                        password="Str0ngP@ssw0rd!">
+
+            <!-- 若为 8.0 版本以上的 mysql-connector-java 驱动，需要设置 nullCatalogMeansCurrent = true -->
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+
+        <javaTypeResolver>
+            <!-- 是否强制使用 BigDecimal；
+                      默认为 false，把 JDBC 的 DECIMAL 和 NUMERIC 类型解析为 Integer；
+                      设置为 true 时，把 JDBC 的 DECIMAL 和 NUMERIC 类型解析为 java.math.BigDecimal
+                   -->
+            <property name="forceBigDecimals" value="true"/>
+
+            <!-- 设置时间类型的转换，
+                      默认 false，将所有 JDBC 的时间类型解析为 java.util.Date；
+                设置为 true 时，将 JDBC 的时间类型按如下规则解析：
+                  DATE	    -> java.time.LocalDate
+                  TIME	    -> java.time.LocalTime
+                  TIMESTAMP      -> java.time.LocalDateTime
+                  TIME_WITH_TIMEZONE  	-> java.time.OffsetTime
+                  TIMESTAMP_WITH_TIMEZONE 	-> java.time.OffsetDateTime
+               -->
+            <property name="useJSR310Types" value="true"/>
+        </javaTypeResolver>
+
+        <!--  配置 Java 模型生成器 -->
+        <javaModelGenerator targetPackage="org.lkg.model" targetProject="DynamicSharding-Arhat/src/main/java">
+            <!-- 自动为每一个生成的类创建一个构造方法，构造方法包含了所有的 field，而不是使用 setter；
+               默认值为 false -->
+            <property name="constructorBased" value="false"/>
+
+            <!-- 在 targetPackage 的基础上，根据数据库的 schema 再生成一层 package，
+               最终生成的类放在这个package下；默认为false -->
+            <property name="enableSubPackages" value="false"/>
+
+            <!-- 是否创建一个不可变的类：如果为true，那么 MBG 生成的类会没有 setter 方法，
+               采用构造函数的方式来接收和设置每个字段的值，此时会忽略 constructorBased 属性的设置；
+               默认值为 false  -->
+            <property name="immutable" value="false"/>
+
+            <!-- 设置在 getter 方法中，是否对 String 类型的字段调用 trim() 方法；默认为 false -->
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="my-mapper" targetProject="src/main/resources">
+            <!-- 同 javaModelGenerator 元素中的配置  -->
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>
+
+
+        <!--
+
+        ANNOTATEDMAPPER，按照使用 Mapper 接口 + Annotation 的方式生成文件，SQL 生成在对应的 Annotation 中，不会生成 xml 文件。
+        MIXEDMAPPER，使用混合配置，会生成 Mapper 接口，并适当添加合适的 Annotation，也会有 SQL 生成在 XML 文件中。
+        XMLMAPPER，会生成 Mapper 接口，接口完全依赖 XML 文件。
+        -->
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="deecyn.shop_02.mbg.mapper"
+                             targetProject="DynamicSharding-Arhat/src/main/java">
+            <!-- 同 javaModelGenerator 元素中的配置  -->
+            <property name="enableSubPackages" value="false"/>
+        </javaClientGenerator>
+
+        <!-- 配置需要生成代码的数据库表 -->
+        <table tableName="sys_config" domainObjectName="SysConfig"
+               enableCountByExample="false" enableUpdateByExample="true"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false"/>
+
+
+
+    </context>
+
+
+
+
+</generatorConfiguration>
+
