@@ -1,10 +1,16 @@
 package org.lkg;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.junit.Test;
-import org.lkg.flyweight.Forest;
-import org.lkg.flyweight.TreeTypeFactory;
+import org.lkg.structable_pattern.flyweight.Forest;
+import org.lkg.structable_pattern.flyweight.TreeTypeFactory;
 
-import java.util.Random;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * @date: 2025/6/8 09:58
@@ -27,5 +33,47 @@ public class FlyWeightTest {
 
         Forest.render();
         System.out.println("树类型个数:" + TreeTypeFactory.getSize());
+    }
+
+    @Data
+    static class Base {
+        private String name;
+        private int age;
+    }
+
+
+    @EqualsAndHashCode(callSuper = true)
+    @Data
+    @AllArgsConstructor
+    static  class A extends Base {
+        private String address;
+    }
+
+    public static void main(String[] args) {
+        Base base = new A("test");
+        ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.configure()
+        try {
+            String s = objectMapper.writeValueAsString(base);
+            System.out.println(s);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private final static Map<String, Function<Object, Object>> map = new HashMap<>();
+    static {
+        register("insure", "PICC_CBPL", (obj) -> apply(obj));
+        register("report", "PICC_CBPL", (obj) -> apply(obj));
+        register("insure", "PICC_SHENZHEN_CBPL", (obj) -> apply(obj));
+    }
+
+    public static void register(String str, String name, Function<Object, Object> functions) {
+        String key = new StringJoiner("_", str, name).toString();
+        map.put(key, functions);
+    }
+
+    public static Object apply(Object req) {
+        return new Object();
     }
 }

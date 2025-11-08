@@ -1,7 +1,7 @@
 package org.lkg;
 
 import org.junit.Test;
-import org.lkg.builder.common_builder.CommonComputer;
+import org.lkg.creatable_pattern.builder.common_builder.CommonComputer;
 
 /**
  * @date: 2025/5/11 17:52

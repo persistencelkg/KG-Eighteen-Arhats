@@ -1,14 +1,12 @@
 package org.lkg;
 
 import org.junit.Test;
-import org.lkg.singleton.EnumSingleton;
-import org.lkg.singleton.HungrySingleton;
-import org.lkg.singleton.InnerClassSingleton;
+import org.lkg.creatable_pattern.singleton.EnumSingleton;
+import org.lkg.creatable_pattern.singleton.HungrySingleton;
+import org.lkg.creatable_pattern.singleton.InnerClassSingleton;
 
 import java.io.*;
-import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * @date: 2025/5/10 17:00
