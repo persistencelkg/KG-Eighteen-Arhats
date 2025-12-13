@@ -1,7 +1,6 @@
 package org.lkg.request;
 
 import lombok.NoArgsConstructor;
-import org.lkg.exception.IResponseEnum;
 
 /**
  * Description:

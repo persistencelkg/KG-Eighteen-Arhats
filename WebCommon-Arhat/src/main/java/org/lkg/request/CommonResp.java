@@ -3,7 +3,7 @@ package org.lkg.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.lkg.exception.IResponseEnum;
+import org.lkg.exception.IErrorCode;
 
 import java.io.Serializable;
 
@@ -66,7 +66,7 @@ public abstract class CommonResp<D, Code> implements Serializable {
         return new DefaultResp(null, COMMON_FAIL.toString(), message);
     }
 
-    public static DefaultResp fail(IResponseEnum iResponseEnum) {
-        return new DefaultResp(null, iResponseEnum.getCode(), iResponseEnum.getMessage());
+    public static DefaultResp fail(IErrorCode iErrorCode) {
+        return new DefaultResp(null, iErrorCode.getCode(), iErrorCode.getMessage());
     }
 }

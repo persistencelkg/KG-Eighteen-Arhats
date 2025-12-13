@@ -1,8 +1,8 @@
 package org.lkg.rpc.lb;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lkg.exception.BizException;
-import org.lkg.exception.enums.BizExceptionEnum;
+import org.lkg.exception.CommonException;
+import org.lkg.exception.enums.CommonExceptionEnum;
 import org.lkg.retry.RetryService;
 import org.lkg.utils.JacksonUtil;
 import org.lkg.utils.ObjectUtil;
@@ -44,11 +44,11 @@ public class LoadBalanceService extends RetryService {
 
     public String getUrl(String serviceName, String url) {
         if (ObjectUtil.isEmpty(serviceName) || ObjectUtil.isEmpty(url)) {
-            throw new BizException(BizExceptionEnum.SERVICE_INVOKE_PARAM_ERROR);
+            throw CommonException.fail(CommonExceptionEnum.PARAM_VALID_ERROR);
         }
         ServiceInstance choose = loadBalancerClient.choose(serviceName);
         if (ObjectUtil.isEmpty(choose)) {
-            throw new BizException(BizExceptionEnum.SERVICE_INVOKE_ERROR);
+            throw CommonException.fail(CommonExceptionEnum.SERVICE_INVOKE_ERROR);
         }
         return String.format("%s%s", choose.getUri().toString(), url);
     }
@@ -65,7 +65,7 @@ public class LoadBalanceService extends RetryService {
 //        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         String param = JacksonUtil.writeValue(request);
         if (ObjectUtil.isEmpty(param)) {
-            throw new BizException(BizExceptionEnum.SERVICE_INVOKE_PARAM_ERROR);
+            throw CommonException.fail(CommonExceptionEnum.PARAM_VALID_ERROR);
         }
         // 自定义超时时间
 //        customTTL(thirdServiceInvokeEnum);

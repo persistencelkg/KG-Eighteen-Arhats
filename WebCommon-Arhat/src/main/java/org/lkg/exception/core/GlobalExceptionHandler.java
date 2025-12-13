@@ -2,11 +2,9 @@ package org.lkg.exception.core;
 
 import io.micrometer.core.instrument.Metrics;
 import lombok.extern.slf4j.Slf4j;
-import org.lkg.exception.BaseException;
 import org.lkg.exception.BizException;
-import org.lkg.exception.enums.BizExceptionEnum;
-import org.lkg.exception.enums.ParamValidExceptionEnum;
-import org.lkg.request.CommonIntResp;
+import org.lkg.exception.enums.CommonExceptionEnum;
+import org.lkg.log.KgLogUtil;
 import org.lkg.request.CommonResp;
 import org.lkg.request.DefaultResp;
 import org.springframework.validation.BindException;
@@ -17,8 +15,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.io.InterruptedIOException;
-import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
@@ -72,27 +68,11 @@ public class GlobalExceptionHandler {
     // 受检异常：网络异常、error类
 
     @ExceptionHandler(value = {
-            SocketTimeoutException.class,
-            ConnectException.class,
-            InterruptedIOException.class,
+            SocketTimeoutException.class
     })
-    public DefaultResp dealWithTimeoutException(InterruptedIOException e) {
-        log.error(e.getMessage(), e);
-        return DefaultResp.fail(BizExceptionEnum.TIME_OUT_ERROR);
-    }
-
-    @ExceptionHandler(value = {
-            ArrayIndexOutOfBoundsException.class,
-            NullPointerException.class,
-            ClassCastException.class,
-            ArithmeticException.class,
-            IllegalArgumentException.class
-    })
-    public DefaultResp defaultUnCheckException(Exception e) {
-        // 开发者需要关注
-        Metrics.counter("unchecked", "ex", e.getClass().getSimpleName()).increment();
-        log.error("please review code: {}", e.getMessage(), e);
-        return DefaultResp.fail(BizExceptionEnum.UNCHECKED_ERROR);
+    public DefaultResp dealWithTimeoutException(SocketTimeoutException e) {
+        KgLogUtil.printSalError(e.getMessage(), e);
+        return DefaultResp.fail(CommonExceptionEnum.TIME_OUT_SAL_ERROR);
     }
 
 
@@ -100,9 +80,7 @@ public class GlobalExceptionHandler {
     public DefaultResp dealWithBottomException(Throwable e) {
         // 开发者需要关注
         Metrics.counter("unknown").increment();
-        log.error(e.getMessage(), e);
-        return CommonResp.fail(BizExceptionEnum.UNKNOWN_ERROR);
+        KgLogUtil.printSysError(e.getMessage(), e);
+        return CommonResp.fail(CommonExceptionEnum.UNKNOWN_ERROR);
     }
-
-
 }
