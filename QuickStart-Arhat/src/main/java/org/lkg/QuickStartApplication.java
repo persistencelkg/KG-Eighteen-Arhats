@@ -1,10 +1,11 @@
 package org.lkg;
 
-import org.mybatis.spring.annotation.MapperScan;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
@@ -17,10 +18,22 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 //@EnableDiscoveryClient
 @EnableFeignClients(basePackages = "org.lkg")
 //@MapperScan("org.lkg")
+@Slf4j
 public class QuickStartApplication {
 
     public static void main(String[] args) {
         SpringApplication springApplication = new SpringApplication(QuickStartApplication.class);
         springApplication.run(args);
+    }
+
+    @Bean
+    public SmartInitializingSingleton iniit() {
+        return  new SmartInitializingSingleton() {
+            @Override
+            public void afterSingletonsInstantiated() {
+                log.info("test------------------------");
+                log.debug("debug---------------");
+            }
+        };
     }
 }

@@ -6,7 +6,7 @@
 
 
     <!-- 收集日志目录，默认 /data/log/${defaultLogAppName} -->
-    <property name="defaultLogPath" value="${LOG_FILE_PATH:-logs}"/>
+    <property name="defaultLogPath" value="${ctx:logging.path}"/>
 
     <!-- 异步任务队列长度 -->
     <property name="asyncQueueSize" value="${LOG_QUEUE_SIZE:-4096}"/>
@@ -178,7 +178,7 @@
     </logger>
 
     <!--  服务层  -->
-    <logger name="org.lkg" level="DEBUG" additivity="true">
+    <logger name="org.lkg" level="${logging.level.quickstart}" additivity="true">
         <appender-ref ref="BIZ-INFO-LOG"/>
         <appender-ref ref="BIZ-ERROR-LOG"/>
     </logger>
