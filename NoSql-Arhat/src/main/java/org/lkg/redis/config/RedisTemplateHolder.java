@@ -1,10 +1,7 @@
 package org.lkg.redis.config;
 
-import org.lkg.redis.crud.TestInterFace;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -25,20 +22,6 @@ public class RedisTemplateHolder {
 
     @Resource
     private MoreRedisDataSourceConfig moreRedisDataSourceConfig;
-
-
-    @Bean
-    public TestInterFace testOne() {
-        return new TestInterFace() {};
-    }
-
-
-
-    @Bean
-    public TestInterFace testTwo() {
-        return new TestInterFace() {};
-    }
-
 
     public RedisTemplate<String, Object> featureTemplate() {
         return redisTemplateMap.get(MoreRedisDataSourceConfig.FEATURE_REDIS_NAME);

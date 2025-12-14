@@ -2,7 +2,8 @@ package org.lkg.exception.core;
 
 import io.micrometer.core.instrument.Metrics;
 import lombok.extern.slf4j.Slf4j;
-import org.lkg.exception.BizException;
+
+import org.lkg.exception.CommonException;
 import org.lkg.exception.enums.CommonExceptionEnum;
 import org.lkg.log.KgLogUtil;
 import org.lkg.request.CommonResp;
@@ -29,11 +30,10 @@ public class GlobalExceptionHandler {
 
     // 用户抛出的异常，无需系统关注
     @ExceptionHandler(value = {
-            BizException.class,
-            BaseException.class})
-    public DefaultResp dealWithBizException(BaseException e) {
-        log.warn(e.getMessage(), e);
-        return DefaultResp.fail(e.getResponseEnum());
+           CommonException.class})
+    public DefaultResp dealWithBizException(CommonException e) {
+        KgLogUtil.printBizError(e.getMessage(), e);
+        return DefaultResp.fail(e.getIErrorCode());
     }
 
     // 参数异常
@@ -49,16 +49,15 @@ public class GlobalExceptionHandler {
         } else if (e instanceof  MethodArgumentNotValidException) {
             result = ((MethodArgumentNotValidException) e).getBindingResult();
         } else {
-            log.warn(e.getMessage(), e);
-            return DefaultResp.fail(ParamValidExceptionEnum.VALID_ERROR);
+            return DefaultResp.fail(e.getMessage());
         }
         final List<FieldError> fieldErrors = result.getFieldErrors();
         StringBuilder builder = new StringBuilder();
         for (FieldError error : fieldErrors) {
             builder.append(error.getDefaultMessage()).append("\n");
         }
-        log.warn(builder.toString(), e);
-        return DefaultResp.fail(ParamValidExceptionEnum.VALID_ERROR.getCode(), builder.toString());
+        KgLogUtil.printBizError(builder.toString(), e);
+        return DefaultResp.fail(e.getMessage(), builder.toString());
     }
 
     // ------------------------------- 以下异常都应该强提醒 --------------------------------------
@@ -81,6 +80,6 @@ public class GlobalExceptionHandler {
         // 开发者需要关注
         Metrics.counter("unknown").increment();
         KgLogUtil.printSysError(e.getMessage(), e);
-        return CommonResp.fail(CommonExceptionEnum.UNKNOWN_ERROR);
+        return CommonResp.fail(CommonExceptionEnum.UNKNOWN_SYS_ERROR);
     }
 }
