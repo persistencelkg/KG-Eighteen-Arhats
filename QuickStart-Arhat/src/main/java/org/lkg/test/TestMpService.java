@@ -12,5 +12,4 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestMpService extends ServiceImpl<TestMpDao, User> {
 
-
 }

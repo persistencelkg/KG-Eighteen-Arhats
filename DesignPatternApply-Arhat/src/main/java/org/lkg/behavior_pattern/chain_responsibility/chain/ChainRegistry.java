@@ -7,7 +7,7 @@ import java.util.List;
  * Author: 李开广
  * Date: 2024/1/1 9:57 PM
  */
-public interface ChainRegistry<T extends Chain> {
+public interface ChainRegistry<T extends ChainTest> {
 
     /**
      * select optional，adapt Your apply product common Object

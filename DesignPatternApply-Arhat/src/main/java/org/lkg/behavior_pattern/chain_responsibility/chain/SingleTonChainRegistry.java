@@ -8,7 +8,7 @@ package org.lkg.behavior_pattern.chain_responsibility.chain;
 public class SingleTonChainRegistry {
 
 
-    public static ChainRegistry<? extends Chain> getInstance() {
+    public static ChainRegistry<? extends ChainTest> getInstance() {
         return DefaultChainRegistry.SingleTonChangeRegistry.getInstance();
     }
 
