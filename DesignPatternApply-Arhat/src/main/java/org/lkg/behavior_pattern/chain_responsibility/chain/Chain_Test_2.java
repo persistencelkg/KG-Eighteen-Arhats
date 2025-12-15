@@ -7,7 +7,7 @@ import org.lkg.behavior_pattern.chain_responsibility.Invocation.BizLoginInvocati
  * Author: 李开广
  * Date: 2024/1/1 9:56 PM
  */
-public class Chain_2 implements Chain{
+public class Chain_Test_2 implements ChainTest {
 
     @Override
     public String toString() {

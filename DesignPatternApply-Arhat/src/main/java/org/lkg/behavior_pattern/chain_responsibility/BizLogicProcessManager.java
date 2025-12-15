@@ -1,6 +1,6 @@
 package org.lkg.behavior_pattern.chain_responsibility;
 
-import org.lkg.behavior_pattern.chain_responsibility.chain.Chain;
+import org.lkg.behavior_pattern.chain_responsibility.chain.ChainTest;
 import org.lkg.behavior_pattern.chain_responsibility.Invocation.BizLoginInvocation;
 
 import java.util.List;
@@ -12,20 +12,20 @@ import java.util.List;
  */
 public class BizLogicProcessManager implements BizLoginInvocation {
 
-    private List<Chain> chainList;
+    private List<ChainTest> chainTestList;
 
     private int currentIndex = -1;
 
 
-    public BizLogicProcessManager(List<Chain> list) {
+    public BizLogicProcessManager(List<ChainTest> list) {
         // 根据顺序执行或者倒序
-        this.chainList = list;
+        this.chainTestList = list;
     }
 
     @Override
     public Object process() {
 
-        if (currentIndex == chainList.size() - 1) {
+        if (currentIndex == chainTestList.size() - 1) {
             // 最终结束的逻辑
             return null;
         }
@@ -34,7 +34,7 @@ public class BizLogicProcessManager implements BizLoginInvocation {
 //            return process();;
 //        }
 
-        return chainList.get(++currentIndex).invoke(this);
+        return chainTestList.get(++currentIndex).invoke(this);
     }
 
 }

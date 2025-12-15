@@ -10,33 +10,33 @@ import java.util.List;
  */
 public class DefaultChainRegistry implements ChainRegistry {
 
-    private final List<Chain> list = new ArrayList<Chain>();
+    private final List<ChainTest> list = new ArrayList<ChainTest>();
 
     private DefaultChainRegistry() {
         // 也可以通过适配器方式，将Chain的普通注册留给Chained
         // list添加的是Adapter，然后在getChainList获取Chained和ChainAdapter进行扩展和解耦，主要是为了扩展
-        registerChain(new Chain_1());
-        registerChain(new Chain_2());
+        registerChain(new Chain_Test_1());
+        registerChain(new Chain_Test_2());
     }
 
     @Override
-    public Chain unwrap(Object chain) {
-        return (Chain) chain;
+    public ChainTest unwrap(Object chain) {
+        return (ChainTest) chain;
     }
 
     @Override
-    public void registerChain(Chain chain) {
-        list.add(chain);
+    public void registerChain(ChainTest chainTest) {
+        list.add(chainTest);
     }
 
     @Override
-    public List<Chain> getChainList() {
+    public List<ChainTest> getChainList() {
         return list;
     }
 
     public static class SingleTonChangeRegistry {
         private final static DefaultChainRegistry INSTANCE = new DefaultChainRegistry();
-        public static ChainRegistry<? extends Chain> getInstance() {
+        public static ChainRegistry<? extends ChainTest> getInstance() {
             return INSTANCE;
         }
     }

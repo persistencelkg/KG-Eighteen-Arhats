@@ -1,6 +1,6 @@
 package org.lkg.behavior_pattern.chain_responsibility;
 
-import org.lkg.behavior_pattern.chain_responsibility.chain.Chain;
+import org.lkg.behavior_pattern.chain_responsibility.chain.ChainTest;
 import org.lkg.behavior_pattern.chain_responsibility.chain.ChainRegistry;
 import org.lkg.behavior_pattern.chain_responsibility.chain.SingleTonChainRegistry;
 
@@ -15,8 +15,8 @@ public class ChainFactory {
 
 
 
-    public List<Chain> getChainList() {
-        ChainRegistry<? extends Chain> instance = SingleTonChainRegistry.getInstance();
-        return (List<Chain>) instance.getChainList();
+    public List<ChainTest> getChainList() {
+        ChainRegistry<? extends ChainTest> instance = SingleTonChainRegistry.getInstance();
+        return (List<ChainTest>) instance.getChainList();
     }
 }

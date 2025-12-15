@@ -19,14 +19,16 @@
         <github.caffeine.version>2.6.2</github.caffeine.version>
         <okhttp.version>4.9.0</okhttp.version>
         <google-qr.verison>3.3.2</google-qr.verison>
+        <jakarta.version>3.0.2</jakarta.version>
     </properties>
 
     <dependencies>
 
-        <dependency>
-            <groupId>io.github.persistencelkg</groupId>
-            <artifactId>DesignPatternApply-Arhat</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.github.persistencelkg</groupId>-->
+<!--            <artifactId>DesignPatternApply-Arhat</artifactId>-->
+<!--        </dependency>-->
+
 
         <!--非web-->
         <dependency>
@@ -138,6 +140,23 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+        <!--  jdk高版本参数校验     -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${jakarta.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
         </dependency>
     </dependencies>
 </project>
