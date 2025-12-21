@@ -1,11 +1,9 @@
 package org.lkg.biztemplate;
 
-import org.lkg.exception.CommonException;
-import org.lkg.exception.IErrorCode;
 import org.lkg.exception.enums.CommonExceptionEnum;
 import org.lkg.exception.enums.MonitorStatus;
 import org.lkg.exception.enums.MonitorType;
-import org.lkg.log.KgLogUtil;
+import org.lkg.utils.KgLogUtil;
 import org.lkg.utils.JacksonUtil;
 
 import java.util.Objects;
@@ -43,6 +41,7 @@ public class SALTemplate {
         } finally {
             KgLogUtil.monitor(MonitorType.SAL_HTTP,  ret, iErrorCode, "SalTemplate.exec", start);
             if (Objects.equals(ret, MonitorStatus.SUCCESS)) {
+                // 序列化策略和内存对象分离
                 KgLogUtil.printSalInfo("{} exec success request:%s, resp:%s, %sms", method, requestStr, JacksonUtil.writeValue(resp), start);
             } else {
                 KgLogUtil.printSalError("{} exec fail request:%s, resp:%s, %sms", method, requestStr, iErrorCode.getMessage(), start);

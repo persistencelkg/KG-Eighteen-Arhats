@@ -2,12 +2,11 @@ package org.lkg.exception.core;
 
 import io.micrometer.core.instrument.Metrics;
 import lombok.extern.slf4j.Slf4j;
-
 import org.lkg.exception.CommonException;
 import org.lkg.exception.enums.CommonExceptionEnum;
-import org.lkg.log.KgLogUtil;
 import org.lkg.request.CommonResp;
 import org.lkg.request.DefaultResp;
+import org.lkg.utils.KgLogUtil;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -38,6 +37,7 @@ public class GlobalExceptionHandler {
 
     // 参数异常
     @ExceptionHandler(value = {
+
             BindException.class,
             MethodArgumentNotValidException.class,
             // 其他类也是因为参数格式引起的统一处理

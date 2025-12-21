@@ -44,6 +44,10 @@ public class CommonException extends RuntimeException{
         return new CommonException(iErrorCode, tipMsg);
     }
 
+    public static CommonException fail(IErrorCode iErrorCode, Throwable th) {
+        return new CommonException(iErrorCode, "", th);
+    }
+
     public static CommonException fail(IErrorCode iErrorCode, String tipMsg, Throwable th) {
         return new CommonException(iErrorCode, tipMsg, th);
     }

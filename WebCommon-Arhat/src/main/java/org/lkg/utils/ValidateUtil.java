@@ -1,7 +1,5 @@
 package org.lkg.utils;
 
-import org.lkg.log.KgLogUtil;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;

@@ -1,11 +1,9 @@
 package org.lkg.biztemplate;
 
-import org.lkg.exception.CommonException;
-import org.lkg.exception.IErrorCode;
 import org.lkg.exception.enums.CommonExceptionEnum;
 import org.lkg.exception.enums.MonitorStatus;
 import org.lkg.exception.enums.MonitorType;
-import org.lkg.log.KgLogUtil;
+import org.lkg.utils.KgLogUtil;
 import org.lkg.utils.JacksonUtil;
 import org.lkg.utils.ObjectUtil;
 import org.lkg.utils.ValidateUtil;
@@ -31,7 +29,7 @@ public class InnerExecTemplate {
             R resp = function.apply(request);
 
             ret = MonitorStatus.SUCCESS;
-            iErrorCode = CommonExceptionEnum.SAL_EXEC_SUCCESS;
+            iErrorCode = CommonExceptionEnum.EXEC_SUCCESS;
 
             return resp;
         }  catch (CommonException commonException) {
@@ -40,13 +38,19 @@ public class InnerExecTemplate {
             throw  commonException;
         } catch (Throwable th) {
             KgLogUtil.printSysError("{} request:{} sys fail, th:", method, requestStr, th);
-            iErrorCode = CommonExceptionEnum.UNKNOWN_SAL_EXEC_ERROR;
+            iErrorCode = CommonExceptionEnum.UNKNOWN_SYS_ERROR;
             throw CommonException.fail(iErrorCode);
         } finally {
-            KgLogUtil.monitor(MonitorType.SAL_HTTP,  ret, iErrorCode, "SalTemplate.exec", start);
+            KgLogUtil.monitor(MonitorType.INNER,  ret, iErrorCode, "InnerExecTemplate.exec", start);
         }
     }
 
 
+
+    public String test(Object obj) {
+        return exec("test", obj, ref -> {
+            return  "";
+        });
+    }
 
 }

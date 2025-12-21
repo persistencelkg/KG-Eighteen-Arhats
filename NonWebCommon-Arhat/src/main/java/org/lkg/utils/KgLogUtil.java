@@ -1,9 +1,8 @@
-package org.lkg.log;
+package org.lkg.utils;
 
 import org.lkg.exception.IErrorCode;
 import org.lkg.exception.enums.MonitorStatus;
 import org.lkg.exception.enums.MonitorType;
-import org.lkg.utils.ObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

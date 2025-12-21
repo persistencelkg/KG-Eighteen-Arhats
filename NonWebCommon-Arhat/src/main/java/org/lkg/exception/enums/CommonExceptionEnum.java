@@ -11,6 +11,8 @@ import org.lkg.exception.IErrorCode;
 @Getter
 @AllArgsConstructor
 public enum CommonExceptionEnum implements  IErrorCode {
+
+    EXEC_SUCCESS("200", "", IErrorType.SAL, IErrorLevel.INFO),
     SAL_EXEC_SUCCESS("100000", "", IErrorType.SAL, IErrorLevel.INFO),
 
     /**
@@ -23,9 +25,14 @@ public enum CommonExceptionEnum implements  IErrorCode {
     /**
      * 参数
      */
-    PARAM_VALID_ERROR("100003", "请求参数错误", IErrorType.BIZ, IErrorLevel.ERROR),
+    PARAM_VALID_ERROR("100004", "请求参数错误", IErrorType.BIZ, IErrorLevel.ERROR),
 
-    SERVICE_INVOKE_ERROR("200000", "服务调用异常", IErrorType.SYSTEM, IErrorLevel.ERROR)
+    JACKSON_EXCLUSION_UNKNOWN_ERROR("100005", "jackson排除字段序列化未知异常", IErrorType.SYSTEM, IErrorLevel.ERROR),
+
+
+    SERVICE_INVOKE_ERROR("200000", "服务调用异常", IErrorType.SYSTEM, IErrorLevel.ERROR),
+
+
 
     ;
 

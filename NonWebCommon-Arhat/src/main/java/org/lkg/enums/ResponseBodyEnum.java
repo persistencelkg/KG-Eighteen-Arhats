@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.io.Serializable;
 
 /**
- * Description:
+ * Description: 兼容不同响应结果
  * Author: 李开广
  * Date: 2024/11/15 4:34 PM
  */
