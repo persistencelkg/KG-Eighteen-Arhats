@@ -228,19 +228,19 @@ public class JacksonUtil {
         private String msg;
     }
 
-    public static String writeValueWithExclusion(Object obj, @NotNull Set<String> exclusionKeySet, @Nullable Class<?> mixInClassz, String... filterName) {
+
+    public static String writeValueWithExclusion(Object obj, Class<?> minInClassz) {
+        return writeValueWithExclusion(obj, Collections.emptySet(), minInClassz);
+    }
+    public static String writeValueWithExclusion(Object obj, @NotNull Set<String> exclusionKeySet, @Nullable Class<?> mixInClassz) {
         SimpleBeanPropertyFilter simpleBeanPropertyFilter = SimpleBeanPropertyFilter.serializeAllExcept(exclusionKeySet);
         SimpleFilterProvider simpleFilterProvider = new SimpleFilterProvider();
-        simpleFilterProvider.addFilter("writeValueWithExclusionFilter", simpleBeanPropertyFilter);
-        Optional.ofNullable(filterName).ifPresent(ref ->  {
-            for (String key : ref) {
-                simpleFilterProvider.addFilter(key, SimpleBeanPropertyFilter.serializeAll());
-            }
+        // 动态根据maxIn混合模式去排除对象，即通过其他@JsonFilter修饰的类去排除, 避免在原对象上去修改，但是当且仅当只支持一个minInClass，因为底层用map存储，key是被序列化对象的class
+        Optional.ofNullable(mixInClassz).ifPresent(ref -> {
+            JsonFilter annotation = ref.getAnnotation(JsonFilter.class);
+            simpleFilterProvider.addFilter(annotation.value(), simpleBeanPropertyFilter);
+            getMapper().addMixIn(obj.getClass(), mixInClassz);
         });
-        // 动态根据maxIn混合模式去排除对象，即通过其他@JsonFilter修饰的类去排除, 避免在原对象上去修改
-
-        Optional.ofNullable(mixInClassz).ifPresent(ref -> getMapper().addMixIn(obj.getClass(), mixInClassz));
-
         try {
             return getMapper().writer(simpleFilterProvider).writeValueAsString(obj);
         } catch (Throwable th) {
@@ -261,7 +261,7 @@ public class JacksonUtil {
         System.out.println("-----");
         HashSet<String> objects = new HashSet<>();
         objects.add("data");
-        System.out.println(writeValueWithExclusion(deserialize, objects, MinInTest.class, "v2Filter"));
+        System.out.println(writeValueWithExclusion(deserialize, objects,MinInTest.class));
         System.out.println(deserialize);
 
         GenericCommonResp deserialize2 = JacksonUtil.deserialize(jsonString2, ResponseBodyEnum.RESULT_CODE_MSG);
