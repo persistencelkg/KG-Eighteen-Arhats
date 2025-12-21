@@ -1,17 +1,27 @@
 package org.lkg.utils;
 
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.lkg.enums.ResponseBodyEnum;
+import org.lkg.exception.CommonException;
+import org.lkg.exception.enums.CommonExceptionEnum;
 import org.lkg.request.GenericCommonResp;
 import org.lkg.request.InternalRequest;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.*;
 
@@ -193,27 +203,65 @@ public class JacksonUtil {
     @Data
     private static class TestObj {
         private String name;
-        @JsonProperty("aName")
+//        @JsonProperty("aName")
         private String aName;
         private String aaName;
 
         private String oldAge;
-        // 以为代码是生成的setAName方法【lombok按照我们理解的方式】，
-        // 但是ide生成的是【setaName有点不友好，但确实对的】所以jackson 在读取set方法时会将连续首字母大写转为小写
-        // 因此实际调用setaname，因此要求属性是aname 而不是aName
+        // 由于aName 是1个小写字母 + Name，根据lombok编译规则后 变成了setAName
+        // jackson 在反序列化时，会将连续首字母大写转为小写 也就是实际jackson在读取key的时候期望读取 aname 但是实际只有aName;
+        // 导致最终获取对象结果为空
 
-        // 正常情况下以为是 setAaName ，jackson世纪调用的是 setaaName，因此解析aaName即可，最好的解决方案是@jsonProperty强制指定，要求上游这么传递不太现实
+        // 最好的解决方案是@jsonProperty强制指定要读取的字段key，要求上游这么传递不太现实
 
     }
+
+    @JsonFilter("writeValueWithExclusionFilter")
+    public static class MinInTest {
+        @JsonIgnore
+        private Integer code;
+    }
+
+    @JsonFilter("v2Filter")
+    public static class MinTestv2 {
+        @JsonIgnore
+        private String msg;
+    }
+
+    public static String writeValueWithExclusion(Object obj, @NotNull Set<String> exclusionKeySet, @Nullable Class<?> mixInClassz, String... filterName) {
+        SimpleBeanPropertyFilter simpleBeanPropertyFilter = SimpleBeanPropertyFilter.serializeAllExcept(exclusionKeySet);
+        SimpleFilterProvider simpleFilterProvider = new SimpleFilterProvider();
+        simpleFilterProvider.addFilter("writeValueWithExclusionFilter", simpleBeanPropertyFilter);
+        Optional.ofNullable(filterName).ifPresent(ref ->  {
+            for (String key : ref) {
+                simpleFilterProvider.addFilter(key, SimpleBeanPropertyFilter.serializeAll());
+            }
+        });
+        // 动态根据maxIn混合模式去排除对象，即通过其他@JsonFilter修饰的类去排除, 避免在原对象上去修改
+
+        Optional.ofNullable(mixInClassz).ifPresent(ref -> getMapper().addMixIn(obj.getClass(), mixInClassz));
+
+        try {
+            return getMapper().writer(simpleFilterProvider).writeValueAsString(obj);
+        } catch (Throwable th) {
+            KgLogUtil.printSysError("JacksonUtil.writeValueWithExclusion fail, exclusions:{}, mixInClass:{}", exclusionKeySet, mixInClassz, th);
+            throw CommonException.fail(CommonExceptionEnum.JACKSON_EXCLUSION_UNKNOWN_ERROR, th);
+        }
+    }
+
 
 
     public static void main(String[] args) {
         String jsonString1 = "{\"data\":[{\"name\":\"example\",\"aName\":\"xxx\",\"oldAge\":101}],\"code\":200,\"message\":\"Success\"}";
-        String jsonString2 = "{\"result\":{\"aname\":\"example\",\"aaName\":\"example2\", \"oldAge\": 3},\"code\":200,\"msg\":\"Success\"}";
+        String jsonString2 = "{\"result\":{\"aName\":\"example\",\"aaName\":\"example2\", \"oldAge\": 3},\"code\":200,\"msg\":\"Success\"}";
 
         GenericCommonResp deserialize = JacksonUtil.deserialize(jsonString1, ResponseBodyEnum.DATA_CODE_MESSAGE);
         List<TestObj> testObjs = deserialize.unSafeGetList(TestObj.class);
         System.out.println(testObjs);
+        System.out.println("-----");
+        HashSet<String> objects = new HashSet<>();
+        objects.add("data");
+        System.out.println(writeValueWithExclusion(deserialize, objects, MinInTest.class, "v2Filter"));
         System.out.println(deserialize);
 
         GenericCommonResp deserialize2 = JacksonUtil.deserialize(jsonString2, ResponseBodyEnum.RESULT_CODE_MSG);

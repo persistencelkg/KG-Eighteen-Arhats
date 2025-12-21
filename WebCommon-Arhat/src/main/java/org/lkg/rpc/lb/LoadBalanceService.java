@@ -1,7 +1,6 @@
 package org.lkg.rpc.lb;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lkg.exception.CommonException;
 import org.lkg.exception.enums.CommonExceptionEnum;
 import org.lkg.retry.RetryService;
 import org.lkg.utils.JacksonUtil;
