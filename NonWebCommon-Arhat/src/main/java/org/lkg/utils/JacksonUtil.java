@@ -35,7 +35,7 @@ public class JacksonUtil {
 
     static {
         // 美化输出
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+//        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         // 输出时将属性变成小写带下划线 输入时还原成javaBean格式 , 已过时要么通过spring全局配置，要么在java bean自动添加
 //        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SnakeCaseStrategy.SNAKE_CASE);
         // 映射未知属性不抛出异常
@@ -103,9 +103,13 @@ public class JacksonUtil {
         return null;
     }
 
-
     public static String writeValue(Object any) {
+        return writeValue(any, false);
+    }
+
+    public static String writeValue(Object any, boolean pretty) {
         try {
+            mapper.configure(SerializationFeature.INDENT_OUTPUT, pretty);
             return mapper.writeValueAsString(any);
         } catch (Exception e) {
             log.error("writeValue json exception, {}", e.getMessage(), e);
@@ -151,7 +155,7 @@ public class JacksonUtil {
             return null;
         }
         try {
-            return mapper.readValue(json, mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass));
+            return mapper.readValue(json, mapper.getTypeFactory().constructMapType(LinkedHashMap.class, keyClass, valueClass));
         } catch (IOException e) {
             log.error("readCollection convert json to object list exception, {}", e.getMessage(), e);
         }
@@ -163,7 +167,7 @@ public class JacksonUtil {
             return null;
         }
         try {
-            return mapper.readValue(json, mapper.getTypeFactory().constructMapType(Map.class,
+            return mapper.readValue(json, mapper.getTypeFactory().constructMapType(LinkedHashMap.class,
                     mapper.getTypeFactory().constructType(keyClass),
                     mapper.getTypeFactory().constructType(valueClass)));
         } catch (IOException e) {
@@ -172,16 +176,16 @@ public class JacksonUtil {
         return null;
     }
 
-    public static TypeReference<Map<String, Object>> getMapReference() {
-        return new TypeReference<Map<String, Object>>() {
+    public static TypeReference<LinkedHashMap<String, Object>> getMapReference() {
+        return new TypeReference<LinkedHashMap<String, Object>>() {
         };
     }
 
     public static Map<String, Object> objToMap(Object obj) {
         String s = writeValue(obj);
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         if (Objects.nonNull(s)) {
-            return readObj(s, new TypeReference<HashMap<String, Object>>() {
+            return readObj(s, new TypeReference<LinkedHashMap<String, Object>>() {
             });
         }
         return map;

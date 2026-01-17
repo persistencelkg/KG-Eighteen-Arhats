@@ -26,12 +26,10 @@ public enum CommonExceptionEnum implements  IErrorCode {
      * 参数
      */
     PARAM_VALID_ERROR("100004", "请求参数错误", IErrorType.BIZ, IErrorLevel.ERROR),
-
     JACKSON_EXCLUSION_UNKNOWN_ERROR("100005", "jackson排除字段序列化未知异常", IErrorType.SYSTEM, IErrorLevel.ERROR),
-
-
     SERVICE_INVOKE_ERROR("200000", "服务调用异常", IErrorType.SYSTEM, IErrorLevel.ERROR),
-
+    PDT_CONTENT_NAME_NOT_EXIST_BIZ_ERROR("100006", "产品内容name不存在", IErrorType.BIZ, IErrorLevel.ERROR ),
+    PDT_CONTENT_PARSE_BIZ_ERROR("100007", "产品内容解析为空", IErrorType.BIZ, IErrorLevel.ERROR),
 
 
     ;
