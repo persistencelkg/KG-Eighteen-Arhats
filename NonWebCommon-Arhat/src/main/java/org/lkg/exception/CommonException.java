@@ -1,6 +1,7 @@
 package org.lkg.exception;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Description: 通用业务异常
@@ -9,6 +10,7 @@ import lombok.Getter;
  * Date: 2024/10/14 8:30 PM
  */
 @Getter
+@Setter
 public class CommonException extends RuntimeException{
 
 
