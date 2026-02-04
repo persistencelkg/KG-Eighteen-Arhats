@@ -30,6 +30,7 @@ public enum CommonExceptionEnum implements  IErrorCode {
     SERVICE_INVOKE_ERROR("200000", "服务调用异常", IErrorType.SYSTEM, IErrorLevel.ERROR),
     PDT_CONTENT_NAME_NOT_EXIST_BIZ_ERROR("100006", "产品内容name不存在", IErrorType.BIZ, IErrorLevel.ERROR ),
     PDT_CONTENT_PARSE_BIZ_ERROR("100007", "产品内容解析为空", IErrorType.BIZ, IErrorLevel.ERROR),
+    EXCEL_READ_BIZ_ERROR("100008", "excel读取失败", IErrorType.BIZ, IErrorLevel.ERROR),
 
 
     ;

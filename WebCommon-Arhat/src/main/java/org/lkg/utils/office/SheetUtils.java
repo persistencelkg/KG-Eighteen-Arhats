@@ -7,7 +7,9 @@ import org.lkg.request.InternalResponse;
 import org.lkg.utils.IOStreamUtil;
 import org.lkg.utils.ObjectUtil;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -178,6 +180,26 @@ public class SheetUtils {
     }
 
     public static void main(String[] args) {
+//        test01();
+
+        test02();
+    }
+
+    private static void test02() {
+        ExcelUtils.PartitionedExcelWriter partitionedExcelWriter = new ExcelUtils.PartitionedExcelWriter();
+        try {
+            String filePath = "t1.xlsx";
+            Workbook workBookWithLocal = ExcelUtils.createWorkBookWithLocal(filePath);
+            partitionedExcelWriter.processLargeExcel(workBookWithLocal, 10, filePath);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private static void test01() {
         InternalResponse internalResponse = new InternalResponse(null);
         internalResponse.setResult("jhhh");
 
@@ -188,7 +210,7 @@ public class SheetUtils {
         Workbook emptyWorkBook = ExcelUtils.createEmptyWorkBook();
         batchSaveRow(emptyWorkBook, list, "响应结果", "异常列表", "状态码", "请求列表", "耗时");
         try {
-            emptyWorkBook.write(ExcelUtils.getDefaultOutputStream("tes3t.xls"));
+            emptyWorkBook.write(ExcelUtils.getDefaultOutputStream("tes3t.xlsx"));
             emptyWorkBook.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -196,9 +218,9 @@ public class SheetUtils {
         System.out.println("-----读取工作簿开始----");
         // 读取
         try {
-            List<CustomInternalResponse> ts = iteratorSheetToJavaObj(CustomInternalResponse.class, ExcelUtils.createWorkBookWithLocal("tes3t.xls"));
+            List<CustomInternalResponse> ts = iteratorSheetToJavaObj(CustomInternalResponse.class, ExcelUtils.createWorkBookWithLocal("tes3t.xlsx"));
             System.out.println(ts);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
